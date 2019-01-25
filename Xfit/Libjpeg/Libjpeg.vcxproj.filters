@@ -1,0 +1,261 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="jconfig.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cderror.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="cdjpeg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jdct.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jerror.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jinclude.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jmemsys.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jmorecfg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jpegint.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jpeglib.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="jversion.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="transupp.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="README" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="cdjpeg.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="cjpeg.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="ckconfig.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="djpeg.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jaricom.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcapimin.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcapistd.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcarith.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jccoefct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jccolor.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcdctmgr.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jchuff.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcinit.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcmainct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcmarker.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcmaster.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcomapi.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcparam.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcprepct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jcsample.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jctrans.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdapimin.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdapistd.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdarith.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdatadst.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdatasrc.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdcoefct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdcolor.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jddctmgr.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdhuff.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdinput.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdmainct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdmarker.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdmaster.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdmerge.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdpostct.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdsample.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jdtrans.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jerror.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jfdctflt.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jfdctfst.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jfdctint.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jidctflt.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jidctfst.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jidctint.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jmemansi.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jmemmgr.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jmemname.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jpegtran.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jquant1.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jquant2.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="jutils.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdbmp.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdcolmap.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdgif.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdjpgcom.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdppm.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdrle.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdswitch.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="rdtarga.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="transupp.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrbmp.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrgif.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrjpgcom.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrppm.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrrle.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="wrtarga.c">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

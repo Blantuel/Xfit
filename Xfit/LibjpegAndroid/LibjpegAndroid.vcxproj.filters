@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Libjpeg\jutils.c" />
+    <ClCompile Include="..\Libjpeg\jcmainct.c" />
+    <ClCompile Include="..\Libjpeg\jcmarker.c" />
+    <ClCompile Include="..\Libjpeg\jcmaster.c" />
+    <ClCompile Include="..\Libjpeg\jcomapi.c" />
+    <ClCompile Include="..\Libjpeg\jcparam.c" />
+    <ClCompile Include="..\Libjpeg\jcsample.c" />
+    <ClCompile Include="..\Libjpeg\jctrans.c" />
+    <ClCompile Include="..\Libjpeg\jdapimin.c" />
+    <ClCompile Include="..\Libjpeg\jdapistd.c" />
+    <ClCompile Include="..\Libjpeg\jdatadst.c" />
+    <ClCompile Include="..\Libjpeg\jdatasrc.c" />
+    <ClCompile Include="..\Libjpeg\jdcoefct.c" />
+    <ClCompile Include="..\Libjpeg\jdcolor.c" />
+    <ClCompile Include="..\Libjpeg\jddctmgr.c" />
+    <ClCompile Include="..\Libjpeg\jdhuff.c" />
+    <ClCompile Include="..\Libjpeg\jdinput.c" />
+    <ClCompile Include="..\Libjpeg\jdmainct.c" />
+    <ClCompile Include="..\Libjpeg\jdmarker.c" />
+    <ClCompile Include="..\Libjpeg\jdmaster.c" />
+    <ClCompile Include="..\Libjpeg\jdmerge.c" />
+    <ClCompile Include="..\Libjpeg\jdpostct.c" />
+    <ClCompile Include="..\Libjpeg\jdsample.c" />
+    <ClCompile Include="..\Libjpeg\jdtrans.c" />
+    <ClCompile Include="..\Libjpeg\jerror.c" />
+    <ClCompile Include="..\Libjpeg\jfdctflt.c" />
+    <ClCompile Include="..\Libjpeg\jfdctfst.c" />
+    <ClCompile Include="..\Libjpeg\jfdctint.c" />
+    <ClCompile Include="..\Libjpeg\jidctflt.c" />
+    <ClCompile Include="..\Libjpeg\jidctfst.c" />
+    <ClCompile Include="..\Libjpeg\jidctint.c" />
+    <ClCompile Include="..\Libjpeg\jmemmgr.c" />
+    <ClCompile Include="..\Libjpeg\jquant1.c" />
+    <ClCompile Include="..\Libjpeg\jquant2.c" />
+  </ItemGroup>
+</Project>

@@ -1,0 +1,276 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="system\System.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\AnimateObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\Blend.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="view\Camera3D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\Compress.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\Filter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object3D\Image3D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\Light.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Object.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object3D\Object3D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="file\Register.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="file\ResourceManager.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Sampler.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object3D\Shape3D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="sound\Sound.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Vertex.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="view\Viewport.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\Converter.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Point.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Point3D.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Point3Dw.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Math.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Matrix.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\Sort.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Rect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Hexagon.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Collision.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Lines.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\WriteFlag.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="text\Text.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Error.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="file\File.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\Memory.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\Array.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="effect\Effect.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\PriorityQueue.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Event.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Context.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_GraphicsBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_Loop.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_OpenGL.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_Vulkan.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_Windows.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Image.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ImageInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Button.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\Collision.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\RectCollision.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Checkbox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Input.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\RadioButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\AnimateLoopObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="system\System.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\AnimateObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="data\Compress.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="data\Converter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="effect\Filter.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Image3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Object3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Sampler.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Shape3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Vertex.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="view\Viewport.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Collision.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="effect\Blend.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_Loop.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_OpenGL.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_Vulkan.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_Windows.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Hexagon.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Lines.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\Text.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\Sound.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="file\ResourceManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Image.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ImageInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Button.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\RectCollision.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Checkbox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="system\Input.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\RadioButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\AnimateLoopObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Object.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

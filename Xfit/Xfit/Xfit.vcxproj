@@ -1,0 +1,323 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{D78D0ED2-ABAD-4EA1-83E2-C77569C24198}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>Xfit</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>Unicode</CharacterSet>
+    <PlatformToolset>v142</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="Shared">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="XfitPropertySheetDebug.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="XfitPropertySheetDebug.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="XfitPropertySheetRelease.props" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+    <Import Project="XfitPropertySheetRelease.props" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <SDLCheck>true</SDLCheck>
+      <WarningLevel>Level4</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <AdditionalDependencies>ws2_32.lib;dinput8.lib;dxguid.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+    </Lib>
+    <FxCompile>
+      <HeaderFileOutput>
+      </HeaderFileOutput>
+      <VariableName>
+      </VariableName>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+    </Link>
+    <Lib>
+      <IgnoreSpecificDefaultLibraries>
+      </IgnoreSpecificDefaultLibraries>
+      <IgnoreAllDefaultLibraries>
+      </IgnoreAllDefaultLibraries>
+      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+    </Lib>
+    <FxCompile>
+      <HeaderFileOutput>
+      </HeaderFileOutput>
+      <VariableName>
+      </VariableName>
+    </FxCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <OmitFramePointers>true</OmitFramePointers>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib />
+    <FxCompile>
+      <HeaderFileOutput>
+      </HeaderFileOutput>
+      <VariableName>
+      </VariableName>
+    </FxCompile>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;dinput8.lib;dxguid.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <ClCompile>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
+      <LanguageStandard>stdcpp17</LanguageStandard>
+      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
+      <OmitFramePointers>true</OmitFramePointers>
+      <ConformanceMode>true</ConformanceMode>
+      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <CompileAs>CompileAsCpp</CompileAs>
+      <SDLCheck>true</SDLCheck>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <WarningLevel>EnableAllWarnings</WarningLevel>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+    </Link>
+    <Lib />
+    <FxCompile>
+      <HeaderFileOutput>
+      </HeaderFileOutput>
+      <VariableName>
+      </VariableName>
+    </FxCompile>
+    <Lib>
+      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="data\Array.h" />
+    <ClInclude Include="data\Memory.h" />
+    <ClInclude Include="data\Compress.h" />
+    <ClInclude Include="data\Converter.h" />
+    <ClInclude Include="data\PriorityQueue.h" />
+    <ClInclude Include="data\Sort.h" />
+    <ClInclude Include="effect\Blend.h" />
+    <ClInclude Include="effect\Effect.h" />
+    <ClInclude Include="effect\Filter.h" />
+    <ClInclude Include="effect\Light.h" />
+    <ClInclude Include="file\File.h" />
+    <ClInclude Include="file\Register.h" />
+    <ClInclude Include="file\ResourceManager.h" />
+    <ClInclude Include="math\Collision.h" />
+    <ClInclude Include="math\Hexagon.h" />
+    <ClInclude Include="math\Lines.h" />
+    <ClInclude Include="math\Math.h" />
+    <ClInclude Include="math\Matrix.h" />
+    <ClInclude Include="math\Point.h" />
+    <ClInclude Include="math\Point3D.h" />
+    <ClInclude Include="math\Point3Dw.h" />
+    <ClInclude Include="math\Rect.h" />
+    <ClInclude Include="object3D\Image3D.h" />
+    <ClInclude Include="object3D\Object3D.h" />
+    <ClInclude Include="object3D\Shape3D.h" />
+    <ClInclude Include="object\AnimateLoopObject.h" />
+    <ClInclude Include="object\AnimateObject.h" />
+    <ClInclude Include="object\Button.h" />
+    <ClInclude Include="object\Checkbox.h" />
+    <ClInclude Include="object\Image.h" />
+    <ClInclude Include="object\ImageInstance.h" />
+    <ClInclude Include="object\Object.h" />
+    <ClInclude Include="object\RadioButton.h" />
+    <ClInclude Include="physics\Collision.h" />
+    <ClInclude Include="physics\RectCollision.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="system\Context.h" />
+    <ClInclude Include="system\Error.h" />
+    <ClInclude Include="system\Event.h" />
+    <ClInclude Include="resource\Sampler.h" />
+    <ClInclude Include="resource\Vertex.h" />
+    <ClInclude Include="sound\Sound.h" />
+    <ClInclude Include="system\Input.h" />
+    <ClInclude Include="system\System.h" />
+    <ClInclude Include="system\WriteFlag.h" />
+    <ClInclude Include="text\Text.h" />
+    <ClInclude Include="view\Camera3D.h" />
+    <ClInclude Include="view\Viewport.h" />
+    <ClInclude Include="_system\_GraphicsBase.h" />
+    <ClInclude Include="_system\_Loop.h" />
+    <ClInclude Include="_system\_OpenGL.h" />
+    <ClInclude Include="_system\_Vulkan.h" />
+    <ClInclude Include="_system\_Windows.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="data\Compress.cpp" />
+    <ClCompile Include="data\Converter.cpp" />
+    <ClCompile Include="effect\Blend.cpp" />
+    <ClCompile Include="effect\Filter.cpp" />
+    <ClCompile Include="math\Collision.cpp" />
+    <ClCompile Include="math\Hexagon.cpp" />
+    <ClCompile Include="math\Lines.cpp" />
+    <ClCompile Include="math\Matrix.cpp" />
+    <ClCompile Include="object3D\Image3D.cpp" />
+    <ClCompile Include="object3D\Object3D.cpp" />
+    <ClCompile Include="object3D\Shape3D.cpp" />
+    <ClCompile Include="object\AnimateLoopObject.cpp" />
+    <ClCompile Include="object\AnimateObject.cpp" />
+    <ClCompile Include="object\Button.cpp" />
+    <ClCompile Include="object\Checkbox.cpp" />
+    <ClCompile Include="object\Image.cpp" />
+    <ClCompile Include="object\ImageInstance.cpp" />
+    <ClCompile Include="file\ResourceManager.cpp" />
+    <ClCompile Include="object\Object.cpp" />
+    <ClCompile Include="object\RadioButton.cpp" />
+    <ClCompile Include="physics\RectCollision.cpp" />
+    <ClCompile Include="sound\Sound.cpp" />
+    <ClCompile Include="resource\Sampler.cpp" />
+    <ClCompile Include="resource\Vertex.cpp" />
+    <ClCompile Include="system\Input.cpp" />
+    <ClCompile Include="system\System.cpp" />
+    <ClCompile Include="text\Text.cpp" />
+    <ClCompile Include="view\Viewport.cpp" />
+    <ClCompile Include="_system\_Loop.cpp" />
+    <ClCompile Include="_system\_OpenGL.cpp" />
+    <ClCompile Include="_system\_Vulkan.cpp" />
+    <ClCompile Include="_system\_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Libjpeg\Libjpeg.vcxproj">
+      <Project>{d20ce35b-acae-4452-8085-dcee0d8b0654}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Libogg\Libogg.vcxproj">
+      <Project>{ef315dad-a37f-494c-9de9-c3370a75d2d0}</Project>
+    </ProjectReference>
+    <ProjectReference Include="..\Libpng\Libpng.vcxproj">
+      <Project>{e3fe1b41-2e14-4553-bc3a-341723c529d5}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+    <ProjectReference Include="..\Zlib\Zlib.vcxproj">
+      <Project>{21124c64-33d0-45b4-a10a-c7d481d44f0a}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

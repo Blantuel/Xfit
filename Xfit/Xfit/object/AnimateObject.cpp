@@ -38,6 +38,7 @@ unsigned AnimateObject::PrevFrame() {
 unsigned AnimateObject::GetCurrectFrame()const { return cFrame; }
 unsigned AnimateObject::GetTotalFrame()const { return len; }
 void AnimateObject::Draw() {
+	Object::Draw();
 	if (_System::_OpenGL::renderMode.activeShaderProg != _System::_OpenGL::imgVertProg) {
 		_System::_OpenGL::glActiveShaderProgram(_System::_OpenGL::progPipeline, _System::_OpenGL::imgVertProg);
 		_System::_OpenGL::renderMode.activeShaderProg = _System::_OpenGL::imgVertProg;

@@ -101,6 +101,7 @@ void Button::Update() {
 	}
 }
 void Button::Draw() {
+	Object::Draw();
 	GLuint posUV;
 	GLuint texture;
 	switch (state) {

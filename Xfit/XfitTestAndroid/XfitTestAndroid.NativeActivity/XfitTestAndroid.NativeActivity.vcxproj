@@ -62,35 +62,35 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
     <ThumbMode>ARM</ThumbMode>
   </PropertyGroup>
@@ -98,7 +98,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-27</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
     <ThumbMode>ARM</ThumbMode>
   </PropertyGroup>
@@ -241,6 +241,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\FreetypeAndroid\FreetypeAndroid.vcxproj">
+      <Project>{24df2d11-d5f4-4967-9afd-9a761db34594}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
     <ProjectReference Include="..\..\LibjpegAndroid\LibjpegAndroid.vcxproj">
       <Project>{adc98346-2d94-49e2-80aa-467c8a1dd9b9}</Project>
     </ProjectReference>

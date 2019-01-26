@@ -21,6 +21,8 @@ Image::~Image() {
 	glDeleteTextures(1, &openGL.texture);
 }
 void Image::Draw() {
+	Object::Draw();
+
 	if(_System::_OpenGL::renderMode.activeShaderProg!= _System::_OpenGL::imgVertProg) {
 		_System::_OpenGL::glActiveShaderProgram(_System::_OpenGL::progPipeline, _System::_OpenGL::imgVertProg);
 		_System::_OpenGL::renderMode.activeShaderProg = _System::_OpenGL::imgVertProg;

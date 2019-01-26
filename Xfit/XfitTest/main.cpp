@@ -9,7 +9,9 @@
 #include <object/Button.h>
 #include <physics/RectCollision.h>
 #include <object/AnimateLoopObject.h>
-
+#include <text/Font.h>
+#include <text/Label.h>
+#include <effect/Blend.h>
 
 float d = 0;
 
@@ -17,6 +19,8 @@ Image* shape;
 ImageInstance* instance;
 Button* button;
 AnimateLoopObject* sprite;
+Label* label;
+Font* font;
 
 void Init() {
 	File file;
@@ -106,7 +110,7 @@ void Init() {
 
 	
 	sprite = new AnimateLoopObject;
-	sprite->blend = nullptr;
+	sprite->blend = new Blend(Blend::Value::SRC_ALPHA, Blend::Value::ONE_MINUS_SRC_ALPHA);
 	sprite->sampler = shape->sampler;
 	sprite->mat = Matrix::GetMove(0.5f, 0.f);
 	
@@ -152,6 +156,25 @@ void Init() {
 		}
 	}
 	instance->BuildInstance(200,64, insPos);
+
+	file.Load(L"NanumBarunGothic.ttf", false, true);
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	file.Close();
+
+	Font::Init(1000);
+	font = new Font(data, size);
+	
+	label = new Label;
+	label->blend = sprite->blend;
+	label->sampler = shape->sampler;
+	
+
+	unsigned width, height;
+	label->PrepareDraw(L"Hello", font, 300, 0xff,&width,&height);
+
+	label->mat = Matrix::GetScale(((float)width/1920.f), ((float)height / 1080.f));
 }
 int i = 0;
 void Update() {
@@ -167,12 +190,18 @@ void Update() {
 	sprite->Draw();
 	sprite->Update();
 
+	label->Draw();
+
 	System::Render();
 }
 void Activate(bool _activated, bool _minimized) {
 
 }
 void Destroy() {
+	delete label;
+	delete font;
+	Font::Release();
+	delete sprite->blend;
 	delete sprite;
 	delete shape->sampler;
 	delete shape;

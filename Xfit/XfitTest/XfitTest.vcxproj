@@ -98,6 +98,7 @@
       </PrecompiledHeaderFile>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level4</WarningLevel>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>

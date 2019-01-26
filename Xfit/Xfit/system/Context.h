@@ -15,63 +15,63 @@
 class Context {
 public:
 	static void Create() {
-		if (System::GetCurrentRendererVersion().name == System::RendererName::OpenGL) {
+#ifdef OPENGL
 #ifdef _DEBUG
-			if (!System::IsRendererInited());
-			if (_System::_OpenGL::threadContext);
+		if (!System::IsRendererInited());
+		if (_System::_OpenGL::threadContext);
 #endif
-			_System::_OpenGL::contextLinked = false;
+		_System::_OpenGL::contextLinked = false;
 #ifdef _DEBUG
-			const int attribList2[] = {
-				WGL_CONTEXT_MAJOR_VERSION_ARB, (int)_System::_OpenGL::version.majorVersion,
-				WGL_CONTEXT_MINOR_VERSION_ARB, (int)_System::_OpenGL::version.minorVersion,
-				WGL_CONTEXT_FLAGS_ARB ,WGL_CONTEXT_DEBUG_BIT_ARB ,0 };
+		const int attribList2[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, (int)_System::_OpenGL::version.majorVersion,
+			WGL_CONTEXT_MINOR_VERSION_ARB, (int)_System::_OpenGL::version.minorVersion,
+			WGL_CONTEXT_FLAGS_ARB ,WGL_CONTEXT_DEBUG_BIT_ARB ,0 };
 #else
-			const int attribList2[] = {
-				WGL_CONTEXT_MAJOR_VERSION_ARB, (int)_System::_Renderer::version.majorVersion,
-				WGL_CONTEXT_MINOR_VERSION_ARB, (int)_System::_Renderer::version.minorVersion,0 };
+		const int attribList2[] = {
+			WGL_CONTEXT_MAJOR_VERSION_ARB, (int)_System::_Renderer::version.majorVersion,
+			WGL_CONTEXT_MINOR_VERSION_ARB, (int)_System::_Renderer::version.minorVersion,0 };
 #endif
-			_System::_OpenGL::threadContext = _System::_OpenGL::wglCreateContextAttribsARB(_System::_Windows::hdc, _System::_OpenGL::context, attribList2);
-		} else if (System::GetCurrentRendererVersion().name == System::RendererName::Vulkan) {
-		}
+		_System::_OpenGL::threadContext = _System::_OpenGL::wglCreateContextAttribsARB(_System::_Windows::hdc, _System::_OpenGL::context, attribList2);
+#elif VULKAN
+#endif
 	}
 	static void Link() {
-		if (System::GetCurrentRendererVersion().name == System::RendererName::OpenGL) {
+#ifdef OPENGL
 #ifdef _DEBUG
-			if (!System::IsRendererInited());
-			if (!_System::_OpenGL::threadContext);
-			if (_System::_OpenGL::contextLinked);
+		if (!System::IsRendererInited());
+		if (!_System::_OpenGL::threadContext);
+		if (_System::_OpenGL::contextLinked);
 #endif
-			_System::_OpenGL::contextLinked = true;
-			wglMakeCurrent(_System::_Windows::hdc, _System::_OpenGL::threadContext);
-		} else if (System::GetCurrentRendererVersion().name == System::RendererName::Vulkan) {
-		}
+		_System::_OpenGL::contextLinked = true;
+		wglMakeCurrent(_System::_Windows::hdc, _System::_OpenGL::threadContext);
+#elif VULKAN
+#endif
 	}
 	static bool IsLinked() {
 		return _System::_OpenGL::contextLinked;
 	}
 	static void Unlink() {
-		if (System::GetCurrentRendererVersion().name == System::RendererName::OpenGL) {
+#ifdef OPENGL
 #ifdef _DEBUG
-			if (!System::IsRendererInited());
-			if (!_System::_OpenGL::threadContext);
-			if (!_System::_OpenGL::contextLinked);
+		if (!System::IsRendererInited());
+		if (!_System::_OpenGL::threadContext);
+		if (!_System::_OpenGL::contextLinked);
 #endif
-			_System::_OpenGL::contextLinked = false;
-			wglMakeCurrent(nullptr,nullptr);
-		} else if (System::GetCurrentRendererVersion().name == System::RendererName::Vulkan) {
-		}
+		_System::_OpenGL::contextLinked = false;
+		wglMakeCurrent(nullptr,nullptr);
+#elif VULKAN
+#endif
 	}
 	static void Delete() {
-		if (System::GetCurrentRendererVersion().name == System::RendererName::OpenGL) {
+#ifdef OPENGL
 #ifdef _DEBUG
-			if (!System::IsRendererInited());
-			if (!_System::_OpenGL::threadContext);
-			if (_System::_OpenGL::threadContext == _System::_OpenGL::context);
-			if (_System::_OpenGL::contextLinked);
+		if (!System::IsRendererInited());
+		if (!_System::_OpenGL::threadContext);
+		if (_System::_OpenGL::threadContext == _System::_OpenGL::context);
+		if (_System::_OpenGL::contextLinked);
 #endif
-			wglDeleteContext(_System::_OpenGL::threadContext);
-		} else if (System::GetCurrentRendererVersion().name == System::RendererName::Vulkan) {
-		}
+		wglDeleteContext(_System::_OpenGL::threadContext);
+#elif VULKAN
+#endif
 	}
 };

@@ -1,8 +1,10 @@
 #pragma once
 
-#include "../object/Image.h"
-#include "../math/Rect.h"
 #include "../system/Error.h"
+#include "../data/Array.h"
+#include <ft2build.h>
+#include FT_FREETYPE_H
+
 
 class FontError : public Error {
 public:
@@ -11,66 +13,31 @@ public:
 class Font {
 	friend class Label;
 
-	size_t len;
-
 	struct CharImage {
-		Tchar text;
+		wchar_t text;
 		unsigned char* bitmap;
-		long advanceX, advanceY;
-		int left, top, bearingY;
-		unsigned px, width, height;
+		int advanceX;
+		int advanceY;
+		int left, top;
+		unsigned pixelSize, width, height;
 	};
 
-	void* rawData;
+	static inline Array<CharImage> charImages;
+	static inline FT_Library library = nullptr;
+
+	FT_Face face;
 public:
-	unsigned fontIndex;
-	Font():len(0),fontIndex(0),rawData(nullptr){}
+	Font(void* _data, unsigned _size, unsigned _index = 0);
 
-	static void Init() {
-	}
-	static void Release() {
-	}
-	bool sBold(unsigned index/* = 0*/)const {
-	}
-	bool IsItalic(unsigned index/* = 0*/)const {
-	}
-	~Font() {
-		delete[] rawData;
-	}
-	const char* GetFamilyName(unsigned index/* = 0*/)const {
-	}
-	const char*GetStyleName(unsigned index/* = 0*/)const {
-	}
-	void Load(void * data, unsigned size) {
-		Font(data, size);
-	}
-	Font(void * data, unsigned size):fontIndex(0) {
-		rawData = data;
-	}
-	size_t GetFontNum() const { return len; }
-};
+	static void Init(size_t _charImageMaxLen);
+	static void Release();
+	bool IsBold()const;
+	bool IsItalic()const;
+	bool IsKerning()const;
+	bool IsHinting()const;
+	unsigned GetIndex()const;
 
-class Label : public Image {
-	unsigned textWidth, textHeight;
-public:
-	enum class Align {
-		Left, Center, Right
-	};
-	enum VerticalAlign {
-		Top, Middle, Bottom
-	};
-	unsigned px,color;
-
-	RectF textBox;
-	Tstring text;
-	Font* font;
-	Align align;
-	RectF GetRect() const;
-	VerticalAlign verticalAlign;
-	unsigned GetTextWidth()const { return textWidth; }
-	unsigned GetTextHeight()const { return textHeight; }
-	virtual ~Label() { delete frame; }
-
-
-	void PrepareDraw();
+	~Font();
+	const char* GetFamilyName()const;
+	const char* GetStyleName()const;
 };

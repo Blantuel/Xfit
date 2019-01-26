@@ -151,6 +151,10 @@ namespace _System::_OpenGL {
 
 		LOADOPENGLFUNCTION(glTexStorage2D);
 
+		LOADOPENGLFUNCTION(glBlendFuncSeparate);
+		LOADOPENGLFUNCTION(glBlendEquationSeparate);
+		LOADOPENGLFUNCTION(glBlendColor);
+
 	#ifdef _DEBUG
 		LOADOPENGLFUNCTION(glDebugMessageCallback);
 	#endif

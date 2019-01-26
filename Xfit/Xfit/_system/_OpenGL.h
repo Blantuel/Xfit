@@ -101,6 +101,10 @@ namespace _System::_OpenGL {
 
 	inline PFNGLTEXSTORAGE2DPROC glTexStorage2D = nullptr;
 
+	inline PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
+	inline PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate = nullptr;
+	inline PFNGLBLENDCOLORPROC glBlendColor = nullptr;
+
 	struct RenderMode {
 		GLint activeShaderProg;
 		GLint vertProg;

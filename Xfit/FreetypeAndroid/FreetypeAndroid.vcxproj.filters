@@ -1,0 +1,43 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="..\Freetype\src\autofit\autofit.c" />
+    <ClCompile Include="..\Freetype\src\bdf\bdf.c" />
+    <ClCompile Include="..\Freetype\src\cff\cff.c" />
+    <ClCompile Include="..\Freetype\src\base\ftbase.c" />
+    <ClCompile Include="..\Freetype\src\base\ftbbox.c" />
+    <ClCompile Include="..\Freetype\src\base\ftbdf.c" />
+    <ClCompile Include="..\Freetype\src\base\ftbitmap.c" />
+    <ClCompile Include="..\Freetype\src\cache\ftcache.c" />
+    <ClCompile Include="..\Freetype\src\base\ftcid.c" />
+    <ClCompile Include="..\Freetype\src\base\ftfstype.c" />
+    <ClCompile Include="..\Freetype\src\base\ftgasp.c" />
+    <ClCompile Include="..\Freetype\src\base\ftglyph.c" />
+    <ClCompile Include="..\Freetype\src\base\ftgxval.c" />
+    <ClCompile Include="..\Freetype\src\gzip\ftgzip.c" />
+    <ClCompile Include="..\Freetype\src\base\ftinit.c" />
+    <ClCompile Include="..\Freetype\src\lzw\ftlzw.c" />
+    <ClCompile Include="..\Freetype\src\base\ftmm.c" />
+    <ClCompile Include="..\Freetype\src\base\ftotval.c" />
+    <ClCompile Include="..\Freetype\src\base\ftpatent.c" />
+    <ClCompile Include="..\Freetype\src\base\ftpfr.c" />
+    <ClCompile Include="..\Freetype\src\base\ftstroke.c" />
+    <ClCompile Include="..\Freetype\src\base\ftsynth.c" />
+    <ClCompile Include="..\Freetype\src\base\ftsystem.c" />
+    <ClCompile Include="..\Freetype\src\base\fttype1.c" />
+    <ClCompile Include="..\Freetype\src\base\ftwinfnt.c" />
+    <ClCompile Include="..\Freetype\src\pcf\pcf.c" />
+    <ClCompile Include="..\Freetype\src\pfr\pfr.c" />
+    <ClCompile Include="..\Freetype\src\psaux\psaux.c" />
+    <ClCompile Include="..\Freetype\src\pshinter\pshinter.c" />
+    <ClCompile Include="..\Freetype\src\psnames\psmodule.c" />
+    <ClCompile Include="..\Freetype\src\raster\raster.c" />
+    <ClCompile Include="..\Freetype\src\sfnt\sfnt.c" />
+    <ClCompile Include="..\Freetype\src\smooth\smooth.c" />
+    <ClCompile Include="..\Freetype\src\truetype\truetype.c" />
+    <ClCompile Include="..\Freetype\src\type1\type1.c" />
+    <ClCompile Include="..\Freetype\src\cid\type1cid.c" />
+    <ClCompile Include="..\Freetype\src\type42\type42.c" />
+    <ClCompile Include="..\Freetype\src\winfonts\winfnt.c" />
+  </ItemGroup>
+</Project>

@@ -5,12 +5,12 @@
 struct SoundSource {
 	void* rawData;
 	size_t size;
-	unsigned samplesPerSec;
+	/*unsigned samplesPerSec;
 	unsigned short nChannels;
 	unsigned short bitsPerSample;
 	
 	unsigned GetBytesPerSec()const {return samplesPerSec*nChannels*GetBytesPerSample();}
-	unsigned GetBytesPerSample() const{return bitsPerSample/8;}
+	unsigned GetBytesPerSample() const{return bitsPerSample/8;}*/
 };
 class Sound {
 	static void ThreadFunc();
@@ -35,79 +35,27 @@ public:
 	static void Release();
 	static bool IsInited();
 
-	bool Decode(SoundSource* _data) {
-		Stop();
-		data = _data;
-		return true;
-	}
-	SoundSource* GetData()const { return data; }
-	Sound() :data(nullptr), pos(0), volume(1.f), playing(false), paused(false), loop(1), loopCount(0) {sounds.InsertLast(this);}
-
+	bool Decode(SoundSource* _data);
+	SoundSource* GetData()const;
+	Sound();
 	static bool SetMasterVolume(float _volume);
 	static float GetMasterVolume() { return masterVolume; }
 
-	bool SetVolume(float _volume);
-	float GetVolume()const { return volume; }
-	bool SetChannelVolumes(const float* _volumes);
-	void GetChannelVolumes(float* _volumes)const;
+	void SetVolume(float _volume);
+	float GetVolume()const;
 
-	unsigned GetLoop()const { return loop; }
-	unsigned GetLoopCount()const { return loopCount; }
+	unsigned GetLoop()const;
+	unsigned GetLoopCount()const;
 
-	unsigned GetSamplePlayPos() const { return pos; }
+	unsigned GetSamplePlayPos() const;
 	static unsigned long long GetMasterPlaySpeed();
-	~Sound() {
-		soundMutex.lock();
-		sounds.EraseIndex(sounds.Search(this));
-		soundMutex.unlock();
-	}
-	bool Play(unsigned _loop) {
-		if (playing || paused)return false;
-		soundMutex.lock();
-		loop = _loop;
-		playing = true;
+	~Sound();
+	bool Play(unsigned _loop);
 
-		soundMutex.unlock();
-		return true;
-	}
-
-	bool SetSamplePlayPos(unsigned _pos) {
-		soundMutex.lock();
-		pos = _pos;
-		soundMutex.unlock();
-		return true;
-	}
-	bool Stop() {
-		if ((!playing) && (!paused))return false;
-		soundMutex.lock();
-
-		playing = false;
-		paused = false;
-		loopCount = 0;
-		pos = 0;
-		soundMutex.unlock();
-		return true;
-	}
-	bool Pause() {
-		if (playing && (!paused)) {
-			soundMutex.lock();
-			playing = false;
-			paused = true;
-			soundMutex.unlock();
-			return true;
-		}
-		return false;
-	}
-	bool Resume() {
-		if ((!playing) && paused) {
-			soundMutex.lock();
-			playing = true;
-			paused = false;
-			soundMutex.unlock();
-			return true;
-		}
-		return false;
-	}
+	bool SetSamplePlayPos(unsigned _pos);
+	bool Stop();
+	bool Pause();
+	bool Resume();
 };
 #ifdef _WIN32
 namespace _System::_Sound_Windows {

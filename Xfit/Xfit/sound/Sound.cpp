@@ -15,6 +15,73 @@ bool Sound::IsInited() {
 #elif __ANDROID__
 #endif
 }
+bool Sound::Decode(SoundSource* _data) {
+	Stop();
+	data = _data;
+	return true;
+}
+SoundSource* Sound::GetData()const { return data; }
+Sound::Sound() :data(nullptr), pos(0), volume(1.f), playing(false), paused(false), loop(1), loopCount(0) { sounds.InsertLast(this); }
+void Sound::SetVolume(float _volume) { volume = _volume; }
+float Sound::GetVolume()const { return volume; }
+unsigned Sound::GetLoop()const { return loop; }
+unsigned Sound::GetLoopCount()const { return loopCount; }
+
+unsigned Sound::GetSamplePlayPos() const { return pos; }
+
+Sound::~Sound() {
+	soundMutex.lock();
+	sounds.EraseIndex(sounds.Search(this));
+	soundMutex.unlock();
+}
+bool Sound::Play(unsigned _loop) {
+	if (playing || paused)return false;
+	soundMutex.lock();
+	loop = _loop;
+	playing = true;
+
+	soundMutex.unlock();
+	return true;
+}
+
+bool Sound::SetSamplePlayPos(unsigned _pos) {
+	soundMutex.lock();
+	pos = _pos;
+	soundMutex.unlock();
+	return true;
+}
+bool Sound::Stop() {
+	if ((!playing) && (!paused))return false;
+	soundMutex.lock();
+
+	playing = false;
+	paused = false;
+	loopCount = 0;
+	pos = 0;
+	soundMutex.unlock();
+	return true;
+}
+bool Sound::Pause() {
+	if (playing && (!paused)) {
+		soundMutex.lock();
+		playing = false;
+		paused = true;
+		soundMutex.unlock();
+		return true;
+	}
+	return false;
+}
+bool Sound::Resume() {
+	if ((!playing) && paused) {
+		soundMutex.lock();
+		playing = true;
+		paused = false;
+		soundMutex.unlock();
+		return true;
+	}
+	return false;
+}
+
 void Sound::ThreadFunc() {
 #ifdef _WIN32
 	_System::_Sound_Windows::soundClient->Start();
@@ -26,21 +93,35 @@ void Sound::ThreadFunc() {
 		unsigned padding;
 		_System::_Sound_Windows::soundClient->GetCurrentPadding(&padding);
 		soundDataSize = _System::_Sound_Windows::soundBufferSize - padding;
-		soundDataSizeMulBit = soundDataSize * 2;
+		soundDataSizeMulBit = soundDataSize * 2;//채널 수를 곱함.
 		short* bufferData;
-		_System::_Sound_Windows::soundRenderClient->GetBuffer(soundDataSize, (BYTE**)&bufferData);
+		_System::_Sound_Windows::soundRenderClient->GetBuffer(soundDataSize, (BYTE**)&bufferData);//soundDataSize는 적용할 데이터 크기(곱 채널,비트수하면 바이트수 나옴.)
 		Memory::Set(bufferData, (short)0, (size_t)soundDataSizeMulBit);
 		
 		for (auto sound : sounds) {
 			sound->soundMutex.lock();
-			if (!sound->playing)continue;
+			if (!sound->playing) {
+				sound->soundMutex.unlock();
+				continue;
+			}
 			const short*const sData = (short*)sound->data->rawData + sound->pos * 2;
-			if (sound->data->size  < ((sound->pos + soundDataSize) * 2 * 2)) {
-				soundRemain = (sound->data->size - sound->pos * 2 * 2) / 2;
+			if (sound->data->size  < ((sound->pos + soundDataSize) * 2*2)) {
+				soundRemain = (sound->data->size - sound->pos * 2*2) / 2;
 				if (sound->volume < 1.f) {
-					for (size_t j = 0; j < soundRemain; j++) bufferData[j] += (short)((float)sData[j] * sound->volume);
+					for (size_t j = 0; j < soundRemain; j++) {
+						const short soundShortData = (short)((float)sData[j] * sound->volume);
+						const int totalShortSoundData = (int)bufferData[j] + (int)soundShortData;
+						if (totalShortSoundData > SHRT_MAX) bufferData[j] = SHRT_MAX;
+						 else if (totalShortSoundData < SHRT_MIN) bufferData[j] = SHRT_MIN;
+						 else bufferData[j] += soundShortData;
+					}
 				} else {
-					for (size_t j = 0; j < soundRemain; j++) bufferData[j] += sData[j];
+					for (size_t j = 0; j < soundRemain; j++) {
+						const int totalShortSoundData = (int)bufferData[j] + (int)sData[j];
+						if (totalShortSoundData > SHRT_MAX) bufferData[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) bufferData[j] = SHRT_MIN;
+						else bufferData[j] += sData[j];
+					}
 				}
 				sound->loopCount++;
 				sound->pos = 0;
@@ -50,9 +131,20 @@ void Sound::ThreadFunc() {
 				}
 			} else {
 				if (sound->volume < 1.f) {
-					for (size_t j = 0; j < soundDataSizeMulBit; j++) bufferData[j] += (short)((float)sData[j] * sound->volume);
+					for (size_t j = 0; j < soundDataSizeMulBit; j++) {
+						const short soundShortData = (short)((float)sData[j] * sound->volume);
+						const int totalShortSoundData = (int)bufferData[j] + (int)soundShortData;
+						if (totalShortSoundData > SHRT_MAX) bufferData[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) bufferData[j] = SHRT_MIN;
+						else bufferData[j] += soundShortData;
+					}
 				} else {
-					for (size_t j = 0; j < soundDataSizeMulBit; j++) bufferData[j] += sData[j];
+					for (size_t j = 0; j < soundDataSizeMulBit; j++) {
+						const int totalShortSoundData = (int)bufferData[j] + (int)sData[j];
+						if (totalShortSoundData > SHRT_MAX) bufferData[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) bufferData[j] = SHRT_MIN;
+						else bufferData[j] += sData[j];
+					}
 				}
 				sound->pos += soundDataSize;
 			}
@@ -76,7 +168,7 @@ void Sound::ThreadFunc() {
 #endif
 	sounds.Free();
 }
-void Sound::Init(size_t _maxSoundLen) {
+void Sound::Init(size_t _maxSoundLen) {//반드시 44100,2채널 16비트여야함.
 #ifdef _WIN32
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 	sounds.Alloc(_maxSoundLen);

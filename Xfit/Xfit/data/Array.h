@@ -17,8 +17,8 @@ public:
 
 	const T* begin()const { return data; }
 	T* begin() { return data; }
-	const T* end()const { return data + len - 1; }
-	T* end() { return data + len - 1; }
+	const T* end()const { return data + len; }
+	T* end() { return data + len; }
 
 	size_t Size()const { return len; }
 	size_t MaxSize()const { return maxLen; }

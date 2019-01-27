@@ -12,6 +12,7 @@
 #include <text/Font.h>
 #include <text/Label.h>
 #include <effect/Blend.h>
+#include <sound/Sound.h>
 
 float d = 0;
 
@@ -21,6 +22,8 @@ Button* button;
 AnimateLoopObject* sprite;
 Label* label;
 Font* font;
+Sound* sound;
+SoundSource soundSource;
 
 void Init() {
 	File file;
@@ -163,7 +166,8 @@ void Init() {
 	file.ReadBytes(size, data);
 	file.Close();
 
-	Font::Init(1000);
+	Font::Init();
+	Font::CreateCharImages(1000);
 	font = new Font(data, size);
 	
 	label = new Label;
@@ -175,6 +179,27 @@ void Init() {
 	label->PrepareDraw(L"Hello", font, 300, 0xff,&width,&height);
 
 	label->mat = Matrix::GetScale(((float)width/1920.f), ((float)height / 1080.f));
+
+	Sound::Init(100);
+
+	sound = new Sound;
+
+	OGGConverter oggConverter;
+	file.Load(L"test.ogg", false, true);
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	file.Close();
+
+	oggConverter.Decode(data, size);
+	delete[] data;
+
+	soundSource.rawData = oggConverter.GetOutputData();
+	soundSource.size = oggConverter.GetOutputSize();
+
+	sound->Decode(&soundSource);
+	sound->Play(1);
+
 }
 int i = 0;
 void Update() {
@@ -198,8 +223,12 @@ void Activate(bool _activated, bool _minimized) {
 
 }
 void Destroy() {
+	delete[]soundSource.rawData;
+	delete sound;
+	Sound::Release();
 	delete label;
 	delete font;
+	Font::FreeCharImages();
 	Font::Release();
 	delete sprite->blend;
 	delete sprite;

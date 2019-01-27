@@ -17,19 +17,20 @@ class Font {
 		wchar_t text;
 		unsigned char* bitmap;
 		int advanceX;
-		int advanceY;
 		int left, top;
 		unsigned pixelSize, width, height;
 	};
 
-	static inline Array<CharImage> charImages;
+	static inline thread_local Array<CharImage> charImages;
 	static inline FT_Library library = nullptr;
 
 	FT_Face face;
 public:
 	Font(void* _data, unsigned _size, unsigned _index = 0);
 
-	static void Init(size_t _charImageMaxLen);
+	static void Init();
+	static void CreateCharImages(size_t _charImageMaxLen);
+	static void FreeCharImages();
 	static void Release();
 	bool IsBold()const;
 	bool IsItalic()const;

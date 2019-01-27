@@ -7,7 +7,10 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 
 	size_t len = wcslen(_text);
 	Font::CharImage* charImages = new Font::CharImage[len];
-	unsigned char** buffers = new unsigned char*[len];
+	unsigned char** buffers = nullptr;
+	if ((Font::charImages.MaxSize() - Font::charImages.Size()) < len) {
+		buffers = new unsigned char*[len];
+	}
 	size_t bufferIndex = 0;
 
 	int top = 0;
@@ -42,7 +45,6 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 			Memory::Copy(charImages[i].bitmap, imageSize, glyph->bitmap.buffer, imageSize);
 
 			charImages[i].advanceX = glyph->advance.x>>6;
-			charImages[i].advanceY = glyph->advance.y >> 6;
 			charImages[i].left = glyph->bitmap_left;
 			charImages[i].top = glyph->bitmap_top;
 			if (top < charImages[i].top)top = charImages[i].top;
@@ -64,22 +66,21 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 	unsigned* outBitmap = new unsigned[imageSize];
 	Memory::Set(outBitmap, 0U, (size_t)imageSize);
 
-	int advanceX = 0,advanceY = top;
+	int advanceX = 0;
 	for (size_t i = 0; i < len; i++) {
 		for (int y = 0; y < charImages[i].height; y++) {
 			for (int x = 0; x < charImages[i].width; x++) {
-				outBitmap[(int)width*(advanceY - charImages[i].top +y)+advanceX + charImages[i].left + x] = ((unsigned)charImages[i].bitmap[charImages[i].width * y + x] << 24) | _color;
+				outBitmap[(int)width*(top - charImages[i].top +y)+advanceX + charImages[i].left + x] = ((unsigned)charImages[i].bitmap[charImages[i].width * y + x] << 24) | _color;
 			}
 		}
 		advanceX += charImages[i].advanceX;
-		advanceY += charImages[i].advanceY;
 	}
 	
 	const RectF rect = { -1.f,1.f,1.f,-1.f };
 	Build(outBitmap, width, height, rect);
 
-	for (size_t i = 0; i < bufferIndex; i++) {
-		delete[]buffers[i];
+	if (buffers) {
+		for (size_t i = 0; i < bufferIndex; i++) delete[]buffers[i];
+		delete[]buffers;
 	}
-	delete[]buffers;
 }

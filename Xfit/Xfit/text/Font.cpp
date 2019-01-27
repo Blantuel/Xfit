@@ -1,11 +1,15 @@
 #include "Font.h"
 
-void Font::Init(size_t _charImageMaxLen) {
-	charImages.Alloc(_charImageMaxLen);
+void Font::Init() {
 	FT_Init_FreeType(&library);
 }
-void Font::Release() {
+void Font::CreateCharImages(size_t _charImageMaxLen) {
+	charImages.Alloc(_charImageMaxLen);
+}
+void Font::FreeCharImages() {
 	charImages.Free();
+}
+void Font::Release() {
 	FT_Done_FreeType(library);
 }
 Font::Font(void* _data, unsigned _size, unsigned _index/* = 0*/) {FT_New_Memory_Face(library, (FT_Byte*)_data, _size, _index, &face);}

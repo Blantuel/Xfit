@@ -18,6 +18,7 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 	unsigned imageSize;
 
 	for (size_t i = 0;i<len; i++) {
+		if (_text[i] == L'\n')continue;
 		size_t charImageIndex = SIZE_MAX;
 
 		for (size_t j = 0; j < Font::charImages.Size(); j++) {
@@ -68,6 +69,7 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 
 	int advanceX = 0;
 	for (size_t i = 0; i < len; i++) {
+		if (_text[i] == L'\n')continue;
 		for (int y = 0; y < charImages[i].height; y++) {
 			for (int x = 0; x < charImages[i].width; x++) {
 				outBitmap[(int)width*(top - charImages[i].top +y)+advanceX + charImages[i].left + x] = ((unsigned)charImages[i].bitmap[charImages[i].width * y + x] << 24) | _color;

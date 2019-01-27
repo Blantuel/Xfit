@@ -12,6 +12,7 @@ public:
 };
 class Font {
 	friend class Label;
+	friend class TextBox;
 
 	struct CharImage {
 		wchar_t text;

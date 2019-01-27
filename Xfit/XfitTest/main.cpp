@@ -13,6 +13,7 @@
 #include <text/Label.h>
 #include <effect/Blend.h>
 #include <sound/Sound.h>
+#include <text/TextBox.h>
 
 float d = 0;
 
@@ -24,6 +25,7 @@ Label* label;
 Font* font;
 Sound* sound;
 SoundSource soundSource;
+TextBox* textBox;
 
 void Init() {
 	File file;
@@ -200,6 +202,15 @@ void Init() {
 	sound->Decode(&soundSource);
 	sound->Play(1);
 
+	textBox = new TextBox;
+	textBox->blend = sprite->blend;
+	textBox->sampler = shape->sampler;
+
+	textBox->PrepareDraw(L"안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요,\n 반갑습니다. 잘가요.",
+		font, 600, 600, TextBox::Align::Left, TextBox::VerticalAlign::Top, 30, 0xffffff);
+
+	textBox->mat = Matrix::GetScale((600.f / 1920.f), (600.f/ 1080.f));
+
 }
 int i = 0;
 void Update() {
@@ -216,6 +227,7 @@ void Update() {
 	sprite->Update();
 
 	label->Draw();
+	textBox->Draw();
 
 	System::Render();
 }
@@ -223,10 +235,11 @@ void Activate(bool _activated, bool _minimized) {
 
 }
 void Destroy() {
-	delete[]soundSource.rawData;
 	delete sound;
 	Sound::Release();
+	delete[]soundSource.rawData;
 	delete label;
+	delete textBox;
 	delete font;
 	Font::FreeCharImages();
 	Font::Release();

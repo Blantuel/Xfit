@@ -180,6 +180,9 @@
     <ClInclude Include="text\Label.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="text\TextBox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="system\System.cpp">
@@ -282,6 +285,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="text\Label.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\Textbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

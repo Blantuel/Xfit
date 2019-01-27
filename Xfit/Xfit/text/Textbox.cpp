@@ -2,7 +2,7 @@
 #include "Font.h"
 #include "../data/Memory.h"
 
-void TextBox::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _width, unsigned _height, Align _align, VerticalAlign _verticalAlign, unsigned _pixelSize, unsigned _color) {
+void TextBox::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _width, unsigned _height, unsigned _pixelSize, unsigned _color) {
 	const FT_Face& face = font->face;
 
 	size_t len = wcslen(_text);

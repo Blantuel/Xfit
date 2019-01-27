@@ -207,7 +207,7 @@ void Init() {
 	textBox->sampler = shape->sampler;
 
 	textBox->PrepareDraw(L"안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요, 반갑습니다. 잘가요. 안녕하세요,\n 반갑습니다. 잘가요.",
-		font, 600, 600, TextBox::Align::Left, TextBox::VerticalAlign::Top, 30, 0xffffff);
+		font, 600, 600, 30, 0xffffff);
 
 	textBox->mat = Matrix::GetScale((600.f / 1920.f), (600.f/ 1080.f));
 

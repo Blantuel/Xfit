@@ -34,6 +34,104 @@
       <Platform>x86</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Xfit\data\Compress.cpp" />
+    <ClCompile Include="..\Xfit\data\Converter.cpp" />
+    <ClCompile Include="..\Xfit\effect\Blend.cpp" />
+    <ClCompile Include="..\Xfit\effect\Filter.cpp" />
+    <ClCompile Include="..\Xfit\file\ResourceManager.cpp" />
+    <ClCompile Include="..\Xfit\math\Collision.cpp" />
+    <ClCompile Include="..\Xfit\math\Hexagon.cpp" />
+    <ClCompile Include="..\Xfit\math\Lines.cpp" />
+    <ClCompile Include="..\Xfit\math\Matrix.cpp" />
+    <ClCompile Include="..\Xfit\object3D\Image3D.cpp" />
+    <ClCompile Include="..\Xfit\object3D\Object3D.cpp" />
+    <ClCompile Include="..\Xfit\object3D\Shape3D.cpp" />
+    <ClCompile Include="..\Xfit\object\AnimateLoopObject.cpp" />
+    <ClCompile Include="..\Xfit\object\AnimateObject.cpp" />
+    <ClCompile Include="..\Xfit\object\Button.cpp" />
+    <ClCompile Include="..\Xfit\object\Checkbox.cpp" />
+    <ClCompile Include="..\Xfit\object\Image.cpp" />
+    <ClCompile Include="..\Xfit\object\ImageInstance.cpp" />
+    <ClCompile Include="..\Xfit\object\Object.cpp" />
+    <ClCompile Include="..\Xfit\object\RadioButton.cpp" />
+    <ClCompile Include="..\Xfit\physics\RectCollision.cpp" />
+    <ClCompile Include="..\Xfit\resource\Sampler.cpp" />
+    <ClCompile Include="..\Xfit\resource\Vertex.cpp" />
+    <ClCompile Include="..\Xfit\sound\Sound.cpp" />
+    <ClCompile Include="..\Xfit\system\Input.cpp" />
+    <ClCompile Include="..\Xfit\system\System.cpp" />
+    <ClCompile Include="..\Xfit\text\Font.cpp" />
+    <ClCompile Include="..\Xfit\text\Label.cpp" />
+    <ClCompile Include="..\Xfit\text\Text.cpp" />
+    <ClCompile Include="..\Xfit\text\Textbox.cpp" />
+    <ClCompile Include="..\Xfit\view\Viewport.cpp" />
+    <ClCompile Include="..\Xfit\_system\_Android.cpp" />
+    <ClCompile Include="..\Xfit\_system\_Loop.cpp" />
+    <ClCompile Include="..\Xfit\_system\_OpenGL.cpp" />
+    <ClCompile Include="..\Xfit\_system\_Vulkan.cpp" />
+    <ClCompile Include="..\Xfit\_system\_Windows.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Xfit\data\Array.h" />
+    <ClInclude Include="..\Xfit\data\Compress.h" />
+    <ClInclude Include="..\Xfit\data\Converter.h" />
+    <ClInclude Include="..\Xfit\data\Memory.h" />
+    <ClInclude Include="..\Xfit\data\PriorityQueue.h" />
+    <ClInclude Include="..\Xfit\data\Sort.h" />
+    <ClInclude Include="..\Xfit\effect\Blend.h" />
+    <ClInclude Include="..\Xfit\effect\Effect.h" />
+    <ClInclude Include="..\Xfit\effect\Filter.h" />
+    <ClInclude Include="..\Xfit\effect\Light.h" />
+    <ClInclude Include="..\Xfit\file\AssetFile.h" />
+    <ClInclude Include="..\Xfit\file\File.h" />
+    <ClInclude Include="..\Xfit\file\Register.h" />
+    <ClInclude Include="..\Xfit\file\ResourceManager.h" />
+    <ClInclude Include="..\Xfit\math\Collision.h" />
+    <ClInclude Include="..\Xfit\math\Hexagon.h" />
+    <ClInclude Include="..\Xfit\math\Lines.h" />
+    <ClInclude Include="..\Xfit\math\Math.h" />
+    <ClInclude Include="..\Xfit\math\Matrix.h" />
+    <ClInclude Include="..\Xfit\math\Point.h" />
+    <ClInclude Include="..\Xfit\math\Point3D.h" />
+    <ClInclude Include="..\Xfit\math\Point3Dw.h" />
+    <ClInclude Include="..\Xfit\math\Rect.h" />
+    <ClInclude Include="..\Xfit\object3D\Image3D.h" />
+    <ClInclude Include="..\Xfit\object3D\Object3D.h" />
+    <ClInclude Include="..\Xfit\object3D\Shape3D.h" />
+    <ClInclude Include="..\Xfit\object\AnimateLoopObject.h" />
+    <ClInclude Include="..\Xfit\object\AnimateObject.h" />
+    <ClInclude Include="..\Xfit\object\Button.h" />
+    <ClInclude Include="..\Xfit\object\Checkbox.h" />
+    <ClInclude Include="..\Xfit\object\Image.h" />
+    <ClInclude Include="..\Xfit\object\ImageInstance.h" />
+    <ClInclude Include="..\Xfit\object\Object.h" />
+    <ClInclude Include="..\Xfit\object\RadioButton.h" />
+    <ClInclude Include="..\Xfit\physics\Collision.h" />
+    <ClInclude Include="..\Xfit\physics\RectCollision.h" />
+    <ClInclude Include="..\Xfit\resource\Sampler.h" />
+    <ClInclude Include="..\Xfit\resource\Vertex.h" />
+    <ClInclude Include="..\Xfit\sound\Sound.h" />
+    <ClInclude Include="..\Xfit\stdafx.h" />
+    <ClInclude Include="..\Xfit\system\Context.h" />
+    <ClInclude Include="..\Xfit\system\Error.h" />
+    <ClInclude Include="..\Xfit\system\Event.h" />
+    <ClInclude Include="..\Xfit\system\Input.h" />
+    <ClInclude Include="..\Xfit\system\System.h" />
+    <ClInclude Include="..\Xfit\system\WriteFlag.h" />
+    <ClInclude Include="..\Xfit\text\Font.h" />
+    <ClInclude Include="..\Xfit\text\Label.h" />
+    <ClInclude Include="..\Xfit\text\Text.h" />
+    <ClInclude Include="..\Xfit\text\TextBox.h" />
+    <ClInclude Include="..\Xfit\view\Camera3D.h" />
+    <ClInclude Include="..\Xfit\view\Viewport.h" />
+    <ClInclude Include="..\Xfit\_system\_Android.h" />
+    <ClInclude Include="..\Xfit\_system\_GraphicsBase.h" />
+    <ClInclude Include="..\Xfit\_system\_Loop.h" />
+    <ClInclude Include="..\Xfit\_system\_OpenGL.h" />
+    <ClInclude Include="..\Xfit\_system\_Vulkan.h" />
+    <ClInclude Include="..\Xfit\_system\_Windows.h" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{fe014a3f-31b7-47bd-8bd4-750492167b16}</ProjectGuid>
     <Keyword>Android</Keyword>
@@ -89,7 +187,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <ThumbMode>ARM</ThumbMode>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
@@ -104,23 +202,31 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings" />
   <ImportGroup Label="Shared" />
-  <ImportGroup Label="PropertySheets" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <UseMultiToolTask>true</UseMultiToolTask>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -129,6 +235,10 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -138,6 +248,9 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
@@ -147,6 +260,10 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
@@ -156,6 +273,9 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
@@ -165,6 +285,10 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
@@ -174,6 +298,9 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
@@ -183,6 +310,10 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
@@ -192,6 +323,9 @@
       </PrecompiledHeaderFile>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <CLanguageStandard>c11</CLanguageStandard>
+      <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

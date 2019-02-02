@@ -10,7 +10,7 @@
 void PNGConverter::DecodeToOut(const void* data, void** outData, unsigned size, Type _outputType) {
 	png_image image;
 
-	ZeroMemory(&image, sizeof(image));
+	memset(&image,0, sizeof(image));
 	image.version = PNG_IMAGE_VERSION;
 
 	if (!png_image_begin_read_from_memory(&image, data, size)) {

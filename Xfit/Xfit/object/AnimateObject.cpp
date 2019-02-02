@@ -1,6 +1,7 @@
 #include "AnimateObject.h"
 #include "../_system/_GraphicsBase.h"
 #include "../_system/_Windows.h"
+#include "../_system/_Android.h"
 #include "../data/Memory.h"
 #include "../resource/Sampler.h"
 
@@ -10,10 +11,12 @@
 #include "../_system/_Vulkan.h"
 #endif
 
+using namespace _System::_OpenGL;
+
 AnimateObject::AnimateObject() :cFrame(0), playing(false), len(0) {}
 AnimateObject::~AnimateObject() {
 	if (len > 0) {
-		_System::_OpenGL::glDeleteBuffers(len, openGL.posUVs);
+		glDeleteBuffers(len, openGL.posUVs);
 		glDeleteTextures(len, openGL.textures);
 		delete[]openGL.posUVs;
 		delete[]openGL.textures;
@@ -39,44 +42,67 @@ unsigned AnimateObject::GetCurrectFrame()const { return cFrame; }
 unsigned AnimateObject::GetTotalFrame()const { return len; }
 void AnimateObject::Draw() {
 	Object::Draw();
-	if (_System::_OpenGL::renderMode.activeShaderProg != _System::_OpenGL::imgVertProg) {
-		_System::_OpenGL::glActiveShaderProgram(_System::_OpenGL::progPipeline, _System::_OpenGL::imgVertProg);
-		_System::_OpenGL::renderMode.activeShaderProg = _System::_OpenGL::imgVertProg;
+
+#ifdef _WIN32
+	if (renderMode.activeShaderProg != imgVertProg) {
+		glActiveShaderProgram(progPipeline, imgVertProg);
+		renderMode.activeShaderProg = imgVertProg;
 	}
-	_System::_OpenGL::glUniformMatrix4fv(_System::_OpenGL::imgVert::matUniform, 1, GL_FALSE, mat.e);
-
-	_System::_OpenGL::glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[cFrame]);
-
-	_System::_OpenGL::glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), 0);
-	_System::_OpenGL::glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), (void*)offsetof(_System::PosUV2D, UV));
-
-	if (_System::_OpenGL::renderMode.divisorSlot[0]) {
-		_System::_OpenGL::glVertexAttribDivisor(0, 0);
-		_System::_OpenGL::renderMode.divisorSlot[0] = false;
+	if (renderMode.vertProg != imgVertProg) {
+		glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, imgVertProg);
+		renderMode.vertProg = imgVertProg;
 	}
-	if (_System::_OpenGL::renderMode.divisorSlot[1]) {
-		_System::_OpenGL::glVertexAttribDivisor(1, 0);
-		_System::_OpenGL::renderMode.divisorSlot[1] = false;
+	if (renderMode.fragProg != imgFragProg) {
+		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
+		renderMode.fragProg = imgFragProg;
+	}
+#elif __ANDROID__
+	if ((version.majorVersion >= 3) && (version.minorVersion >= 1)) {
+		if (renderMode.activeShaderProg != imgVertProg) {
+			glActiveShaderProgram(progPipeline, imgVertProg);
+			renderMode.activeShaderProg = imgVertProg;
+		}
+		if (renderMode.vertProg != imgVertProg) {
+			glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, imgVertProg);
+			renderMode.vertProg = imgVertProg;
+		}
+		if (renderMode.fragProg != imgFragProg) {
+			glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
+			renderMode.fragProg = imgFragProg;
+		}
+	} else {
+		if (renderMode.prog != imgProg) {
+			glUseProgram(imgProg);
+			renderMode.prog = imgProg;
+		}
+	}
+#endif
+
+	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
+
+	glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[cFrame]);
+
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), (void*)offsetof(_System::PosUV2D, UV));
+
+	if (renderMode.divisorSlot[0]) {
+		glVertexAttribDivisor(0, 0);
+		renderMode.divisorSlot[0] = false;
+	}
+	if (renderMode.divisorSlot[1]) {
+		glVertexAttribDivisor(1, 0);
+		renderMode.divisorSlot[1] = false;
 	}
 
-	if (_System::_OpenGL::renderMode.activeTextureSlot != 0) {
-		_System::_OpenGL::glActiveTexture(GL_TEXTURE0);
-		_System::_OpenGL::renderMode.activeTextureSlot = 0;
+	if (renderMode.activeTextureSlot != 0) {
+		glActiveTexture(GL_TEXTURE0);
+		renderMode.activeTextureSlot = 0;
 	}
 	glBindTexture(GL_TEXTURE_2D, openGL.textures[cFrame]);
 
-	if (_System::_OpenGL::renderMode.sampler != sampler) {
-		_System::_OpenGL::glBindSampler(0, sampler->sampler);
-		_System::_OpenGL::renderMode.sampler = sampler;
-	}
-
-	if (_System::_OpenGL::renderMode.vertProg != _System::_OpenGL::imgVertProg) {
-		_System::_OpenGL::glUseProgramStages(_System::_OpenGL::progPipeline, GL_VERTEX_SHADER_BIT, _System::_OpenGL::imgVertProg);
-		_System::_OpenGL::renderMode.vertProg = _System::_OpenGL::imgVertProg;
-	}
-	if (_System::_OpenGL::renderMode.fragProg != _System::_OpenGL::imgFragProg) {
-		_System::_OpenGL::glUseProgramStages(_System::_OpenGL::progPipeline, GL_FRAGMENT_SHADER_BIT, _System::_OpenGL::imgFragProg);
-		_System::_OpenGL::renderMode.fragProg = _System::_OpenGL::imgFragProg;
+	if (renderMode.sampler != sampler) {
+		glBindSampler(0, sampler->sampler);
+		renderMode.sampler = sampler;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -89,17 +115,25 @@ void AnimateObject::Build(unsigned _len, const void *const* _datas, const unsign
 
 	openGL.posUVs = new GLuint[len];
 	openGL.textures = new GLuint[len];
-	_System::_OpenGL::glGenBuffers(len, openGL.posUVs);
+	glGenBuffers(len, openGL.posUVs);
 	glGenTextures(len, openGL.textures);
 
 	for (unsigned i = 0; i < len; i++) {
 		_System::PosUV2D vertexP[4] = { {_rects[i].GetPoint1(),_UVs[i][0]},{_rects[i].GetPoint2(),_UVs[i][1] },{_rects[i].GetPoint3(), _UVs[i][2]},{_rects[i].GetPoint4(), _UVs[i][3]} };
 
-		_System::_OpenGL::glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[i]);
-		_System::_OpenGL::glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[i]);
+#ifdef _WIN32
+		if ((version.majorVersion >= 4) && (version.minorVersion >= 4)) {
+			glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+		} else {
+			glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
+		}
+#elif __ANDROID__
+		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
+#endif
 
 		glBindTexture(GL_TEXTURE_2D, openGL.textures[i]);
-		_System::_OpenGL::glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, _widths[i], _heights[i]);
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, _widths[i], _heights[i]);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _widths[i], _heights[i], GL_RGBA, GL_UNSIGNED_BYTE, _datas[i]);
 	}
 }

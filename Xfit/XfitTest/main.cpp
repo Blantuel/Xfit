@@ -1,4 +1,4 @@
-#include <object/Image.h>
+ï»¿#include <object/Image.h>
 #include <object/ImageInstance.h>
 #include <resource/Sampler.h>
 #include <system/System.h>
@@ -6,6 +6,7 @@
 #include <data/Array.h>
 #include <data/Converter.h>
 #include <file/File.h>
+#include <file/AssetFile.h>
 #include <object/Button.h>
 #include <physics/RectCollision.h>
 #include <object/AnimateLoopObject.h>
@@ -23,13 +24,18 @@ Button* button;
 AnimateLoopObject* sprite;
 Label* label;
 Font* font;
-Sound* sound;
-SoundSource soundSource;
+//Sound* sound;
+//SoundSource soundSource;
 TextBox* textBox;
 
 void Init() {
+#ifdef _WIN32
 	File file;
-	file.Load(L"test.jpg", false, true);
+#elif __ANDROID__
+	AssetFile file;
+#endif
+	
+	file.Open("test.jpg");
 	size_t size = file.GetSize();
 	char* data = new char[size];
 	file.ReadBytes(size, data);
@@ -62,56 +68,57 @@ void Init() {
 	delete[] data;
 	delete[] data2;
 
-	button = new Button;
-	button->blend = nullptr;
-	button->sampler = shape->sampler;
-	button->collision = new RectCollision();
-	((RectCollision*)button->collision)->rect = RectF(-0.6, -0.4, 0.1, -0.1);
+	//button = new Button;
+	//button->blend = nullptr;
+	//button->sampler = shape->sampler;
+	//button->collision = new RectCollision();
+	//((RectCollision*)button->collision)->rect = RectF(-0.6, -0.4, 0.1, -0.1);
 
-	file.Load(L"ButtonUp.png", false, true);
-	size = file.GetSize();
-	data = new char[size];
-	file.ReadBytes(size, data);
-	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	data2 = (unsigned*)pngConverter.GetOutputData();
-	button->UpBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	//file.Load(_T("ButtonUp.png"), false, true);
+	//size = file.GetSize();
+	//data = new char[size];
+	//file.ReadBytes(size, data);
+	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	//data2 = (unsigned*)pngConverter.GetOutputData();
+	//button->UpBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	delete[]data;
-	delete[]data2;
-	file.Close();
-	file.Load(L"ButtonOver.png", false, true);
-	size = file.GetSize();
-	data = new char[size];
-	file.ReadBytes(size, data);
-	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	data2 = (unsigned*)pngConverter.GetOutputData();
-	button->OverBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	//delete[]data;
+	//delete[]data2;
+	//file.Close();
+	//file.Load(_T("ButtonOver.png"), false, true);
+	//size = file.GetSize();
+	//data = new char[size];
+	//file.ReadBytes(size, data);
+	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	//data2 = (unsigned*)pngConverter.GetOutputData();
+	//button->OverBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	delete[]data;
-	delete[]data2;
-	file.Close();
-	file.Load(L"ButtonDown.png", false, true);
-	size = file.GetSize();
-	data = new char[size];
-	file.ReadBytes(size, data);
-	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	data2 = (unsigned*)pngConverter.GetOutputData();
-	button->DownBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	//delete[]data;
+	//delete[]data2;
+	//file.Close();
+	//file.Load(_T("ButtonDown.png"), false, true);
+	//size = file.GetSize();
+	//data = new char[size];
+	//file.ReadBytes(size, data);
+	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	//data2 = (unsigned*)pngConverter.GetOutputData();
+	//button->DownBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	delete[]data;
-	delete[]data2;
-	file.Close();
-	file.Load(L"ButtonDisable.png", false, true);
-	size = file.GetSize();
-	data = new char[size];
-	file.ReadBytes(size, data);
-	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	data2 = (unsigned*)pngConverter.GetOutputData();
-	button->DisableBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	//delete[]data;
+	//delete[]data2;
+	//file.Close();
+	//file.Load(_T("ButtonDisable.png"), false, true);
+	//size = file.GetSize();
+	//data = new char[size];
+	//file.ReadBytes(size, data);
+	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	//data2 = (unsigned*)pngConverter.GetOutputData();
+	//button->DisableBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	delete[]data;
-	delete[]data2;
-	file.Close();
+	//delete[]data;
+	//delete[]data2;
+	//file.Close();
+	//button->mat = Matrix::GetMove(-0.5f,0.f);
 
 	
 	sprite = new AnimateLoopObject;
@@ -125,9 +132,9 @@ void Init() {
 	unsigned* heights = new unsigned[10];
 	RectF* rects = new RectF[10];
 	for (int i = 0; i < 10; i++) {
-		Tostringstream ss;
-		ss << _T("dead") << i << _T(".png");
-		file.Load(ss.str().c_str(), false, true);
+		ostringstream ss;
+		ss << "dead" << i << ".png";
+		file.Open(ss.str().c_str());
 		size = file.GetSize();
 		data = new char[size];
 		file.ReadBytes(size, data);
@@ -154,7 +161,7 @@ void Init() {
 
 	Matrix insPos[64];
 	instance->mat = Matrix::GetScale(0.5625, 1);
-	button->mat = Matrix::GetMove(-0.5f,0.f);
+
 	for (int i = 0; i < 8; i++) {
 		for (int j = 0; j < 8; j++) {
 			insPos[i * 8 + j] = Matrix::GetMove((float)j*0.25f - 0.875f, (float)i*0.25f - 0.875f);
@@ -162,7 +169,7 @@ void Init() {
 	}
 	instance->BuildInstance(200,64, insPos);
 
-	file.Load(L"NanumBarunGothic.ttf", false, true);
+	file.Open("NanumBarunGothic.ttf");
 	size = file.GetSize();
 	data = new char[size];
 	file.ReadBytes(size, data);
@@ -182,12 +189,12 @@ void Init() {
 
 	label->mat = Matrix::GetScale(((float)width/1920.f), ((float)height / 1080.f));
 
-	Sound::Init(100);
+	//Sound::Init(100);
 
-	sound = new Sound;
+	//sound = new Sound;
 
-	OGGConverter oggConverter;
-	file.Load(L"test.ogg", false, true);
+	/*OGGConverter oggConverter;
+	file.Open("test.ogg", File::OpenMode::Read);
 	size = file.GetSize();
 	data = new char[size];
 	file.ReadBytes(size, data);
@@ -200,14 +207,15 @@ void Init() {
 	soundSource.size = oggConverter.GetOutputSize();
 
 	sound->Decode(&soundSource);
-	sound->Play(1);
+	sound->Play(1);*/
 
 	textBox = new TextBox;
 	textBox->blend = sprite->blend;
 	textBox->sampler = shape->sampler;
 
-	textBox->PrepareDraw(L"¾È³çÇÏ¼¼¿ä, ¹Ý°©½À´Ï´Ù. Àß°¡¿ä. ¾È³çÇÏ¼¼¿ä, ¹Ý°©½À´Ï´Ù. Àß°¡¿ä. ¾È³çÇÏ¼¼¿ä, ¹Ý°©½À´Ï´Ù. Àß°¡¿ä. ¾È³çÇÏ¼¼¿ä, ¹Ý°©½À´Ï´Ù. Àß°¡¿ä. ¾È³çÇÏ¼¼¿ä, ¹Ý°©½À´Ï´Ù. Àß°¡¿ä. ¾È³çÇÏ¼¼¿ä,\n ¹Ý°©½À´Ï´Ù. Àß°¡¿ä.",
+	textBox->PrepareDraw(L"ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”. ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”. ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”. ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”. ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”. ì•ˆë…•í•˜ì„¸ìš”,\n ë°˜ê°‘ìŠµë‹ˆë‹¤. ìž˜ê°€ìš”.",
 		font, 600, 600, 30, 0xffffff);
+	//textBox->PrepareDrawEdit(L"ì•ˆë…•í•˜ì„¸ìš”, ë°˜ê°‘ìŠµë‹ˆë‹¤.", font, 30, 0xffffff);
 
 	textBox->mat = Matrix::GetScale((600.f / 1920.f), (600.f/ 1080.f));
 
@@ -217,8 +225,8 @@ void Update() {
 	System::Clear(false);
 	instance->Draw();
 	shape->Draw();
-	button->Update();
-	button->Draw();
+	//button->Update();
+	//button->Draw();
 	shape->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, (float)i / 200.f);
 	instance->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, (float)i / 200.f);
 	i++;
@@ -235,9 +243,9 @@ void Activate(bool _activated, bool _minimized) {
 
 }
 void Destroy() {
-	delete sound;
-	Sound::Release();
-	delete[]soundSource.rawData;
+	//delete sound;
+	//Sound::Release();
+	//delete[]soundSource.rawData;
 	delete label;
 	delete textBox;
 	delete font;
@@ -248,30 +256,24 @@ void Destroy() {
 	delete shape->sampler;
 	delete shape;
 	delete instance;
-	delete button->collision;
-	delete button;
+	//delete button->collision;
+	//delete button;
 }
 
-
-int APIENTRY _tWinmain(HINSTANCE _hInstance, HINSTANCE, LPTSTR, int) {
-#ifdef _WIN32
-	System::WindowCreate(_hInstance);
-#elif __ANDROID__
-#endif
-	System::RendererCreate();
-
+void Create() {
 	System::WindowInfo winInfo;
+	winInfo.screenMode = System::ScreenMode::Fullscreen;
+	winInfo.windowHeight = 1080;
+	winInfo.windowWidth = 1920;
+	winInfo.windowShow = System::WindowShow::Default;
+
+	winInfo.title = _T("Test");
+	winInfo.windowPos.x = 0;
+	winInfo.windowPos.y = 0;
 	winInfo.cursorResource = nullptr;
 	winInfo.maximized = false;
 	winInfo.minimized = false;
 	winInfo.resizeWindow = false;
-	winInfo.screenMode = System::ScreenMode::Fullscreen;
-	winInfo.title = _T("Test");
-	winInfo.windowHeight = 1080;
-	winInfo.windowWidth = 1920;
-	winInfo.windowShow = System::WindowShow::Default;
-	winInfo.windowPos.x = CW_USEDEFAULT;
-	winInfo.windowPos.y = CW_USEDEFAULT;
 
 	System::updateFuncs = Update;
 	System::activateFunc = Activate;
@@ -286,10 +288,20 @@ int APIENTRY _tWinmain(HINSTANCE _hInstance, HINSTANCE, LPTSTR, int) {
 	System::RendererInit(&renderInfo);
 
 	Init();
+}
 
-	System::Loop();
+#ifdef _WIN32
+int APIENTRY _tWinmain(HINSTANCE _hInstance, HINSTANCE, LPTSTR, int) {
+	System::createFunc = Create;
 
-	System::RendererRelease();
-	System::WindowRelease();
+	System::Create(_hInstance);
+
 	return 0;
 }
+#elif __ANDROID__
+void ANativeActivity_onCreate(ANativeActivity* activity, void* savedState, size_t savedStateSize) {
+	System::createFunc = Create;
+
+	System::Create(activity);
+}
+#endif

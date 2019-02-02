@@ -6,40 +6,43 @@
 #include "../_system/_GraphicsBase.h"
 #include "../system/Input.h"
 
+using namespace _System::_OpenGL;
+
+
 void Button::DrawImage(GLuint _posUV, GLuint _texture) {
-	if (_System::_OpenGL::renderMode.activeShaderProg != _System::_OpenGL::imgVertProg) {
-		_System::_OpenGL::glActiveShaderProgram(_System::_OpenGL::progPipeline, _System::_OpenGL::imgVertProg);
-		_System::_OpenGL::renderMode.activeShaderProg = _System::_OpenGL::imgVertProg;
+	if (renderMode.activeShaderProg != imgVertProg) {
+		glActiveShaderProgram(progPipeline, imgVertProg);
+		renderMode.activeShaderProg = imgVertProg;
 	}
-	_System::_OpenGL::glUniformMatrix4fv(_System::_OpenGL::imgVert::matUniform, 1, GL_FALSE, mat.e);
-
-	_System::_OpenGL::glBindBuffer(GL_ARRAY_BUFFER, _posUV);
-
-	_System::_OpenGL::glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
-
-	if (_System::_OpenGL::renderMode.divisorSlot[0]) {
-		_System::_OpenGL::glVertexAttribDivisor(0, 0);
-		_System::_OpenGL::renderMode.divisorSlot[0] = false;
+	if (renderMode.vertProg != imgVertProg) {
+		glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, imgVertProg);
+		renderMode.vertProg = imgVertProg;
+	}
+	if (renderMode.fragProg != imgFragProg) {
+		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
+		renderMode.fragProg = imgFragProg;
 	}
 
-	if (_System::_OpenGL::renderMode.activeTextureSlot != 0) {
-		_System::_OpenGL::glActiveTexture(GL_TEXTURE0);
-		_System::_OpenGL::renderMode.activeTextureSlot = 0;
+	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
+
+	glBindBuffer(GL_ARRAY_BUFFER, _posUV);
+
+	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+	if (renderMode.divisorSlot[0]) {
+		glVertexAttribDivisor(0, 0);
+		renderMode.divisorSlot[0] = false;
+	}
+
+	if (renderMode.activeTextureSlot != 0) {
+		glActiveTexture(GL_TEXTURE0);
+		renderMode.activeTextureSlot = 0;
 	}
 	glBindTexture(GL_TEXTURE_2D, _texture);
 
-	if (_System::_OpenGL::renderMode.sampler != sampler) {
-		_System::_OpenGL::glBindSampler(0, sampler->sampler);
-		_System::_OpenGL::renderMode.sampler = sampler;
-	}
-
-	if (_System::_OpenGL::renderMode.vertProg != _System::_OpenGL::imgVertProg) {
-		_System::_OpenGL::glUseProgramStages(_System::_OpenGL::progPipeline, GL_VERTEX_SHADER_BIT, _System::_OpenGL::imgVertProg);
-		_System::_OpenGL::renderMode.vertProg = _System::_OpenGL::imgVertProg;
-	}
-	if (_System::_OpenGL::renderMode.fragProg != _System::_OpenGL::imgFragProg) {
-		_System::_OpenGL::glUseProgramStages(_System::_OpenGL::progPipeline, GL_FRAGMENT_SHADER_BIT, _System::_OpenGL::imgFragProg);
-		_System::_OpenGL::renderMode.fragProg = _System::_OpenGL::imgFragProg;
+	if (renderMode.sampler != sampler) {
+		glBindSampler(0, sampler->sampler);
+		renderMode.sampler = sampler;
 	}
 
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
@@ -59,19 +62,19 @@ Button::State Button::GetState() const { return state; }
 
 Button::~Button() {
 	if (openGL.upPosUV) {
-		_System::_OpenGL::glDeleteBuffers(1, &openGL.upPosUV);
+		glDeleteBuffers(1, &openGL.upPosUV);
 		glDeleteTextures(1, &openGL.upTexture);
 	}
 	if (openGL.overPosUV) {
-		_System::_OpenGL::glDeleteBuffers(1, &openGL.overPosUV);
+		glDeleteBuffers(1, &openGL.overPosUV);
 		glDeleteTextures(1, &openGL.overTexture);
 	}
 	if (openGL.downPosUV) {
-		_System::_OpenGL::glDeleteBuffers(1, &openGL.downPosUV);
+		glDeleteBuffers(1, &openGL.downPosUV);
 		glDeleteTextures(1, &openGL.downTexture);
 	}
 	if (openGL.disablePosUV) {
-		_System::_OpenGL::glDeleteBuffers(1, &openGL.disablePosUV);
+		glDeleteBuffers(1, &openGL.disablePosUV);
 		glDeleteTextures(1, &openGL.disableTexture);
 	}
 }
@@ -167,15 +170,19 @@ void Button::Build(const void* _data, unsigned _width, unsigned _height, const R
 #ifdef _DEBUG
 	if (*_outPosUV);
 #endif
-	_System::_OpenGL::glGenBuffers(1, _outPosUV);
+	glGenBuffers(1, _outPosUV);
 	glGenTextures(1, _outTexture);
 
 	_System::PosUV2D vertexP[4] = { {_rect.GetPoint1(),_UVs[0]},{_rect.GetPoint2(),_UVs[1] },{_rect.GetPoint3(), _UVs[2]},{_rect.GetPoint4(), _UVs[3]} };
 
-	_System::_OpenGL::glBindBuffer(GL_ARRAY_BUFFER, *_outPosUV);
-	_System::_OpenGL::glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, *_outPosUV);
+#ifdef _WIN32
+	glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+#elif __ANDROID__
+	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
+#endif
 
 	glBindTexture(GL_TEXTURE_2D, *_outTexture);
-	_System::_OpenGL::glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, _width, _height);
+	glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, _width, _height);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, _width, _height, GL_RGBA, GL_UNSIGNED_BYTE, _data);
 }

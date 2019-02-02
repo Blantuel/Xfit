@@ -29,7 +29,7 @@ public:
 		}
 		return UINTPTR_MAX;
 	}
-	template<> static size_t Search(const int* _ar, const int& _value, size_t _count) {
+	static size_t Search(const int* _ar, const int& _value, size_t _count) {
 #ifdef AVX2
 		size_t s = 0, ss = _count % 8;
 		_count -= ss;
@@ -41,7 +41,7 @@ public:
 			if (index < 8)return s+index;
 		}
 		return _Search(_ar+s, _value, ss);
-#else 
+#elif SSE4
 		size_t s = 0, ss = _count % 4;
 		_count -= ss;
 		for (; s < _count; s += 4) {
@@ -52,9 +52,11 @@ public:
 			if (index < 4)return s + index;
 		}
 		return _Search(_ar + s, _value, ss);
+#else 
+		return _Search(_ar, _value, _count);
 #endif
 	}
-	template<> static size_t Search(const short* _ar, const short& _value, size_t _count) {
+	static size_t Search(const short* _ar, const short& _value, size_t _count) {
 #ifdef AVX2
 		size_t s = 0, ss = _count % 16;
 		_count -= ss;
@@ -66,7 +68,7 @@ public:
 			if (index < 16)return s+index;
 		}
 		return _Search(_ar + s, _value, ss);
-#else 
+#elif SSE4
 		size_t s = 0, ss = _count % 8;
 		_count -= ss;
 		for (; s < _count; s += 8) {
@@ -77,14 +79,16 @@ public:
 			if (index < 16)return s + index;
 		}
 		return _Search(_ar + s, _value, ss);
+#else 
+		return _Search(_ar, _value, _count);
 #endif
 	}
-	template<> static size_t Search(const char* _ar, const char& _value, size_t _count) {
+	static size_t Search(const char* _ar, const char& _value, size_t _count) {
 		const char* result = (const char*)memchr(_ar, _value, _count);
 		if (!result)return UINTPTR_MAX;
 		return size_t(result - _ar);
 	}
-	template<> static size_t Search(const long long* _ar, const long long& _value, size_t _count) {
+	static size_t Search(const long long* _ar, const long long& _value, size_t _count) {
 #ifdef AVX2
 		size_t s = 0, ss = _count % 4;
 		_count -= ss;
@@ -96,7 +100,7 @@ public:
 			if (index < 4)return s+ index;
 		}
 		return _Search(_ar + s, _value, ss);
-#else 
+#elif SSE4
 		size_t s = 0, ss = _count % 2;
 		_count -= ss;
 		for (; s < _count; s += 2) {
@@ -104,28 +108,30 @@ public:
 			const __m256i b = _mm_set1_epi64x(_value);
 			const __m256i result = _mm_cmpeq_epi64(a, b);
 			const unsigned index = _tzcnt_u32(_mm256_movemask_epi8(result)) >> 3;
-			if (index < 2)return s+ index;
+			if (index < 2)return s + index;
 		}
 		return _Search(_ar + s, _value, ss);
+#else 
+		return _Search(_ar, _value, _count);
 #endif
 	}
-	template<> static size_t Search(const unsigned long long* _ar, const unsigned long long& _value, size_t _count) {
+	static size_t Search(const unsigned long long* _ar, const unsigned long long& _value, size_t _count) {
 		return Search((long long*)_ar, (long long)_value, _count);
 	}
-	template<> static size_t Search(const unsigned int* _ar, const unsigned int& _value, size_t _count) {
+	static size_t Search(const unsigned int* _ar, const unsigned int& _value, size_t _count) {
 		return Search((int*)_ar, (int)_value, _count);
 	}
-	template<> static size_t Search(const unsigned short* _ar, const unsigned short& _value, size_t _count) {
+	static size_t Search(const unsigned short* _ar, const unsigned short& _value, size_t _count) {
 		return Search((short*)_ar, (short)_value, _count);
 	}
-	template<> static size_t Search(const unsigned char* _ar, const unsigned char& _value, size_t _count) {
+	static size_t Search(const unsigned char* _ar, const unsigned char& _value, size_t _count) {
 		return Search((char*)_ar, (char)_value, _count);
 	}
 	template<typename T> static T* Set(T* _ar, const T& _value, size_t _count) {
 		for (size_t i = 0; i < _count; i++) _ar[i] = _value;
 		return _ar;
 	}
-	template<> static int* Set(int* _ar, const int &_value, size_t _count) {
+	static int* Set(int* _ar, const int &_value, size_t _count) {
 #ifdef AVX2
 		size_t ss = _count % 8;
 		_count -= ss;
@@ -134,7 +140,7 @@ public:
 			_mm256_storeu_si256((__m256i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);
-#else 
+#elif SSE4
 		size_t ss = _count % 4;
 		_count -= ss;
 		for (size_t s = 0; s < _count; s += 4) {
@@ -142,9 +148,11 @@ public:
 			_mm_storeu_si128((__m128i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);
+#else 
+		return _Set(_ar, _value, _count);
 #endif
 	}
-	template<> static short* Set(short* _ar, const short &_value, size_t _count) {
+	static short* Set(short* _ar, const short &_value, size_t _count) {
 #ifdef AVX2
 		size_t ss = _count % 16;
 		_count -= ss;
@@ -153,7 +161,7 @@ public:
 			_mm256_storeu_si256((__m256i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);
-#else 
+#elif SSE4
 		size_t ss = _count % 8;
 		_count -= ss;
 		for (size_t s = 0; s < _count; s += 8) {
@@ -161,12 +169,14 @@ public:
 			_mm_storeu_si128((__m128i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);
+#else 
+		return _Set(_ar, _value, _count);
 #endif
 	}
 	static char* Set(char* _ar, char _value, size_t _count) {
 		return (char*)memset((void*)_ar, (int)_value, _count);
 	}
-	template<> static long long* Set(long long* _ar,const long long& _value, size_t _count) {
+	static long long* Set(long long* _ar,const long long& _value, size_t _count) {
 #ifdef AVX2
 		size_t ss = _count % 4;
 		_count -= ss;
@@ -175,7 +185,7 @@ public:
 			_mm256_storeu_si256((__m256i*)(_ar + s), a);
 		}
 		return _Set(_ar+_count, _value, ss);
-#else 
+#elif SSE4
 		size_t ss = _count % 2;
 		_count -= ss;
 		for (size_t s = 0; s < _count; s += 2) {
@@ -183,27 +193,37 @@ public:
 			_mm_storeu_si128((__m128i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);
+#else 
+		return _Set(_ar, _value, _count);
 #endif
 	}
-	template<> static unsigned long long* Set(unsigned long long* _ar, const unsigned long long& _value, size_t _count) {
+	static unsigned long long* Set(unsigned long long* _ar, const unsigned long long& _value, size_t _count) {
 		return (unsigned long long*)Set((long long*)_ar, (long long)_value, _count);
 	}
-	template<> static unsigned int* Set(unsigned int* _ar, const unsigned int& _value, size_t _count) {
+	static unsigned int* Set(unsigned int* _ar, const unsigned int& _value, size_t _count) {
 		return (unsigned int*)Set((int*)_ar, (int)_value, _count);
 	}
-	template<> static unsigned short* Set(unsigned short* _ar, const unsigned short&  _value, size_t _count) {
+	static unsigned short* Set(unsigned short* _ar, const unsigned short&  _value, size_t _count) {
 		return (unsigned short*)Set((short*)_ar, (short)_value, _count);
 	}
-	template<> static unsigned char* Set(unsigned char* _ar, const unsigned char& _value, size_t _count) {
+	static unsigned char* Set(unsigned char* _ar, const unsigned char& _value, size_t _count) {
 		return (unsigned char*)Set((char*)_ar, (char)_value, _count);
 	}
 
 	template <typename T> static T* Copy(T* _dest, size_t _destCount, const T* _source, size_t _count) {
+#ifdef _WIN32
 		memcpy_s(_dest, _destCount * sizeof(T),_source, _count*sizeof(T));
+#else
+		memcpy(_dest, _source, _count * sizeof(T));
+#endif
 		return _dest;
 	}
 	template <typename T> static T* CopyInThis(T* _dest, size_t _destCount, const T* _source, size_t _count) {
+#ifdef _WIN32
 		memmove_s(_dest, _destCount * sizeof(T), _source, _count * sizeof(T));
+#else
+		memmove(_dest, _source, _count * sizeof(T));
+#endif
 		return _dest;
 	}
 };

@@ -81,6 +81,7 @@ void Label::PrepareDraw(const wchar_t* _text, const Font* font, unsigned _pixelS
 	const RectF rect = { -1.f,1.f,1.f,-1.f };
 	Build(outBitmap, width, height, rect);
 
+	delete[]outBitmap;
 	if (buffers) {
 		for (size_t i = 0; i < bufferIndex; i++) delete[]buffers[i];
 		delete[]buffers;

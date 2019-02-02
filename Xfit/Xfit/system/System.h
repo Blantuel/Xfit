@@ -5,6 +5,7 @@
 
 template <typename T> class Array;
 
+
 class SystemError : public Error {
 public:
 	enum class Code {
@@ -104,6 +105,7 @@ namespace System {
 		unsigned minorVersion;
 	};
 	
+	inline void(*createFunc)();
 	inline void(*activateFunc)(bool _activated, bool _minimized);
 	inline void(*updateFuncs)();
 	inline void(*destroyFunc)();
@@ -112,28 +114,21 @@ namespace System {
 
 	
 	OSversion GetOSVersion();
-	
-	
-	void WindowRelease();
-	void Loop();
-	
+
 	void Exit();
 
 #ifdef _WIN32
-	void WindowCreate(HINSTANCE _hInstance);
+	void Create(HINSTANCE _hInstance);
 #elif __ANDROID__
-	void WindowCreate();
+	void Create(ANativeActivity* _activity);
 #endif
-	void RendererCreate();
-	
-	void RendererRelease();
 
 	void RendererInit(RendererInfo* _info);
 	void WindowInit(WindowInfo* _info);
 
 	float GetRefleshRate();
 	bool IsVSync();
-	chrono::nanoseconds GetDeltaTime();
+	double GetDeltaTime();
 
 	void SetScreenMode(ScreenMode _screenMode);
 	
@@ -159,7 +154,6 @@ namespace System {
 	ScreenMode GetScreenMode();
 
 	bool IsPause();
-	bool IsCreated();
 
 	unsigned GetMsaaCount();
 	unsigned GetMsaaQuality();

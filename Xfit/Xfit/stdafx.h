@@ -3,18 +3,19 @@
 #include <random>
 #include <cstring> 
 #include <cwchar>
-#include <fcntl.h>
 #include <chrono>
 #include <atomic>
 #include <mutex>
 #include <typeinfo>
 #include <sstream>
+#include <thread>
 
 
 #if defined(_M_AMD64) || defined(_M_IX86) || defined(__amd64__) || defined(__i386__)
 
 #if defined(_M_AMD64) || defined(__amd64__)
 
+#define SSE4 1
 #define AVX2 1
 //#define AVX512 1
 
@@ -80,6 +81,16 @@
 
 #endif
 
+#ifdef _DEBUG
+
+#define PRINTMSG(...) ((void)0)
+
+#else
+
+#define PRINTMSG(...) ((void)0)
+
+#endif
+
 #elif __linux__
 
 #include <unistd.h>
@@ -96,9 +107,11 @@
 #include <android/configuration.h>
 #include <android/looper.h>
 #include <android/native_activity.h>
+#include <android/asset_manager.h>
 
 #ifdef OPENGL
 
+#include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
@@ -107,6 +120,16 @@
 
 #elif VULKAN
 #define VK_USE_PLATFORM_ANDROID_KHR 1
+#endif
+
+#ifdef _DEBUG
+
+#define PRINTMSG(...) ((void)__android_log_print(ANDROID_LOG_INFO, "Xfit", __VA_ARGS__))
+
+#else
+
+#define PRINTMSG(...) ((void)0)
+
 #endif
 
 #endif

@@ -3,12 +3,17 @@
 #include "../stdafx.h"
 #include "Math.h"
 
+
+
 class alignas(16) Matrix {
 public:
 	union {
+#ifdef SSE4
 		struct {
 			__m128 m1, m2, m3, m4;
 		};
+#else
+#endif
 		struct {
 			float _11, _12, _13, _14;
 			float _21, _22, _23, _24;
@@ -40,7 +45,6 @@ public:
 	static Matrix GetDirection2D(float _x, float _y);
 
 	Matrix Multiply(const Matrix& _mat)const;
-	Matrix MultiplyTranspose(const Matrix& _mat)const;
 	Matrix operator*(const Matrix& m)const;
 	Matrix& operator*=(const Matrix& m);
 
@@ -59,4 +63,3 @@ public:
 	Matrix Inverse()const;
 	float GetDeterminant()const;
 };
-

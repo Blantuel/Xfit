@@ -90,7 +90,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-27</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
     <ThumbMode>ARM</ThumbMode>
   </PropertyGroup>
@@ -98,7 +98,7 @@
     <ConfigurationType>DynamicLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-27</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
     <ThumbMode>ARM</ThumbMode>
   </PropertyGroup>
@@ -125,21 +125,35 @@
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x86'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'">
+    <UseMultiToolTask>true</UseMultiToolTask>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM64'">
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -148,6 +162,8 @@
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <EnableNeonCodegen>true</EnableNeonCodegen>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -161,6 +177,7 @@
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -168,25 +185,31 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>Xfit.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <EnableNeonCodegen>true</EnableNeonCodegen>
+      <AdditionalIncludeDirectories>../../Freetype/include;../../Xfit;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
-      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
+      <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;XfitAndroid;m;LiboggAndroid;LibpngAndroid;ZlibAndroid;FreetypeAndroid;LibjpegAndroid</LibraryDependencies>
+      <AdditionalLibraryDirectories>../../ARM/Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>Xfit.h</PrecompiledHeaderFile>
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
       <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -199,6 +222,9 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -211,6 +237,8 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -223,6 +251,9 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
@@ -235,28 +266,15 @@
       <CompileAs>CompileAsCpp</CompileAs>
       <CLanguageStandard>c11</CLanguageStandard>
       <CppLanguageStandard>c++1z</CppLanguageStandard>
+      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <ExceptionHandling>Enabled</ExceptionHandling>
     </ClCompile>
     <Link>
       <LibraryDependencies>%(LibraryDependencies);GLESv3;EGL;z;</LibraryDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\FreetypeAndroid\FreetypeAndroid.vcxproj">
-      <Project>{24df2d11-d5f4-4967-9afd-9a761db34594}</Project>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LibjpegAndroid\LibjpegAndroid.vcxproj">
-      <Project>{adc98346-2d94-49e2-80aa-467c8a1dd9b9}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LiboggAndroid\LiboggAndroid.vcxproj">
-      <Project>{372b8468-7da6-4fb9-8890-85cf1c2acb17}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\LibpngAndroid\LibpngAndroid.vcxproj">
-      <Project>{2cc29845-c652-4c10-874b-6773139d1a45}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\XfitAndroid\XfitAndroid.vcxproj">
-      <Project>{fe014a3f-31b7-47bd-8bd4-750492167b16}</Project>
-    </ProjectReference>
+    <ClCompile Include="..\..\XfitTest\main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

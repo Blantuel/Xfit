@@ -61,7 +61,11 @@ public:
 	Array(const Array<T> &_other):maxLen(_other.maxLen) {
 		len = _other.len;
 		data = new T[maxLen];
+#ifdef _WIN32
 		memcpy_s(data, sizeof(T)*len,_other.data, sizeof(T)*len);
+#else
+		memcpy(data, _other.data, sizeof(T) * len);
+#endif
 	}
 	Array(Array<T> &&_other) : maxLen(_other.maxLen) {
 		data = _other.data;
@@ -71,7 +75,11 @@ public:
 	Array<T>& operator =(const Array<T> &_other) {
 		if (&_other == this)return *this;
 		Resize(_other.len);
+#ifdef _WIN32
 		memcpy_s(data, sizeof(T)*len,_other.data, sizeof(T)*len);
+#else
+		memcpy(data, _other.data, sizeof(T) * len);
+#endif
 		return *this;
 	}
 	Array<T>& operator=(Array<T> &&_other) {
@@ -93,67 +101,115 @@ public:
 	}
 	Array<T>& InsertArLast(const T* _ar, size_t _len) {
 		Resize(len + _len);
+#ifdef _WIN32
 		memmove_s(data + len - _len, _len * sizeof(T), _ar, _len * sizeof(T));
+#else
+		memmove(data + len - _len, _ar, _len * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertArLast(const Array<T>& _ar) {return InsertArLast(_ar.GetData(), _ar.Size());}
 	Array<T>& InsertInitializerLast(const initializer_list<T> _init) {
 		Resize(len + _init.size());
+#ifdef _WIN32
 		memmove_s(data + len - _init.size(), _init.size() * sizeof(T), _init.begin(), _init.size()*sizeof(T));
+#else
+		memmove(data + len - _init.size(), _init.begin(), _init.size() * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertInitializer(const initializer_list<T> _init, size_t _index) {
 		Resize(len+ _init.size());
+#ifdef _WIN32
 		memmove_s(data + _index + _init.size(), (len - _index - _init.size()) * sizeof(T), data + _index, (len - _index - _init.size())*sizeof(T));
 		memmove_s(data + _index, (len - _index) * sizeof(T), _init.begin(), _init.size()*sizeof(T));
+#else
+		memmove(data + _index + _init.size(), data + _index, (len - _index - _init.size()) * sizeof(T));
+		memmove(data + _index, _init.begin(), _init.size() * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertAr(const T* _ar, size_t _len, size_t _index) {
 		Resize(len+ _len);
+#ifdef _WIN32
 		memmove_s(data + _index + _len, (len - _index - _len) * sizeof(T), data + _index,(len - _index - _len)*sizeof(T));
 		memmove_s(data + _index, (len - _index) * sizeof(T), _ar, _len*sizeof(T));
+#else
+		memmove(data + _index + _len, data + _index, (len - _index - _len) * sizeof(T));
+		memmove(data + _index, _ar, _len * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertAr(const Array<T>& _ar, size_t _index) { return InsertAr(_ar.GetData(), _ar.Size(), _index); }
 	Array<T>& InsertInitializerFirst(const initializer_list<T> _init) {
 		Resize(len + _init.size());
+#ifdef _WIN32
 		memmove_s(data + _init.size(), (len - _init.size()) * sizeof(T), data, (len - _init.size())*sizeof(T));
 		memmove_s(data, len * sizeof(T),_init.begin(), _init.size()*sizeof(T));
+#else
+		memmove(data + _init.size(), data, (len - _init.size()) * sizeof(T));
+		memmove(data, _init.begin(), _init.size() * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertArFirst(const T* _ar, size_t _len) {
 		Resize(len + _len);
+#ifdef _WIN32
 		memmove_s(data + _len, (len - _len) * sizeof(T), data, (len - _len)*sizeof(T));
 		memmove_s(data, len * sizeof(T), _ar, _len*sizeof(T));
+#else
+		memmove(data + _len, data, (len - _len) * sizeof(T));
+		memmove(data, _ar, _len * sizeof(T));
+#endif
 		return *this;
 	}
 	Array<T>& InsertArFirst(const Array<T>& _ar) {return InsertArFirst(_ar.GetData(),_ar.Size());}
 	Array<T>& SetAr(const T* _value, size_t _len, size_t _index) {
 		if (_index + _len>len) Resize(_index + _len);
+#ifdef _WIN32
 		memmove_s(data + _index, (len-_index) * sizeof(T),_value, _len*sizeof(T));
+#else
+		memmove(data + _index, _value, _len * sizeof(T));
+#endif
 		return *this;
 	}
 	T& InsertFirst(const T& _value) {
 		Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + 1, (len - 1) * sizeof(T), data, (len - 1) * sizeof(T));
+#else
+		memmove(data + 1, data, (len - 1) * sizeof(T));
+#endif
 		return data[0] = _value;
 	}
 	T& InsertFirst(T&& _value) {
 		Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + 1, (len-1) * sizeof(T),data, (len-1)*sizeof(T));
+#else
+		memmove(data + 1, data, (len - 1) * sizeof(T));
+#endif
 		return data[0] = move(_value);
 	}
 	Array<T>& Insert(T&& _value, size_t _index) {
 		if (_index >= len)Resize(_index + 1);
 		else Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + _index + 1, (len - _index-1) * sizeof(T), data + _index, (len - _index-1)*sizeof(T));
+#else
+		memmove(data + _index + 1, data + _index, (len - _index - 1) * sizeof(T));
+#endif
 		data[_index] = move(_value);
 		return *this;
 	}
 	Array<T>& Insert(const T& _value, size_t _index) {
 		if (_index >= len)Resize(_index + 1);
 		else Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + _index + 1, (len - _index-1) * sizeof(T),data + _index, (len - _index-1)*sizeof(T));
+#else
+		memmove(data + _index + 1, data + _index, (len - _index - 1) * sizeof(T));
+#endif
 		data[_index] = _value;
 		return *this;
 	}
@@ -168,12 +224,20 @@ public:
 	}
 	T& EraseLast() { len -= 1; return data[len]; }
 	Array<T>& EraseIndex(size_t _index) {
+#ifdef _WIN32
 		memmove_s(data + _index, (len - _index) * sizeof(T),data + _index + 1, (len - _index - 1) * sizeof(T));
+#else
+		memmove(data + _index, data + _index + 1, (len - _index - 1) * sizeof(T));
+#endif
 		len--;
 		return *this;
 	}
 	Array<T>& EraseThisAr(size_t _index, size_t _len) {
+#ifdef _WIN32
 		memmove_s(data + _index, (len - _index) * sizeof(T),data + _index + _len, (len - _index - _len) * sizeof(T));
+#else
+		memmove(data + _index, data + _index + _len, (len - _index - _len) * sizeof(T));
+#endif
 		len -= _len;
 		return *this;
 	}

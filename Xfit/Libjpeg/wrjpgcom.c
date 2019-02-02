@@ -22,7 +22,6 @@ extern void * malloc ();
 #ifdef USE_SETMODE
 #include <fcntl.h>		/* to declare setmode()'s parameter macros */
 /* If you have setmode() but not <io.h>, just delete this line: */
-#include <io.h>			/* to declare setmode() */
 #endif
 
 #ifdef USE_CCOMMAND		/* command-line reader for Macintosh */
@@ -505,7 +504,7 @@ main (int argc, char **argv)
   } else {
     /* default input file is stdin */
 #ifdef USE_SETMODE		/* need to hack file mode? */
-    setmode(fileno(stdin), O_BINARY);
+    //setmode(fileno(stdin), O_BINARY);
 #endif
 #ifdef USE_FDOPEN		/* need to re-open in binary mode? */
     if ((infile = fdopen(fileno(stdin), READ_BINARY)) == NULL) {

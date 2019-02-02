@@ -7,11 +7,13 @@
 #include "../_system/_Vulkan.h"
 #endif
 
+using namespace _System::_OpenGL;
+
 void Checkbox::ButtonUp(PointF _mousePos) { SetCheck(!IsChecked());}
 Checkbox::Checkbox():checked(false) {openGL.checkPosUV = 0;}
 Checkbox::~Checkbox() {
 	if (openGL.checkPosUV) {
-		_System::_OpenGL::glGenBuffers(1, &openGL.checkPosUV);
+		glGenBuffers(1, &openGL.checkPosUV);
 		glGenTextures(1, &openGL.checkTexture);
 	}
 }

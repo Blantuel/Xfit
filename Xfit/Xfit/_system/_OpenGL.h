@@ -11,7 +11,6 @@ namespace _System::_OpenGL {
 	inline float refleshRate;
 	inline System::RendererVersion version = { System::RendererName::None,0,0 };
 
-	void Create();
 	void Release();
 
 	void Init(System::RendererInfo* _info);
@@ -25,6 +24,10 @@ namespace _System::_OpenGL {
 	inline thread_local HGLRC threadContext = nullptr;
 #elif __ANDROID__
 #endif
+
+	inline GLuint imgProg;
+	inline GLuint imgInsProg;
+
 	inline GLuint imgVertProg;
 	inline GLuint imgInsVertProg;
 	inline GLuint imgFragProg;
@@ -33,6 +36,15 @@ namespace _System::_OpenGL {
 	inline GLuint vao;
 
 	inline GLint uniformShapeColor;
+
+	namespace img {
+		inline GLint matUniform;
+		inline GLint samplerUniform;
+	}
+	namespace imgIns {
+		inline GLint matUniform;
+		inline GLint samplerUniform;
+	}
 
 	namespace imgVert {
 		inline GLint matUniform;
@@ -43,6 +55,28 @@ namespace _System::_OpenGL {
 	namespace imgInsVert {
 		inline GLint matUniform;
 	}
+	struct RenderMode {
+		GLint activeShaderProg;
+		GLint vertProg;
+		GLint fragProg;
+		GLint prog;
+		Blend* blend;
+		Sampler* sampler;
+		unsigned short activeTextureSlot;
+		bool divisorSlot[8];
+	};
+
+	inline RenderMode renderMode = {
+		-1,
+		-1,
+		-1,
+		-1,
+		nullptr,
+		nullptr,
+		USHRT_MAX,
+	{false,false,false,false,false,false,false,false}
+	};
+
 
 #ifdef _WIN32
 	inline PFNWGLCREATECONTEXTATTRIBSARBPROC wglCreateContextAttribsARB = nullptr;
@@ -104,26 +138,6 @@ namespace _System::_OpenGL {
 	inline PFNGLBLENDFUNCSEPARATEPROC glBlendFuncSeparate = nullptr;
 	inline PFNGLBLENDEQUATIONSEPARATEPROC glBlendEquationSeparate = nullptr;
 	inline PFNGLBLENDCOLORPROC glBlendColor = nullptr;
-
-	struct RenderMode {
-		GLint activeShaderProg;
-		GLint vertProg;
-		GLint fragProg;
-		Blend* blend;
-		Sampler* sampler;
-		unsigned short activeTextureSlot;
-		bool divisorSlot[8];
-	};
-
-	inline RenderMode renderMode = {
-		-1,
-		-1,
-		-1,
-		nullptr,
-		nullptr,
-		USHRT_MAX,
-	{false,false,false,false,false,false,false,false}
-	};
 
 #ifdef _DEBUG
 	inline PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback;

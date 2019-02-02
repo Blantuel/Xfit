@@ -17,7 +17,7 @@
 #ifdef USE_SETMODE
 #include <fcntl.h>		/* to declare setmode()'s parameter macros */
 /* If you have setmode() but not <io.h>, just delete this line: */
-#include <io.h>			/* to declare setmode() */
+//#include <io.h>			/* to declare setmode() */
 #endif
 
 
@@ -151,7 +151,7 @@ read_stdin (void)
   FILE * input_file = stdin;
 
 #ifdef USE_SETMODE		/* need to hack file mode? */
-  setmode(fileno(stdin), O_BINARY);
+  //setmode(fileno(stdin), O_BINARY);
 #endif
 #ifdef USE_FDOPEN		/* need to re-open in binary mode? */
   if ((input_file = fdopen(fileno(stdin), READ_BINARY)) == NULL) {
@@ -169,7 +169,7 @@ write_stdout (void)
   FILE * output_file = stdout;
 
 #ifdef USE_SETMODE		/* need to hack file mode? */
-  setmode(fileno(stdout), O_BINARY);
+  //setmode(fileno(stdout), O_BINARY);
 #endif
 #ifdef USE_FDOPEN		/* need to re-open in binary mode? */
   if ((output_file = fdopen(fileno(stdout), WRITE_BINARY)) == NULL) {

@@ -183,45 +183,15 @@
     <ClInclude Include="text\TextBox.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="_system\_Android.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="file\AssetFile.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="system\System.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\AnimateObject.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="data\Compress.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="data\Converter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="effect\Filter.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object3D\Image3D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object3D\Object3D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="resource\Sampler.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object3D\Shape3D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="resource\Vertex.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="view\Viewport.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="math\Collision.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="effect\Blend.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="_system\_Loop.cpp">
@@ -236,58 +206,97 @@
     <ClCompile Include="_system\_Windows.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="math\Hexagon.cpp">
+    <ClCompile Include="object\AnimateLoopObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="math\Lines.cpp">
+    <ClCompile Include="object\AnimateObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="text\Text.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="sound\Sound.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="file\ResourceManager.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="math\Matrix.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\Image.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\ImageInstance.cpp">
+    <ClCompile Include="effect\Blend.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="object\Button.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="physics\RectCollision.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="object\Checkbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="system\Input.cpp">
+    <ClCompile Include="math\Collision.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="object\RadioButton.cpp">
+    <ClCompile Include="data\Compress.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="object\AnimateLoopObject.cpp">
+    <ClCompile Include="data\Converter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="object\Object.cpp">
+    <ClCompile Include="effect\Filter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="text\Font.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="math\Hexagon.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Image.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Image3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ImageInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="system\Input.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="text\Label.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="math\Lines.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Matrix.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Object.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Object3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\RadioButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\RectCollision.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="file\ResourceManager.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Sampler.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object3D\Shape3D.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="sound\Sound.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="system\System.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\Text.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
     <ClCompile Include="text\Textbox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Vertex.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_Android.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

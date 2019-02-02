@@ -30,7 +30,6 @@ namespace _System::_Windows {
 			if ((System::GetScreenMode() != System::ScreenMode::Fullscreen) && (_wParam != SIZE_MINIMIZED) && sized) {
 				_Windows::windowWidth = LOWORD(_lParam);
 				_Windows::windowHeight = HIWORD(_lParam);
-				if (_System::_Loop::deltaTime.count()!=0) _System::_Loop::resized = true;
 			}
 			sized = true;
 			return 0;
@@ -67,7 +66,7 @@ namespace _System::_Windows {
 		}
 		return DefWindowProc(_hWnd, _message, _wParam, _lParam);
 	}
-	void Create(HINSTANCE _hInstance) {
+	void Init(System::WindowInfo* _info) {
 		RTL_OSVERSIONINFOEXW osversioninfo;
 		osversioninfo.dwOSVersionInfoSize = sizeof(osversioninfo);
 		const auto RtlGetVersion = (NTSTATUS(NTAPI*)(PRTL_OSVERSIONINFOEXW))GetProcAddress(GetModuleHandle(_T("ntdll.dll")), "RtlGetVersion");
@@ -82,14 +81,12 @@ namespace _System::_Windows {
 		else if (osversioninfo.dwMajorVersion == 6 && osversioninfo.dwMinorVersion == 3) _osversion.windows.version = serverOS ? System::WindowsVersion::WindowsServer2012R2 : System::WindowsVersion::Windows8Point1;
 		else if (osversioninfo.dwMajorVersion == 10 && osversioninfo.dwMinorVersion == 0) _osversion.windows.version = serverOS ? System::WindowsVersion::WindowsServer2016 : System::WindowsVersion::Windows10;
 
-		hInstance = _hInstance;
 		SYSTEM_INFO infoi;
 		GetSystemInfo(&infoi);
 
 		processorCoreNum = infoi.dwNumberOfProcessors;
 		processorArchitecture = infoi.wProcessorArchitecture;
-	}
-	void Init(System::WindowInfo* _info) {
+
 		maximized = _info->maximized;
 		minimized = _info->minimized;
 
@@ -146,7 +143,10 @@ namespace _System::_Windows {
 			else if (keyState[i] == 3)keyState[i] = 0;
 		}
 		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
-			if (msg.message == WM_QUIT)return false;
+			if (msg.message == WM_QUIT) {
+				_System::_Loop::exited = true;
+				return false;
+			}
 			TranslateMessage(&msg);
 			DispatchMessage(&msg);
 		}

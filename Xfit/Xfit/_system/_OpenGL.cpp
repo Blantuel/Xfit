@@ -1,15 +1,14 @@
 #include "_OpenGL.h"
 
-#ifdef _WIN32
 #include "_Windows.h"
-#elif __ANDROID__
 #include "_Android.h"
-#endif
+
 
 #include "_Loop.h"
 
 #ifdef _DEBUG
 #include "../file/File.h"
+#include "../file/AssetFile.h"
 #else
 #endif
 
@@ -19,11 +18,8 @@ namespace _System::_OpenGL {
 #define LOADOPENGLFUNCTION(_name) {_name = (decltype(_name))wglGetProcAddress(#_name);}
 #elif __ANDROID__
 #endif
-
 #ifdef _WIN32
 	static void APIENTRY OpenglDebugCallback(GLenum _source, GLenum _type, GLuint _id, GLenum _severity, GLsizei _length, const GLchar* _message, const void* _userParam) {
-#elif __ANDROID__
-#endif
 	string str = "!!XFit OpenGL DebugLog ";
 
 	switch (_source) {
@@ -93,6 +89,9 @@ namespace _System::_OpenGL {
 	str += "\n";
 	OutputDebugStringA(str.data());
 	}
+#elif __ANDROID__
+#endif
+
 	static void LoadOpenGL() {
 	#ifdef _WIN32
 		LOADOPENGLFUNCTION(wglCreateContextAttribsARB);
@@ -162,14 +161,117 @@ namespace _System::_OpenGL {
 
 	#endif
 	}
-	static GLuint LoadAndCompileShader(const Tchar* _path,GLenum _type) {
-		const GLuint shader = glCreateShader(_type);
-		File shaderFile(_path, false, true);
+	static GLuint LoadAndCompileShader2(const char* _vertPath, const char* _fragPath) {
+		const GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
+		const GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
+
+#ifdef _WIN32
+		File shaderFile;
+#elif __ANDROID__
+		AssetFile shaderFile;
+#endif
+		shaderFile.Open(_vertPath);
 		int shaderSize = (int)shaderFile.GetSize();
-		char* shaderData = new char[(size_t)shaderSize];
+		char* shaderData = new char[shaderSize];
+
 		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
 		shaderFile.Close();
+
+		glShaderSource(vertShader, 1, (const char**)& shaderData, &shaderSize);
+
+
+		glCompileShader(vertShader);
+
+		delete[]shaderData;
+
+		GLint compileStatus;
+		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &compileStatus);
+		if (!compileStatus) {
+			GLint compileLogLen;
+			glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &compileLogLen);
+			char* compileLogCharAr = new char[compileLogLen];
+			glGetShaderInfoLog(vertShader, compileLogLen, nullptr, compileLogCharAr);
+			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
+			compileLogDebugStr += compileLogCharAr;
+			compileLogDebugStr += "\n";
+			PRINTMSG(compileLogDebugStr.data());
+			delete[]compileLogCharAr;
+		}
+
+		shaderFile.Open(_fragPath);
+		shaderSize = (int)shaderFile.GetSize();
+		shaderData = new char[shaderSize];
+
+		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
+		shaderFile.Close();
+
+		glShaderSource(fragShader, 1, (const char**)&shaderData, &shaderSize);
+
+
+		glCompileShader(fragShader);
+
+		delete[]shaderData;
+
+		glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compileStatus);
+		if (!compileStatus) {
+			GLint compileLogLen;
+			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &compileLogLen);
+			char* compileLogCharAr = new char[compileLogLen];
+			glGetShaderInfoLog(fragShader, compileLogLen, nullptr, compileLogCharAr);
+			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
+			compileLogDebugStr += compileLogCharAr;
+			compileLogDebugStr += "\n";
+			PRINTMSG(compileLogDebugStr.data());
+			delete[]compileLogCharAr;
+		}
+
+		const GLuint prog = glCreateProgram();
+
+		glAttachShader(prog, vertShader);
+		glAttachShader(prog, fragShader);
+
+		glLinkProgram(prog);
+
+		GLint linkStatus;
+		glGetProgramiv(prog, GL_LINK_STATUS, &linkStatus);
+		if (!linkStatus) {
+			GLint linkLogLen;
+			glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &linkLogLen);
+			char* linkLogCharAr = new char[linkLogLen];
+			glGetProgramInfoLog(prog, linkLogLen, nullptr, linkLogCharAr);
+			string linkLogDebugStr = "!!XFit OpenGL Shader Link Error : ";
+			linkLogDebugStr += linkLogCharAr;
+			linkLogDebugStr += "\n";
+			PRINTMSG(linkLogDebugStr.data());
+			delete[]linkLogCharAr;
+		}
+
+		glDetachShader(prog, vertShader);
+		glDetachShader(prog, fragShader);
+
+		glDeleteShader(vertShader);
+		glDeleteShader(fragShader);
+
+		return prog;
+	}
+	static GLuint LoadAndCompileShader(const char* _path,GLenum _type) {
+		const GLuint shader = glCreateShader(_type);
+
+#ifdef _WIN32
+		File shaderFile;
+#elif __ANDROID__
+		AssetFile shaderFile;
+#endif
+		shaderFile.Open(_path);
+		int shaderSize = (int)shaderFile.GetSize();
+		char* shaderData = new char[shaderSize];
+
+		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
+		shaderFile.Close();
+
 		glShaderSource(shader, 1, (const char**)&shaderData, &shaderSize);
+
+
 		glCompileShader(shader);
 
 		delete[]shaderData;
@@ -184,7 +286,7 @@ namespace _System::_OpenGL {
 			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
 			compileLogDebugStr += compileLogCharAr;
 			compileLogDebugStr += "\n";
-			OutputDebugStringA(compileLogDebugStr.data());
+			PRINTMSG(compileLogDebugStr.data());
 			delete[]compileLogCharAr;
 		}
 		const GLuint prog = glCreateProgram();
@@ -204,7 +306,7 @@ namespace _System::_OpenGL {
 			string linkLogDebugStr = "!!XFit OpenGL Shader Link Error : ";
 			linkLogDebugStr += linkLogCharAr;
 			linkLogDebugStr += "\n";
-			OutputDebugStringA(linkLogDebugStr.data());
+			PRINTMSG(linkLogDebugStr.data());
 			delete[]linkLogCharAr;
 		}
 
@@ -213,10 +315,12 @@ namespace _System::_OpenGL {
 
 		return prog;
 	}
-	void Create() {
+	void Init(System::RendererInfo* _info) {
 	#ifdef _DEBUG
+		if (System::IsRendererInited());
 	#endif
-	#ifdef _WIN32
+
+#ifdef _WIN32
 		WNDCLASS wndClass;
 		wndClass.cbClsExtra = 0;
 		wndClass.cbWndExtra = 0;
@@ -267,28 +371,20 @@ namespace _System::_OpenGL {
 
 		tempContext = wglCreateContext(tempDC);
 		wglMakeCurrent(tempDC, tempContext);
-	#elif __ANDROID__
-	#endif
-		version.name = System::RendererName::OpenGL;
+
+		LoadOpenGL();
 
 		int major, minor;
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		version.minorVersion = (unsigned)minor;
 		version.majorVersion = (unsigned)major;
-	}
-	void Init(System::RendererInfo* _info) {
-	#ifdef _DEBUG
-		if (System::IsRendererInited());
-	#endif
-		LoadOpenGL();
 
 		wglMakeCurrent(nullptr, nullptr);
 		wglDeleteContext(context);
 		ReleaseDC(tempHWnd, tempDC);
 		DestroyWindow(tempHWnd);
 
-#ifdef _WIN32
 		int pixelFormat;
 		unsigned numFormats;
 		if (_info->msaaCount > 1) {
@@ -340,25 +436,34 @@ namespace _System::_OpenGL {
 
 		wglMakeCurrent(_System::_Windows::hdc, context);
 
-		tempHWnd = nullptr;
-#elif __ANDROID__
-#endif
+		if (_info->msaaCount > 1)glEnable(GL_MULTISAMPLE);
+
+		if (_info->vSync) wglSwapIntervalEXT(1);
+		else wglSwapIntervalEXT(0);
 
 #ifdef _DEBUG
 		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
 		glDebugMessageCallback(OpenglDebugCallback, nullptr);
 #endif
-		if (_info->msaaCount > 1)glEnable(GL_MULTISAMPLE);
 
-
+#elif __ANDROID__
+		int major, minor;
+		glGetIntegerv(GL_MINOR_VERSION, &minor);
+		glGetIntegerv(GL_MAJOR_VERSION, &major);
+		version.minorVersion = (unsigned)minor;
+		version.majorVersion = (unsigned)major;
+#endif
+		
+		
 		glGenVertexArrays(1, &vao);
 
 		glBindVertexArray(vao);
 
-		imgVertProg = LoadAndCompileShader(_T("../Xfit/_shader/imgVert.glsl"), GL_VERTEX_SHADER);
-		imgInsVertProg = LoadAndCompileShader(_T("../Xfit/_shader/imgInsVert.glsl"), GL_VERTEX_SHADER);
+#ifdef _WIN32
+		imgVertProg = LoadAndCompileShader("shaders/imgVert.glsl", GL_VERTEX_SHADER);
+		imgInsVertProg = LoadAndCompileShader("shaders/imgInsVert.glsl", GL_VERTEX_SHADER);
 
-		imgFragProg = LoadAndCompileShader(_T("../Xfit/_shader/imgFrag.glsl"), GL_FRAGMENT_SHADER);
+		imgFragProg = LoadAndCompileShader("shaders/imgFrag.glsl", GL_FRAGMENT_SHADER);
 
 		glGenProgramPipelines(1, &progPipeline);
 		glBindProgramPipeline(progPipeline);
@@ -369,7 +474,40 @@ namespace _System::_OpenGL {
 		imgFrag::samplerUniform = glGetUniformLocation(imgFragProg, "samplerUniform");
 
 		glActiveShaderProgram(progPipeline, imgFragProg);
+
 		glUniform1i(imgFrag::samplerUniform, 0);
+#else __ANDROID__
+		if ((major >= 3) && (minor >= 1)) {
+			imgVertProg = LoadAndCompileShader("shaders/imgVert.glsl", GL_VERTEX_SHADER);
+			imgInsVertProg = LoadAndCompileShader("shaders/imgInsVert.glsl", GL_VERTEX_SHADER);
+
+			imgFragProg = LoadAndCompileShader("shaders/imgFrag.glsl", GL_FRAGMENT_SHADER);
+
+			glGenProgramPipelines(1, &progPipeline);
+			glBindProgramPipeline(progPipeline);
+
+			imgVert::matUniform = glGetUniformLocation(imgVertProg, "matUniform");
+			imgInsVert::matUniform = glGetUniformLocation(imgInsVertProg, "matUniform");
+
+			imgFrag::samplerUniform = glGetUniformLocation(imgFragProg, "samplerUniform");
+
+			glActiveShaderProgram(progPipeline, imgFragProg);
+
+			glUniform1i(imgFrag::samplerUniform, 0);
+		} else {
+			imgProg = LoadAndCompileShader2("shaders/imgVert.glsl", "shaders/imgFrag.glsl");
+			imgInsProg = LoadAndCompileShader2("shaders/imgInsVert.glsl", "shaders/imgFrag.glsl");
+
+			img::matUniform = glGetUniformLocation(imgProg, "matUniform");
+			imgIns::matUniform = glGetUniformLocation(imgInsProg, "matUniform");
+
+			img::samplerUniform = glGetUniformLocation(imgProg, "samplerUniform");
+			imgIns::samplerUniform = glGetUniformLocation(imgInsProg, "samplerUniform");
+
+			glUniform1i(img::samplerUniform, 0);
+			glUniform1i(imgIns::samplerUniform, 0);
+		}
+#endif
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
@@ -378,11 +516,10 @@ namespace _System::_OpenGL {
 		glEnableVertexAttribArray(4);
 		glEnableVertexAttribArray(5);
 
-		if (_info->vSync) wglSwapIntervalEXT(1);
-		else wglSwapIntervalEXT(0);
-
 		vSync = _info->vSync;
 		msaaCount = _info->msaaCount;
+
+		version.name = System::RendererName::OpenGL;
 	}
 	void Release() {
 #ifdef _WIN32

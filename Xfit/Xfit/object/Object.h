@@ -6,7 +6,7 @@
 class Blend;
 class Viewport;
 
-class Object abstract {
+class Object  {
 public:
 	Matrix mat;
 	Blend * blend;

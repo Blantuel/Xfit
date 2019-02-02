@@ -1,9 +1,11 @@
 #include "Input.h"
 #include "System.h"
 #include "../_system/_Windows.h"
+#include "../_system/_Android.h"
 
 
 namespace Input {
+#ifdef _WIN32
 	PointF GetMousePos() {
 		POINT p;
 		GetCursorPos(&p);
@@ -28,4 +30,6 @@ namespace Input {
 	bool IsKeyPressed(unsigned char _keyCode) { return _System::_Windows::keyState[_keyCode] == 3;}
 	short GetWheelScrolling() { return _System::_Windows::zScroll; }
 	void ShowCursor(bool _show) { ::ShowCursor(_show); }
+#elif __ANDROID__
+#endif
 }

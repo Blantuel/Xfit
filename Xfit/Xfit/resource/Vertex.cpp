@@ -13,10 +13,12 @@
 #include "../_system/_Vulkan.h"
 #endif
 
+using namespace _System::_OpenGL;
+
 void Vertices::_WriteBufferOpenGL(GLuint* _buffer, const void * _data, unsigned nodeSize) {
 	if (!_data) {
 		if (*_buffer) {
-			_System::_OpenGL::glDeleteBuffers(1, _buffer);
+			glDeleteBuffers(1, _buffer);
 			*_buffer = NULL;
 		}
 		return;

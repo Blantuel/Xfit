@@ -125,10 +125,29 @@
     </AntPackage>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <Content Include="assets\ButtonDisable.png" />
+    <Content Include="assets\ButtonDown.png" />
+    <Content Include="assets\ButtonOver.png" />
+    <Content Include="assets\ButtonUp.png" />
+    <Content Include="assets\dead0.png" />
+    <Content Include="assets\dead1.png" />
+    <Content Include="assets\dead2.png" />
+    <Content Include="assets\dead3.png" />
+    <Content Include="assets\dead4.png" />
+    <Content Include="assets\dead5.png" />
+    <Content Include="assets\dead6.png" />
+    <Content Include="assets\dead7.png" />
+    <Content Include="assets\dead8.png" />
+    <Content Include="assets\dead9.png" />
+    <Content Include="assets\shaders\imgFrag.glsl" />
+    <Content Include="assets\shaders\imgInsVert.glsl" />
+    <Content Include="assets\shaders\imgVert.glsl" />
+    <Content Include="assets\NanumBarunGothic.ttf" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
     <AndroidManifest Include="AndroidManifest.xml" />
     <AntProjectPropertiesFile Include="project.properties" />
+    <Content Include="assets\test.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XfitTestAndroid.NativeActivity\XfitTestAndroid.NativeActivity.vcxproj">

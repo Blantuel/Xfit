@@ -203,6 +203,7 @@ Matrix Matrix::GetDirection2D(float _x, float _y) {
 }
 Matrix Matrix::Multiply(const Matrix& _mat)const {
 	Matrix matrix;
+#ifdef SSE4
 	matrix.m1 = _mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(m1, m1, _MM_SHUFFLE(0, 0, 0, 0)), _mat.m1),
 		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(m1, m1, _MM_SHUFFLE(1, 1, 1, 1)), _mat.m2),
 			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(m1, m1, _MM_SHUFFLE(2, 2, 2, 2)), _mat.m3),
@@ -222,88 +223,120 @@ Matrix Matrix::Multiply(const Matrix& _mat)const {
 		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(m4, m4, _MM_SHUFFLE(1, 1, 1, 1)), _mat.m2),
 			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(m4, m4, _MM_SHUFFLE(2, 2, 2, 2)), _mat.m3),
 				_mm_mul_ps(_mm_shuffle_ps(m4, m4, _MM_SHUFFLE(3, 3, 3, 3)), _mat.m4))));
-	return matrix;
-}
-Matrix Matrix::MultiplyTranspose(const Matrix& _mat)const {
-	Matrix matrix;
-	const __m128 t1 = _mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m1, _mat.m1, _MM_SHUFFLE(0, 0, 0, 0)), m1),
-		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m1, _mat.m1, _MM_SHUFFLE(1, 1, 1, 1)), m2),
-			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m1, _mat.m1, _MM_SHUFFLE(2, 2, 2, 2)), m3),
-				_mm_mul_ps(_mm_shuffle_ps(_mat.m1, _mat.m1, _MM_SHUFFLE(3, 3, 3, 3)), m4))));
+#else
+	matrix.e[0] = e[0] * _mat.e[0] + e[1] * _mat.e[4] + e[2] * _mat.e[8] + e[3] * _mat.e[12];
+	matrix.e[1] = e[0] * _mat.e[1] + e[1] * _mat.e[5] + e[2] * _mat.e[9] + e[3] * _mat.e[13];
+	matrix.e[2] = e[0] * _mat.e[2] + e[1] * _mat.e[6] + e[2] * _mat.e[10] + e[3] * _mat.e[14];
+	matrix.e[3] = e[0] * _mat.e[3] + e[1] * _mat.e[7] + e[2] * _mat.e[11] + e[3] * _mat.e[15];
 
-	_mm_store_ps(matrix.e, t1);
+	matrix.e[4] = e[4] * _mat.e[0] + e[5] * _mat.e[4] + e[6] * _mat.e[8] + e[7] * _mat.e[12];
+	matrix.e[5] = e[4] * _mat.e[1] + e[5] * _mat.e[5] + e[6] * _mat.e[9] + e[7] * _mat.e[13];
+	matrix.e[6] = e[4] * _mat.e[2] + e[5] * _mat.e[6] + e[6] * _mat.e[10] + e[7] * _mat.e[14];
+	matrix.e[7] = e[4] * _mat.e[3] + e[5] * _mat.e[7] + e[6] * _mat.e[11] + e[7] * _mat.e[15];
 
-	const __m128 t2 = _mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m2, _mat.m2, _MM_SHUFFLE(0, 0, 0, 0)), m1),
-		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m2, _mat.m2, _MM_SHUFFLE(1, 1, 1, 1)), m2),
-			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m2, _mat.m2, _MM_SHUFFLE(2, 2, 2, 2)), m3),
-				_mm_mul_ps(_mm_shuffle_ps(_mat.m2, _mat.m2, _MM_SHUFFLE(3, 3, 3, 3)), m4))));
+	matrix.e[8] = e[8] * _mat.e[0] + e[9] * _mat.e[4] + e[10] * _mat.e[8] + e[11] * _mat.e[12];
+	matrix.e[9] = e[8] * _mat.e[1] + e[9] * _mat.e[5] + e[10] * _mat.e[9] + e[11] * _mat.e[13];
+	matrix.e[10] = e[8] * _mat.e[2] + e[9] * _mat.e[6] + e[10] * _mat.e[10] + e[11] * _mat.e[14];
+	matrix.e[11] = e[8] * _mat.e[3] + e[9] * _mat.e[7] + e[10] * _mat.e[11] + e[11] * _mat.e[15];
 
-	_mm_store_ps(matrix.e + 4, t2);
-
-	const __m128 t3 = _mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m3, _mat.m3, _MM_SHUFFLE(0, 0, 0, 0)), m1),
-		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m3, _mat.m3, _MM_SHUFFLE(1, 1, 1, 1)), m2),
-			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m3, _mat.m3, _MM_SHUFFLE(2, 2, 2, 2)), m3),
-				_mm_mul_ps(_mm_shuffle_ps(_mat.m3, _mat.m3, _MM_SHUFFLE(3, 3, 3, 3)), m4))));
-
-	_mm_store_ps(matrix.e + 8, t3);
-
-	const __m128 t4 = _mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m4, _mat.m4, _MM_SHUFFLE(0, 0, 0, 0)), m1),
-		_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m4, _mat.m4, _MM_SHUFFLE(1, 1, 1, 1)), m2),
-			_mm_add_ps(_mm_mul_ps(_mm_shuffle_ps(_mat.m4, _mat.m4, _MM_SHUFFLE(2, 2, 2, 2)), m3),
-				_mm_mul_ps(_mm_shuffle_ps(_mat.m4, _mat.m4, _MM_SHUFFLE(3, 3, 3, 3)), m4))));
-
-	_mm_store_ps(matrix.e + 12, t4);
+	matrix.e[12] = e[12] * _mat.e[0] + e[13] * _mat.e[4] + e[14] * _mat.e[8] + e[15] * _mat.e[12];
+	matrix.e[13] = e[12] * _mat.e[1] + e[13] * _mat.e[5] + e[14] * _mat.e[9] + e[15] * _mat.e[13];
+	matrix.e[14] = e[12] * _mat.e[2] + e[13] * _mat.e[6] + e[14] * _mat.e[10] + e[15] * _mat.e[14];
+	matrix.e[15] = e[12] * _mat.e[3] + e[13] * _mat.e[7] + e[14] * _mat.e[11] + e[15] * _mat.e[15];
+#endif
 	return matrix;
 }
 Matrix Matrix::operator*(const Matrix& m)const { return Multiply(m); }
 Matrix& Matrix::operator*=(const Matrix& m) { return *this = *this*m; }
 
 Matrix& Matrix::operator*=(float f) {
+#ifdef SSE4
 	__m128 me = _mm_set1_ps(f);
 	m1 = _mm_mul_ps(m1, me);
 	m2 = _mm_mul_ps(m2, me);
 	m3 = _mm_mul_ps(m3, me);
 	m4 = _mm_mul_ps(m4, me);
+#else
+	e[0] *= f; e[1] *= f; e[2] *= f; e[3] *= f;
+	e[4] *= f; e[5] *= f; e[6] *= f; e[7] *= f;
+	e[8] *= f; e[9] *= f; e[10] *= f; e[11] *= f;
+	e[12] *= f; e[13] *= f; e[14] *= f; e[15] *= f;
+#endif
 	return *this;
 }
 Matrix Matrix::operator*(float f)const {
 	Matrix matrix;
+#ifdef SSE4
 	__m128 me = _mm_set1_ps(f);
 	matrix.m1 = _mm_mul_ps(m1, me);
 	matrix.m2 = _mm_mul_ps(m2, me);
 	matrix.m3 = _mm_mul_ps(m3, me);
 	matrix.m4 = _mm_mul_ps(m4, me);
+#else
+	matrix.e[0] *= f; matrix.e[1] *= f; matrix.e[2] *= f; matrix.e[3] *= f;
+	matrix.e[4] *= f; matrix.e[5] *= f; matrix.e[6] *= f; matrix.e[7] *= f;
+	matrix.e[8] *= f; matrix.e[9] *= f; matrix.e[10] *= f; matrix.e[11] *= f;
+	matrix.e[12] *= f; matrix.e[13] *= f; matrix.e[14] *= f; matrix.e[15] *= f;
+#endif
 	return matrix;
 }
 
 Matrix& Matrix::operator-=(const Matrix& m) {
+#ifdef SSE4
 	m1 = _mm_sub_ps(m1, m.m1);
 	m2 = _mm_sub_ps(m2, m.m2);
 	m3 = _mm_sub_ps(m3, m.m3);
 	m4 = _mm_sub_ps(m4, m.m4);
+#else
+	e[0] -= m.e[0]; e[1] -= m.e[1]; e[2] -= m.e[2]; e[3] -= m.e[3];
+	e[4] -= m.e[4]; e[5] -= m.e[5]; e[6] -= m.e[6]; e[7] -= m.e[7];
+	e[8] -= m.e[8]; e[9] -= m.e[9]; e[10] -= m.e[10]; e[11] -= m.e[11];
+	e[12] -= m.e[12]; e[13] -= m.e[13]; e[14] -= m.e[14]; e[15] -= m.e[15];
+#endif
 	return *this;
 }
 Matrix& Matrix::operator+=(const Matrix& m) {
+#ifdef SSE4
 	m1 = _mm_add_ps(m1, m.m1);
 	m2 = _mm_add_ps(m2, m.m2);
 	m3 = _mm_add_ps(m3, m.m3);
 	m4 = _mm_add_ps(m4, m.m4);
+#else
+	e[0] += m.e[0]; e[1] += m.e[1]; e[2] += m.e[2]; e[3] += m.e[3];
+	e[4] += m.e[4]; e[5] += m.e[5]; e[6] += m.e[6]; e[7] += m.e[7];
+	e[8] += m.e[8]; e[9] += m.e[9]; e[10] += m.e[10]; e[11] += m.e[11];
+	e[12] += m.e[12]; e[13] += m.e[13]; e[14] += m.e[14]; e[15] += m.e[15];
+#endif
 	return *this;
 }
 Matrix Matrix::operator-(const Matrix& m)const {
 	Matrix matrix;
+#ifdef SSE4
 	matrix.m1 = _mm_sub_ps(m1, m.m1);
 	matrix.m2 = _mm_sub_ps(m2, m.m2);
 	matrix.m3 = _mm_sub_ps(m3, m.m3);
 	matrix.m4 = _mm_sub_ps(m4, m.m4);
+#else
+	matrix.e[0] -= m.e[0]; matrix.e[1] -= m.e[1]; matrix.e[2] -= m.e[2]; matrix.e[3] -= m.e[3];
+	matrix.e[4] -= m.e[4]; matrix.e[5] -= m.e[5]; matrix.e[6] -= m.e[6]; matrix.e[7] -= m.e[7];
+	matrix.e[8] -= m.e[8]; matrix.e[9] -= m.e[9]; matrix.e[10] -= m.e[10]; matrix.e[11] -= m.e[11];
+	matrix.e[12] -= m.e[12]; matrix.e[13] -= m.e[13]; matrix.e[14] -= m.e[14]; matrix.e[15] -= m.e[15];
+#endif
 	return matrix;
 }
 Matrix Matrix::operator+(const Matrix& m)const {
 	Matrix matrix;
+#ifdef SSE4
 	matrix.m1 = _mm_add_ps(m1, m.m1);
 	matrix.m2 = _mm_add_ps(m2, m.m2);
 	matrix.m3 = _mm_add_ps(m3, m.m3);
 	matrix.m4 = _mm_add_ps(m4, m.m4);
+#else
+	matrix.e[0] += m.e[0]; matrix.e[1] += m.e[1]; matrix.e[2] += m.e[2]; matrix.e[3] += m.e[3];
+	matrix.e[4] += m.e[4]; matrix.e[5] += m.e[5]; matrix.e[6] += m.e[6]; matrix.e[7] += m.e[7];
+	matrix.e[8] += m.e[8]; matrix.e[9] += m.e[9]; matrix.e[10] += m.e[10]; matrix.e[11] += m.e[11];
+	matrix.e[12] += m.e[12]; matrix.e[13] += m.e[13]; matrix.e[14] += m.e[14]; matrix.e[15] += m.e[15];
+#endif
 	return matrix;
 }
 Matrix& Matrix::operator/=(const Matrix& m) { return *this *= m.Inverse(); }
@@ -311,6 +344,7 @@ Matrix Matrix::operator/(const Matrix& m)const { return *this*m.Inverse(); }
 
 Matrix Matrix::Inverse()const {
 	Matrix matrix;
+#ifdef SSE4
 	__m128 minor0, minor1, minor2, minor3;
 	__m128 row0, row1 = _mm_setzero_ps(), row2, row3 = _mm_setzero_ps();
 	__m128 det, tmp1 = _mm_setzero_ps();
@@ -411,6 +445,8 @@ Matrix Matrix::Inverse()const {
 	minor3 = _mm_mul_ps(det, minor3);
 	_mm_storel_pi((__m64*)(matrix.e + 12), minor3);
 	_mm_storeh_pi((__m64*)(matrix.e + 14), minor3);
+#else
+#endif
 	return matrix;
 }
 float Matrix::GetDeterminant()const { return 0; }

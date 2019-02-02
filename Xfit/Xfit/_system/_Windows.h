@@ -28,7 +28,6 @@ namespace _System::_Windows {
 	inline bool minimized;
 	inline DEVMODE fullscreenMode, restoreMode;
 
-	void Create(HINSTANCE _hInstance);
 	void Init(System::WindowInfo* _info);
 
 	inline bool pause=false, activated=false;

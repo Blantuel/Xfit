@@ -15,6 +15,7 @@
 class Context {
 public:
 	static void Create() {
+#ifdef _WIN32
 #ifdef OPENGL
 #ifdef _DEBUG
 		if (!System::IsRendererInited());
@@ -34,8 +35,13 @@ public:
 		_System::_OpenGL::threadContext = _System::_OpenGL::wglCreateContextAttribsARB(_System::_Windows::hdc, _System::_OpenGL::context, attribList2);
 #elif VULKAN
 #endif
+
+#elif __ANDROID__
+#endif
+
 	}
 	static void Link() {
+#ifdef _WIN32
 #ifdef OPENGL
 #ifdef _DEBUG
 		if (!System::IsRendererInited());
@@ -46,11 +52,14 @@ public:
 		wglMakeCurrent(_System::_Windows::hdc, _System::_OpenGL::threadContext);
 #elif VULKAN
 #endif
+#elif __ANDROID__
+#endif
 	}
 	static bool IsLinked() {
 		return _System::_OpenGL::contextLinked;
 	}
 	static void Unlink() {
+#ifdef _WIN32
 #ifdef OPENGL
 #ifdef _DEBUG
 		if (!System::IsRendererInited());
@@ -61,8 +70,11 @@ public:
 		wglMakeCurrent(nullptr,nullptr);
 #elif VULKAN
 #endif
+#elif __ANDROID__
+#endif
 	}
 	static void Delete() {
+#ifdef _WIN32
 #ifdef OPENGL
 #ifdef _DEBUG
 		if (!System::IsRendererInited());
@@ -72,6 +84,8 @@ public:
 #endif
 		wglDeleteContext(_System::_OpenGL::threadContext);
 #elif VULKAN
+#endif
+#elif __ANDROID__
 #endif
 	}
 };

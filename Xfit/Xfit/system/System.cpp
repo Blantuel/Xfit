@@ -9,11 +9,10 @@
 
 #include "../_system/_GraphicsBase.h"
 
-#ifdef OPENGL
 #include "../_system/_OpenGL.h"
-#elif VULKAN
 #include "../_system/_Vulkan.h"
-#endif
+
+#include "../time/Time.h"
 
 SystemError::SystemError(Code _code) :Error((int)_code) {}
 
@@ -25,10 +24,17 @@ namespace System {
 
 		System::createFunc();
 
+		Time::Init();
+
 		while (true) {
 			if (!_System::_Windows::Loop())break;
 			_System::_Loop::Loop();
 		}
+		System::destroyFunc();
+
+		_System::_OpenGL::Release();
+		_System::_Windows::Release();
+
 	}
 #elif __ANDROID__
 	void Create(ANativeActivity* _activity) {
@@ -254,6 +260,6 @@ namespace System {
 		return (bool)_System::_Android::engine.context;
 #endif
 	}
-	double GetDeltaTime() { return 0.0; }
+	double GetDeltaTime() { return _System::_Loop::deltaTime; }
 }
 

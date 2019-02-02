@@ -3,10 +3,15 @@
 #include "_Loop.h"
 #include "../data/Array.h"
 
+#include "_OpenGL.h"
+#include "_Vulkan.h"
+
 namespace _System::_Windows {
 	void Release() {}
+
+	bool sizeInited = false;//WM_SIZE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
+
 	LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
-		static 	bool sized = false;
 		switch (_message) {
 		case WM_ACTIVATE:
 			_Windows::pause = HIWORD(_wParam);
@@ -27,11 +32,12 @@ namespace _System::_Windows {
 			System::activateFunc(_Windows::activated, _Windows::pause);
 			return 0;
 		case WM_SIZE:
-			if ((System::GetScreenMode() != System::ScreenMode::Fullscreen) && (_wParam != SIZE_MINIMIZED) && sized) {
+			if ((System::GetScreenMode() != System::ScreenMode::Fullscreen) && (_wParam != SIZE_MINIMIZED) && sizeInited) {
 				_Windows::windowWidth = LOWORD(_lParam);
 				_Windows::windowHeight = HIWORD(_lParam);
+				_System::_OpenGL::Resize();
 			}
-			sized = true;
+			sizeInited = true;
 			return 0;
 		case WM_KEYDOWN:
 			if (keyState[_wParam] == 0)keyState[_wParam] = 1;
@@ -124,6 +130,7 @@ namespace _System::_Windows {
 			fullscreenMode.dmBitsPerPel = 32;// set the bits per pixel
 			fullscreenMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
 		}else style = WS_CAPTION | WS_SYSMENU | (resizeWindow?WS_THICKFRAME:0) | (maximized ? WS_MAXIMIZEBOX : 0) | (minimized ? WS_MINIMIZEBOX : 0);
+
 
 		hWnd = CreateWindowEx(exStyle,wc.lpszClassName, _info->title.data(), style, _info->windowPos.x, _info->windowPos.y, _info->windowWidth, _info->windowHeight, nullptr, nullptr, hInstance, nullptr);
 		if (hWnd == nullptr);

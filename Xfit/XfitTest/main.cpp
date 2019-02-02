@@ -20,7 +20,7 @@ float d = 0;
 
 Image* shape;
 ImageInstance* instance;
-Button* button;
+//Button* button;
 AnimateLoopObject* sprite;
 Label* label;
 Font* font;
@@ -185,9 +185,9 @@ void Init() {
 	
 
 	unsigned width, height;
-	label->PrepareDraw(L"Hello", font, 300, 0xff,&width,&height);
+	label->PrepareDraw(L"Hello", font, 200, 0xff,&width,&height);
 
-	label->mat = Matrix::GetScale(((float)width/1920.f), ((float)height / 1080.f));
+	label->mat = Matrix::GetScale(((float)width/(float)System::GetWindowWidth()), ((float)height / (float)System::GetWindowHeight()));
 
 	//Sound::Init(100);
 
@@ -217,19 +217,18 @@ void Init() {
 		font, 600, 600, 30, 0xffffff);
 	//textBox->PrepareDrawEdit(L"안녕하세요, 반갑습니다.", font, 30, 0xffffff);
 
-	textBox->mat = Matrix::GetScale((600.f / 1920.f), (600.f/ 1080.f));
-
+	textBox->mat = Matrix::GetScale((600.f / (float)System::GetWindowWidth()), (600.f/ (float)System::GetWindowHeight()));
 }
-int i = 0;
+float i = 0.f;
 void Update() {
 	System::Clear(false);
 	instance->Draw();
 	shape->Draw();
 	//button->Update();
 	//button->Draw();
-	shape->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, (float)i / 200.f);
-	instance->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, (float)i / 200.f);
-	i++;
+	shape->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, i);
+	instance->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1,i);
+	i += (float)System::GetDeltaTime();
 
 	sprite->Draw();
 	sprite->Update();
@@ -262,18 +261,18 @@ void Destroy() {
 
 void Create() {
 	System::WindowInfo winInfo;
-	winInfo.screenMode = System::ScreenMode::Fullscreen;
-	winInfo.windowHeight = 1080;
-	winInfo.windowWidth = 1920;
+	winInfo.screenMode = System::ScreenMode::Window;
+	winInfo.windowHeight = 720;
+	winInfo.windowWidth = 1280;
 	winInfo.windowShow = System::WindowShow::Default;
 
 	winInfo.title = _T("Test");
-	winInfo.windowPos.x = 0;
-	winInfo.windowPos.y = 0;
+	winInfo.windowPos.x = System::WindowDefaultPos;
+	winInfo.windowPos.y = System::WindowDefaultPos;
 	winInfo.cursorResource = nullptr;
 	winInfo.maximized = false;
 	winInfo.minimized = false;
-	winInfo.resizeWindow = false;
+	winInfo.resizeWindow = true;
 
 	System::updateFuncs = Update;
 	System::activateFunc = Activate;

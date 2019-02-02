@@ -7,16 +7,17 @@
 #include "_Vulkan.h"
 
 #include "../data/Array.h"
+#include "../time/Time.h"
 
 namespace _System::_Loop {
 	void Loop() {
 		if (!start) {
-			//time = chrono::system_clock::now();
+			time = Time::GetTime();
 			start = true;
 		} else {
-			//const auto time2 = time;
-			//time = chrono::system_clock::now();
-			//deltaTime = time - time2;
+			const auto time2 = time;
+			time = Time::GetTime();
+			deltaTime = time - time2;
 		}
 		System::updateFuncs();
 

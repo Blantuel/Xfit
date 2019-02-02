@@ -15,6 +15,8 @@ namespace _System::_OpenGL {
 
 	void Init(System::RendererInfo* _info);
 
+	void Resize();
+
 #ifdef _WIN32
 	inline HGLRC context;
 	inline HDC tempDC;

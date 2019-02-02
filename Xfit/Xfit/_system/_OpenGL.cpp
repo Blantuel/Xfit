@@ -525,11 +525,11 @@ namespace _System::_OpenGL {
 #ifdef _WIN32
 		wglMakeCurrent(nullptr, nullptr);
 		wglDeleteContext(context);
-		if (tempHWnd) {
-			ReleaseDC(tempHWnd, tempDC);
-			DestroyWindow(tempHWnd);
-		}
 #elif __ANDROID__
 #endif
+	}
+
+	void Resize() {
+		glViewport(0, 0, (int)System::GetWindowWidth(), (int)System::GetWindowHeight());
 	}
 }

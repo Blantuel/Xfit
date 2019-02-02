@@ -189,6 +189,9 @@
     <ClInclude Include="file\AssetFile.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="time\Time.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="view\Viewport.cpp">
@@ -297,6 +300,9 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="_system\_Android.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="time\Time.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

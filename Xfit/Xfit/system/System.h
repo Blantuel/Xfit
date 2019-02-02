@@ -74,6 +74,10 @@ namespace System {
 		Window,
 		Fullscreen
 	};
+#ifdef _WIN32
+	constexpr int WindowDefaultPos = CW_USEDEFAULT;
+#endif
+
 	struct WindowInfo {
 		ScreenMode screenMode;
 
@@ -128,6 +132,8 @@ namespace System {
 
 	float GetRefleshRate();
 	bool IsVSync();
+
+	constexpr double NotInitedDeltaTime = -1.0;
 	double GetDeltaTime();
 
 	void SetScreenMode(ScreenMode _screenMode);

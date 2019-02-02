@@ -257,6 +257,7 @@
     <ClInclude Include="text\Label.h" />
     <ClInclude Include="text\Text.h" />
     <ClInclude Include="text\TextBox.h" />
+    <ClInclude Include="time\Time.h" />
     <ClInclude Include="view\Camera3D.h" />
     <ClInclude Include="view\Viewport.h" />
     <ClInclude Include="_system\_Android.h" />
@@ -297,6 +298,7 @@
     <ClCompile Include="text\Label.cpp" />
     <ClCompile Include="text\Text.cpp" />
     <ClCompile Include="text\Textbox.cpp" />
+    <ClCompile Include="time\Time.cpp" />
     <ClCompile Include="view\Viewport.cpp" />
     <ClCompile Include="_system\_Android.cpp" />
     <ClCompile Include="_system\_Loop.cpp" />

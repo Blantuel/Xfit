@@ -158,14 +158,14 @@ public:
 	}
 	bool operator==(const Point3Dw& _point)const {
 #ifdef SSE4
-		return (bool)_mm_cmpeq_epi32(m, _point.m).m128i_i32[0];
+		return _mm_movemask_epi8(_mm_cmpeq_epi32(m, _point.m)) == 65535;
 #else
 		return (x == _point.x) && (y == _point.y) && (z == _point.z) && (w == _point.w);
 #endif
 	}
 	bool operator!=(const Point3Dw& _point)const {
 #ifdef SSE4
-		return !((bool)_mm_cmpeq_epi32(m, _point.m).m128i_i32[0]);
+		return _mm_movemask_epi8(_mm_cmpeq_epi32(m, _point.m)) != 65535;
 #else
 		return !((x == _point.x) && (y == _point.y) && (z == _point.z) && (w == _point.w));
 #endif
@@ -182,8 +182,13 @@ public:
 
 	int InnerProduct(const Point3Dw& _point) const {
 #ifdef SSE4
-		__m128i m2 = _mm_mul_epi32(m, _point.m);
-		return m2.m128i_i32[0]+ m2.m128i_i32[1]+m2.m128i_i32[2]+m2.m128i_i32[3];
+		union {
+			__m128i m2;
+			int ar[4];
+		};
+		m2 = _mm_mul_epi32(m, _point.m);
+		
+		return ar[0]+ar[1]+ar[2]+ar[3];
 #else
 		return x * _point.x + y * _point.y + z * _point.z + w * _point.w;
 #endif
@@ -369,14 +374,14 @@ public:
 	}
 	bool operator==(const Point3DwF& _point)const {
 #ifdef SSE4
-		return (bool)_mm_cmpeq_ps(m, _point.m).m128_f32[0];
+		return _mm_movemask_ps(_mm_cmpeq_ps(m, _point.m)) == 15.f;
 #else
 		return (x == _point.x) && (y == _point.y) && (z == _point.z) && (w == _point.w);
 #endif
 	}
 	bool operator!=(const Point3DwF& _point)const {
 #ifdef SSE4
-		return !((bool)_mm_cmpeq_ps(m, _point.m).m128_f32[0]);
+		return _mm_movemask_ps(_mm_cmpeq_ps(m, _point.m)) != 15.f;
 #else
 		return !((x == _point.x) && (y == _point.y) && (z == _point.z) && (w == _point.w));
 #endif
@@ -396,7 +401,18 @@ public:
 		z += (point_t.z - z)*t;
 		return *this;
 	}
-	float InnerProduct(const Point3DwF& _point) const { return  x * _point.x + y * _point.y + z * _point.z + w * _point.w; }
+	float InnerProduct(const Point3DwF& _point) const {
+#ifdef SSE4
+		union {
+			__m128 m2;
+			float ar[4];
+		};
+		m2 = _mm_mul_ps(m, _point.m);
+		return ar[0] + ar[1] + ar[2] + ar[3];
+#else
+		return  x * _point.x + y * _point.y + z * _point.z + w * _point.w;
+#endif
+	}
 	Point3DwF OuterProduct(const Point3DwF& _point) const { return Point3DwF(y*_point.z - z * _point.y, z*_point.x - x * _point.z, x*_point.y - y * _point.x); }
 	Point3DwF LinePoint3Dw(const Point3DwF& _point, float _t)const {
 		const Point3DwF& point = _point / _point.w*w;
@@ -581,7 +597,18 @@ public:
 		return *this;
 	}
 
-	double InnerProduct(const Point3DwD& _point) const { return  x * _point.x + y * _point.y + z * _point.z + w * _point.w; }
+	double InnerProduct(const Point3DwD& _point) const { 
+#ifdef AVX2
+		union {
+			__m256d m2;
+			double ar[4];
+		};
+		m2 = _mm256_mul_pd(m, _point.m);
+		return ar[0] + ar[1] + ar[2] + ar[3];
+#else
+		return  x * _point.x + y * _point.y + z * _point.z + w * _point.w; 
+#endif
+	}
 	Point3DwD OuterProduct(const Point3DwD& _point) const { return Point3DwD(y*_point.z - z * _point.y, z*_point.x - x * _point.z, x*_point.y - y * _point.x); }
 	Point3DwD LinePoint3Dw(const Point3DwD& _point, double _t)const {
 		const Point3DwD& point = _point / _point.w*w;

@@ -46,10 +46,16 @@ public:
 		_count -= ss;
 		for (; s < _count; s += 4) {
 			__m128i a = _mm_loadu_si128((__m128i*)(_ar + s));
-			const __m256i b = _mm_set1_epi16(_value);
-			const __m256i result = _mm_cmpeq_epi16(a, b);
-			const unsigned index = _tzcnt_u32(_mm256_movemask_epi8(result)) >> 2;
-			if (index < 4)return s + index;
+			const __m128i b = _mm_set1_epi32(_value);
+			union {
+				__m128i result;
+				int ar[4];
+			};
+			result = _mm_cmpeq_epi32(a, b);
+
+			for (int i = 0; i < 4; i++) {
+				if (ar[i] == -1) return s + i;
+			}
 		}
 		return _Search(_ar + s, _value, ss);
 #else 
@@ -73,10 +79,16 @@ public:
 		_count -= ss;
 		for (; s < _count; s += 8) {
 			__m128i a = _mm_loadu_si128((__m128i*)(_ar + s));
-			const __m256i b = _mm_set1_epi16(_value);
-			const __m256i result = _mm_cmpeq_epi16(a, b);
-			const unsigned index = _tzcnt_u32(_mm256_movemask_epi8(result)) >> 1;
-			if (index < 16)return s + index;
+			const __m128i b = _mm_set1_epi16(_value);
+			union {
+				__m128i result;
+				short ar[8];
+			};
+			result = _mm_cmpeq_epi16(a, b);
+
+			for (int i = 0; i < 8; i++) {
+				if (ar[i] == -1) return s + i;
+			}
 		}
 		return _Search(_ar + s, _value, ss);
 #else 
@@ -105,10 +117,16 @@ public:
 		_count -= ss;
 		for (; s < _count; s += 2) {
 			__m128i a = _mm_loadu_si128((__m128i*)(_ar + s));
-			const __m256i b = _mm_set1_epi64x(_value);
-			const __m256i result = _mm_cmpeq_epi64(a, b);
-			const unsigned index = _tzcnt_u32(_mm256_movemask_epi8(result)) >> 3;
-			if (index < 2)return s + index;
+			const __m128i b = _mm_set1_epi64x(_value);
+			union {
+				__m128i result;
+				long long ar[2];
+			};
+			result = _mm_cmpeq_epi64(a, b);
+
+			for (int i = 0; i < 2; i++) {
+				if (ar[i] == -1) return s + i;
+			}
 		}
 		return _Search(_ar + s, _value, ss);
 #else 
@@ -189,7 +207,7 @@ public:
 		size_t ss = _count % 2;
 		_count -= ss;
 		for (size_t s = 0; s < _count; s += 2) {
-			const __m128i a = _mm_set1_epi64(_value);
+			const __m128i a = _mm_set1_epi64x(_value);
 			_mm_storeu_si128((__m128i*)(_ar + s), a);
 		}
 		return _Set(_ar + _count, _value, ss);

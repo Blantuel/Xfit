@@ -13,6 +13,14 @@ namespace Input {
 	bool IsWheelClicked();
 	bool IsWheelClick();
 	bool IsWheelClicking();
+
+#ifdef __ANDROID__
+	bool IsPointerClick(unsigned _index=0);
+	bool IsPointerClicking(unsigned _index = 0);
+	bool IsPointerClicked(unsigned _index = 0);
+
+	PointF GetPointPos(unsigned _index = 0);
+#endif
 	
 	static Tchar GetEnterChar();
 	bool IsKeyPress(unsigned char _keyCode);

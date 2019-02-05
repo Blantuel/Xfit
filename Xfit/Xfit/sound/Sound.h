@@ -12,8 +12,14 @@ struct SoundSource {
 	unsigned GetBytesPerSec()const {return samplesPerSec*nChannels*GetBytesPerSample();}
 	unsigned GetBytesPerSample() const{return bitsPerSample/8;}*/
 };
+struct SLBufferQueueItf_;
+typedef const struct SLBufferQueueItf_* const* SLBufferQueueItf;
+
 class Sound {
 	static void ThreadFunc();
+#ifdef __ANDROID__
+	static void BufferQueueCallback(SLBufferQueueItf caller, void* pContext);
+#endif
 	size_t pos;
 	
 	float volume;
@@ -25,21 +31,18 @@ class Sound {
 
 	static inline Array<Sound*> sounds;
 
-	static inline thread soundThread;
 	mutex soundMutex;
 
 	static inline bool soundExit = false;
-	static inline float masterVolume = 1.f;
 public:
 	static void Init(size_t _maxSoundLen);
 	static void Release();
-	static bool IsInited();
 
-	bool Decode(SoundSource* _data);
+	void Decode(SoundSource* _data);
 	SoundSource* GetData()const;
 	Sound();
-	static bool SetMasterVolume(float _volume);
-	static float GetMasterVolume() { return masterVolume; }
+	static void SetMute(bool _mute);
+	static void SetMasterVolume(float _volume);
 
 	void SetVolume(float _volume);
 	float GetVolume()const;
@@ -47,29 +50,12 @@ public:
 	unsigned GetLoop()const;
 	unsigned GetLoopCount()const;
 
-	unsigned GetSamplePlayPos() const;
-	static unsigned long long GetMasterPlaySpeed();
+	unsigned GetPos() const;
 	~Sound();
-	bool Play(unsigned _loop);
+	void Play(unsigned _loop);
 
-	bool SetSamplePlayPos(unsigned _pos);
-	bool Stop();
-	bool Pause();
-	bool Resume();
+	void SetPos(unsigned _pos);
+	void Stop();
+	void Pause();
+	void Resume();
 };
-#ifdef _WIN32
-namespace _System::_Sound_Windows {
-	inline HANDLE hEvent;
-
-	inline IMMDevice* soundDevice;
-	inline IMMDeviceEnumerator* soundDeviceEnumerator;
-	inline UINT32 soundBufferSize;
-
-	inline IAudioClient* soundClient = nullptr;//check sound inited too
-	inline IAudioRenderClient* soundRenderClient;
-	inline IChannelAudioVolume* soundVolume;
-	inline IAudioClock* soundClock;
-
-	inline UINT32 channelCount;
-}
-#endif

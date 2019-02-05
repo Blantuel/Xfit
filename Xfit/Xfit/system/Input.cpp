@@ -31,5 +31,19 @@ namespace Input {
 	short GetWheelScrolling() { return _System::_Windows::zScroll; }
 	void ShowCursor(bool _show) { ::ShowCursor(_show); }
 #elif __ANDROID__
+
+	bool IsPointerClick(unsigned _index/* = 0*/) { 
+		return _System::_Android::clicks[_index] == 1;
+	}
+	bool IsPointerClicking(unsigned _index/* = 0*/) {
+		return _System::_Android::clicks[_index] == 2;
+	}
+	bool IsPointerClicked(unsigned _index/* = 0*/) {
+		return _System::_Android::clicks[_index] == 3;
+	}
+
+	PointF GetPointPos(unsigned _index/* = 0*/) {
+		return _System::_Android::poses[_index];
+	}
 #endif
 }

@@ -35,6 +35,8 @@ namespace _System::_Android {
 	};
 	inline App app = {};
 	inline Engine engine = {};
+	inline unsigned char clicks[10];
+	inline PointF poses[10];
 
 	void Create(ANativeActivity* activity);
 

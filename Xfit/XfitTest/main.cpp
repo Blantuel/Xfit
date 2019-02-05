@@ -20,12 +20,12 @@ float d = 0;
 
 Image* shape;
 ImageInstance* instance;
-//Button* button;
+Button* button;
 AnimateLoopObject* sprite;
 Label* label;
 Font* font;
-//Sound* sound;
-//SoundSource soundSource;
+Sound* sound;
+SoundSource soundSource;
 TextBox* textBox;
 
 void Init() {
@@ -68,57 +68,57 @@ void Init() {
 	delete[] data;
 	delete[] data2;
 
-	//button = new Button;
-	//button->blend = nullptr;
-	//button->sampler = shape->sampler;
-	//button->collision = new RectCollision();
-	//((RectCollision*)button->collision)->rect = RectF(-0.6, -0.4, 0.1, -0.1);
+	button = new Button;
+	button->blend = nullptr;
+	button->sampler = shape->sampler;
+	button->collision = new RectCollision();
+	((RectCollision*)button->collision)->rect = RectF(-0.6, -0.4, 0.1, -0.1);
 
-	//file.Load(_T("ButtonUp.png"), false, true);
-	//size = file.GetSize();
-	//data = new char[size];
-	//file.ReadBytes(size, data);
-	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	//data2 = (unsigned*)pngConverter.GetOutputData();
-	//button->UpBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	file.Open("ButtonUp.png");
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	data2 = (unsigned*)pngConverter.GetOutputData();
+	button->UpBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	//delete[]data;
-	//delete[]data2;
-	//file.Close();
-	//file.Load(_T("ButtonOver.png"), false, true);
-	//size = file.GetSize();
-	//data = new char[size];
-	//file.ReadBytes(size, data);
-	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	//data2 = (unsigned*)pngConverter.GetOutputData();
-	//button->OverBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	delete[]data;
+	delete[]data2;
+	file.Close();
+	file.Open("ButtonOver.png");
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	data2 = (unsigned*)pngConverter.GetOutputData();
+	button->OverBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	//delete[]data;
-	//delete[]data2;
-	//file.Close();
-	//file.Load(_T("ButtonDown.png"), false, true);
-	//size = file.GetSize();
-	//data = new char[size];
-	//file.ReadBytes(size, data);
-	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	//data2 = (unsigned*)pngConverter.GetOutputData();
-	//button->DownBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	delete[]data;
+	delete[]data2;
+	file.Close();
+	file.Open("ButtonDown.png");
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	data2 = (unsigned*)pngConverter.GetOutputData();
+	button->DownBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	//delete[]data;
-	//delete[]data2;
-	//file.Close();
-	//file.Load(_T("ButtonDisable.png"), false, true);
-	//size = file.GetSize();
-	//data = new char[size];
-	//file.ReadBytes(size, data);
-	//pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
-	//data2 = (unsigned*)pngConverter.GetOutputData();
-	//button->DisableBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
+	delete[]data;
+	delete[]data2;
+	file.Close();
+	file.Open("ButtonDisable.png");
+	size = file.GetSize();
+	data = new char[size];
+	file.ReadBytes(size, data);
+	pngConverter.Decode(data, size, ImageConverter::Type::RGBA);
+	data2 = (unsigned*)pngConverter.GetOutputData();
+	button->DisableBuild(data2, pngConverter.GetWidth(), pngConverter.GetHeight(), r);
 
-	//delete[]data;
-	//delete[]data2;
-	//file.Close();
-	//button->mat = Matrix::GetMove(-0.5f,0.f);
+	delete[]data;
+	delete[]data2;
+	file.Close();
+	button->mat = Matrix::GetMove(-0.5f,0.f);
 
 	
 	sprite = new AnimateLoopObject;
@@ -189,12 +189,12 @@ void Init() {
 
 	label->mat = Matrix::GetScale(((float)width/(float)System::GetWindowWidth()), ((float)height / (float)System::GetWindowHeight()));
 
-	//Sound::Init(100);
+	Sound::Init(100);
 
-	//sound = new Sound;
+	sound = new Sound;
 
-	/*OGGConverter oggConverter;
-	file.Open("test.ogg", File::OpenMode::Read);
+	OGGConverter oggConverter;
+	file.Open("test.ogg");
 	size = file.GetSize();
 	data = new char[size];
 	file.ReadBytes(size, data);
@@ -207,7 +207,7 @@ void Init() {
 	soundSource.size = oggConverter.GetOutputSize();
 
 	sound->Decode(&soundSource);
-	sound->Play(1);*/
+	sound->Play(1);
 
 	textBox = new TextBox;
 	textBox->blend = sprite->blend;
@@ -224,8 +224,8 @@ void Update() {
 	System::Clear(false);
 	instance->Draw();
 	shape->Draw();
-	//button->Update();
-	//button->Draw();
+	button->Update();
+	button->Draw();
 	shape->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1, i);
 	instance->mat = Matrix::GetMatrix2D(0, 0, 0.5625, 1,i);
 	i += (float)System::GetDeltaTime();
@@ -239,12 +239,12 @@ void Update() {
 	System::Render();
 }
 void Activate(bool _activated, bool _minimized) {
-
+	Sound::SetMute(!_activated);
 }
 void Destroy() {
-	//delete sound;
-	//Sound::Release();
-	//delete[]soundSource.rawData;
+	delete sound;
+	Sound::Release();
+	delete[]soundSource.rawData;
 	delete label;
 	delete textBox;
 	delete font;
@@ -255,8 +255,8 @@ void Destroy() {
 	delete shape->sampler;
 	delete shape;
 	delete instance;
-	//delete button->collision;
-	//delete button;
+	delete button->collision;
+	delete button;
 }
 
 void Create() {
@@ -266,6 +266,7 @@ void Create() {
 	winInfo.windowWidth = 1280;
 	winInfo.windowShow = System::WindowShow::Default;
 
+#ifdef _WIN32
 	winInfo.title = _T("Test");
 	winInfo.windowPos.x = System::WindowDefaultPos;
 	winInfo.windowPos.y = System::WindowDefaultPos;
@@ -273,6 +274,7 @@ void Create() {
 	winInfo.maximized = false;
 	winInfo.minimized = false;
 	winInfo.resizeWindow = true;
+#endif
 
 	System::updateFuncs = Update;
 	System::activateFunc = Activate;

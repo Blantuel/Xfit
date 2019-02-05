@@ -56,8 +56,9 @@ void AnimateObject::Draw() {
 		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 		renderMode.fragProg = imgFragProg;
 	}
+	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
 #elif __ANDROID__
-	if ((version.majorVersion >= 3) && (version.minorVersion >= 1)) {
+	if (versionNumber >= 301) {
 		if (renderMode.activeShaderProg != imgVertProg) {
 			glActiveShaderProgram(progPipeline, imgVertProg);
 			renderMode.activeShaderProg = imgVertProg;
@@ -70,15 +71,16 @@ void AnimateObject::Draw() {
 			glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 			renderMode.fragProg = imgFragProg;
 		}
+		glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
 	} else {
 		if (renderMode.prog != imgProg) {
 			glUseProgram(imgProg);
 			renderMode.prog = imgProg;
 		}
+		glUniformMatrix4fv(img::matUniform, 1, GL_FALSE, mat.e);
 	}
 #endif
 
-	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
 
 	glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[cFrame]);
 
@@ -123,7 +125,7 @@ void AnimateObject::Build(unsigned _len, const void *const* _datas, const unsign
 
 		glBindBuffer(GL_ARRAY_BUFFER, openGL.posUVs[i]);
 #ifdef _WIN32
-		if ((version.majorVersion >= 4) && (version.minorVersion >= 4)) {
+		if (glBufferStorage) {
 			glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
 		} else {
 			glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);

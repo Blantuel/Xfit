@@ -138,7 +138,27 @@ namespace _System::_Android {
 
 	int32_t engine_handle_input(AInputEvent* _event) {
 		if (AInputEvent_getType(_event) == AINPUT_EVENT_TYPE_MOTION) {
+			const auto action = AMotionEvent_getAction(_event);
+			const auto actionType = action & AMOTION_EVENT_ACTION_MASK;
+			if (actionType == AMOTION_EVENT_ACTION_DOWN) {
+				clicks[0] = 1;
+			} else if (actionType == AMOTION_EVENT_ACTION_UP) {
+				clicks[0] = 3;
+			} else if (actionType == AMOTION_EVENT_ACTION_POINTER_DOWN) {
+				const auto pointerId = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+				if(pointerId<10)clicks[pointerId] = 1;
+			} else if (actionType == AMOTION_EVENT_ACTION_POINTER_UP) {
+				const auto pointerId = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+				if (pointerId < 10)clicks[pointerId] = 3;
+			}
+			for (unsigned i = 0; i < 10; i++) {
+				if ((clicks[i] == 1) || (clicks[i] == 2)) {
+					poses[i].x = (float)AMotionEvent_getX(_event, i) / (float)_System::_Android::engine.width * 2.f - 1.f;
+					poses[i].y = (float)AMotionEvent_getY(_event, i) / (float)_System::_Android::engine.height * 2.f - 1.f;
+				}
+			}
 			return 1;
+			
 		}
 		return 0;
 	}
@@ -159,6 +179,10 @@ namespace _System::_Android {
 		void (*source)() = nullptr;
 
 		while(true) {
+			for (unsigned i = 0; i < 10; i++) {
+				if (clicks[i] == 1)clicks[i] = 2;
+				else if (clicks[i] == 3)clicks[i] = 0;
+			}
 			while ((ident = ALooper_pollAll(engine.animating ? 0 : -1, NULL, &events, (void**)&source)) >= 0) {
 				if (source != nullptr) source();
 
@@ -167,7 +191,7 @@ namespace _System::_Android {
 				}
 				if (app.destroyRequested)goto exitLabel;
 			}
-			if (engine.animating&& app.inited) {
+			if (engine.animating && app.inited) {
 				_System::_Loop::Loop();
 			}
 		}
@@ -226,12 +250,14 @@ namespace _System::_Android {
 
 		engine.display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
 
-		eglInitialize(engine.display, 0, 0);
+		EGLint major;
+		EGLint minor;
+		eglInitialize(engine.display, &major, &minor);
 
 		eglChooseConfig(engine.display, attribs, &config, 1, &numConfigs);
 
 		int attrib_list[] = {
-			EGL_CONTEXT_CLIENT_VERSION, 3,
+			EGL_CONTEXT_CLIENT_VERSION,3,
 			EGL_NONE
 		};
 		engine.context = eglCreateContext(engine.display, config, NULL, attrib_list);
@@ -286,9 +312,11 @@ namespace _System::_Android {
 			break;
 		case APP_CMD_GAINED_FOCUS:
 			engine.animating = 1;
+			if(System::activateFunc)System::activateFunc(true, false);
 			break;
 		case APP_CMD_LOST_FOCUS:
 			engine.animating = 0;
+			if(System::activateFunc)System::activateFunc(false, false);
 			break;
 		}
 	}

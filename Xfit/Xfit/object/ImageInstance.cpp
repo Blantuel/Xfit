@@ -44,8 +44,9 @@ void ImageInstance::Draw() {
 		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 		renderMode.fragProg = imgFragProg;
 	}
+	glUniformMatrix4fv(imgInsVert::matUniform, 1, GL_FALSE, mat.e);
 #elif __ANDROID__
-	if ((version.majorVersion >= 3) && (version.minorVersion >= 1)) {
+	if (versionNumber >= 301) {
 		if (renderMode.activeShaderProg != imgInsVertProg) {
 			glActiveShaderProgram(progPipeline, imgInsVertProg);
 			renderMode.activeShaderProg = imgInsVertProg;
@@ -58,15 +59,16 @@ void ImageInstance::Draw() {
 			glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 			renderMode.fragProg = imgFragProg;
 		}
+		glUniformMatrix4fv(imgInsVert::matUniform, 1, GL_FALSE, mat.e);
 	} else {
 		if (renderMode.prog != imgInsProg) {
 			glUseProgram(imgInsProg);
 			renderMode.prog = imgInsProg;
 		}
-		}
+		glUniformMatrix4fv(imgIns::matUniform, 1, GL_FALSE, mat.e);
+	}
 #endif
 
-	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
 
 	glBindBuffer(GL_ARRAY_BUFFER, openGL.posUV);
 
@@ -128,7 +130,7 @@ void ImageInstance::Build(const void* _data, unsigned _width, unsigned _height, 
 	_System::PosUV2D vertexP[4] = { {_rect.GetPoint1(),_UVs[0]},{_rect.GetPoint2(),_UVs[1] },{_rect.GetPoint3(), _UVs[2]},{_rect.GetPoint4(), _UVs[3]} };
 	glBindBuffer(GL_ARRAY_BUFFER, openGL.posUV);
 #ifdef _WIN32
-	if ((version.majorVersion >= 4) && (version.minorVersion >= 4)) {
+	if (glBufferStorage) {
 		glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
 	} else {
 		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
@@ -153,7 +155,7 @@ void ImageInstance::BuildInstance(unsigned _maxInsNum, unsigned _insNum, Matrix*
 	insNum = _insNum;
 	if (_maxInsNum == _insNum) {
 #ifdef _WIN32
-		if ((version.majorVersion >= 4) && (version.minorVersion >= 4)) {
+		if (glBufferStorage) {
 			glBufferStorage(GL_ARRAY_BUFFER, _maxInsNum * sizeof(Matrix), _insMatries, GL_DYNAMIC_STORAGE_BIT);
 		} else {
 			glBufferData(GL_ARRAY_BUFFER, _maxInsNum * sizeof(Matrix), _insMatries, GL_DYNAMIC_DRAW);
@@ -163,7 +165,7 @@ void ImageInstance::BuildInstance(unsigned _maxInsNum, unsigned _insNum, Matrix*
 #endif
 	} else {
 #ifdef _WIN32
-		if ((version.majorVersion >= 4) && (version.minorVersion >= 4)) {
+		if (glBufferStorage) {
 			glBufferStorage(GL_ARRAY_BUFFER, _maxInsNum * sizeof(Matrix), nullptr, GL_DYNAMIC_STORAGE_BIT);
 		} else {
 			glBufferData(GL_ARRAY_BUFFER, _maxInsNum * sizeof(Matrix), nullptr, GL_DYNAMIC_DRAW);

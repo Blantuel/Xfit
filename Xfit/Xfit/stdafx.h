@@ -16,7 +16,7 @@
 #if defined(_M_AMD64) || defined(__amd64__)
 
 #define SSE4 1
-#define AVX2 1
+//#define AVX2 1
 //#define AVX512 1
 
 #endif
@@ -116,7 +116,6 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #include <GLES3/gl31.h>
-#include <GLES3/gl32.h>
 
 #elif VULKAN
 #define VK_USE_PLATFORM_ANDROID_KHR 1
@@ -124,7 +123,7 @@
 
 #ifdef _DEBUG
 
-#define PRINTMSG(...) ((void)__android_log_print(ANDROID_LOG_INFO, "Xfit", __VA_ARGS__))
+#define PRINTMSG(...) ((void)__android_log_print(ANDROID_LOG_INFO, "XfitMSG", __VA_ARGS__))
 
 #else
 

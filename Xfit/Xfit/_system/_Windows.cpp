@@ -10,26 +10,30 @@ namespace _System::_Windows {
 	void Release() {}
 
 	bool sizeInited = false;//WM_SIZE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
+	bool activateInited = false;//WM_ACTIVATE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
 
 	LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
 		switch (_message) {
 		case WM_ACTIVATE:
-			_Windows::pause = HIWORD(_wParam);
-			_Windows::activated = (LOWORD(_wParam) != WA_INACTIVE);
-			if (System::GetScreenMode() == System::ScreenMode::Fullscreen) {
-				_Windows::pause = !_Windows::activated;
-				if (_Windows::activated) {
-					if (ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN| CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
-					{
+			if (activateInited) {
+				_Windows::pause = HIWORD(_wParam);
+				_Windows::activated = (LOWORD(_wParam) != WA_INACTIVE);
+				if (System::GetScreenMode() == System::ScreenMode::Fullscreen) {
+					_Windows::pause = !_Windows::activated;
+					if (_Windows::activated) {
+						if (ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN | CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
+						{
+						}
+					} else {
+						if (ChangeDisplaySettings(&restoreMode, CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
+						{
+						}
+						CloseWindow(hWnd);
 					}
-				} else {
-					if (ChangeDisplaySettings(&restoreMode, CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
-					{
-					}
-					CloseWindow(hWnd);
 				}
+				System::activateFunc(_Windows::activated, _Windows::pause);
 			}
-			System::activateFunc(_Windows::activated, _Windows::pause);
+			activateInited = true;
 			return 0;
 		case WM_SIZE:
 			if ((System::GetScreenMode() != System::ScreenMode::Fullscreen) && (_wParam != SIZE_MINIMIZED) && sizeInited) {
@@ -134,7 +138,12 @@ namespace _System::_Windows {
 
 		hWnd = CreateWindowEx(exStyle,wc.lpszClassName, _info->title.data(), style, _info->windowPos.x, _info->windowPos.y, _info->windowWidth, _info->windowHeight, nullptr, nullptr, hInstance, nullptr);
 		if (hWnd == nullptr);
+
 		ShowWindow(hWnd, (int)_info->windowShow);
+
+		if (screenMode == System::ScreenMode::Fullscreen)ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN | CDS_RESET);
+		_Windows::pause = false;
+		_Windows::activated = true;
 
 		hdc = GetDC(hWnd);
 	}

@@ -10,6 +10,7 @@ namespace _System::_OpenGL {
 	inline unsigned msaaCount, msaaQuality;
 	inline float refleshRate;
 	inline System::RendererVersion version = { System::RendererName::None,0,0 };
+	inline unsigned versionNumber;
 
 	void Release();
 
@@ -69,10 +70,10 @@ namespace _System::_OpenGL {
 	};
 
 	inline RenderMode renderMode = {
-		-1,
-		-1,
-		-1,
-		-1,
+		INT_MAX,
+		INT_MAX,
+		INT_MAX,
+		INT_MAX,
 		nullptr,
 		nullptr,
 		USHRT_MAX,

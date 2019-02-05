@@ -1,112 +1,235 @@
 #include "Sound.h"
 #include "../_system/_Windows.h"
+#include "../system/Event.h"
+#include "../data/Memory.h"
 
-unsigned long long Sound::GetMasterPlaySpeed() {
+#ifdef __ANDROID__
+#include <SLES/OpenSLES.h>
+#endif
+
+static thread soundThread;
+
 #ifdef _WIN32
-	UINT64 speedFr;
-	HRESULT hr = _System::_Sound_Windows::soundClock->GetFrequency(&speedFr);
-	return (unsigned long long)speedFr;
+static HANDLE hEvent;
+
+static IMMDevice* soundDevice;
+static IMMDeviceEnumerator* soundDeviceEnumerator;
+static UINT32 soundBufferSize;
+
+static IAudioClient* soundClient;
+static IAudioRenderClient* soundRenderClient;
+static IChannelAudioVolume* soundVolume;
+static IAudioClock* soundClock;
+
+static float masterVolume;
+static bool mute = false;
+
 #elif __ANDROID__
+
+static SLObjectItf engineObject;
+static SLEngineItf engine;
+
+static SLObjectItf outputMixObject;
+static SLVolumeItf volumeItf;
+
+static SLDataSource audioSource;
+static SLDataLocator_BufferQueue bufferQueue;
+static SLDataSink audioSink;
+static SLDataLocator_OutputMix locatorOutputMix;
+
+static SLObjectItf playerObject;
+static SLPlayItf playItf;
+static SLBufferQueueItf bufferQueueItf;
+static SLBufferQueueState bufferQueueState;
+
+static SLDataFormat_PCM format;
+
+static constexpr unsigned MAX_NUMBER_INTERFACES = 2;
+
+static SLboolean required[MAX_NUMBER_INTERFACES];
+static SLInterfaceID iidArray[MAX_NUMBER_INTERFACES];
+
+static constexpr unsigned BUFFER_LEN = 2048;
+
+static Event<true,false> soundEvent;
+
+short buffer[BUFFER_LEN / 2];
+
+SLmillibel maxLevel;
+
+#endif
+
+
+void Sound::SetMute(bool _mute) {
+#ifdef _WIN32
+	float volumes[2];
+	mute = _mute;
+	if (mute) {
+		volumes[0] = 0.f;
+		volumes[1] = 0.f;
+	} else {
+		volumes[0] = masterVolume;
+		volumes[1] = masterVolume;
+	}
+	soundVolume->SetAllVolumes(2, volumes,nullptr);
+#elif __ANDROID__
+	(*volumeItf)->SetMute(volumeItf,(SLboolean)_mute);
 #endif
 }
-bool Sound::IsInited() { 
+void Sound::SetMasterVolume(float _volume) {
+#ifdef _DEBUG
+	if (_volume<0.f || _volume>1.f);
+#endif
 #ifdef _WIN32
-	return (bool)_System::_Sound_Windows::soundClient; 
+	masterVolume = _volume;
+	if (!mute) {
+		float volumes[2];
+		volumes[0] = masterVolume;
+		volumes[1] = masterVolume;
+		soundVolume->SetAllVolumes(2, volumes, nullptr);
+	}
 #elif __ANDROID__
+	if (_volume == 0.f) {
+		(*volumeItf)->SetVolumeLevel(volumeItf, SL_MILLIBEL_MIN);
+	} else {
+		(*volumeItf)->SetVolumeLevel(volumeItf, maxLevel - (SLmillibel)(log10f(1.f / _volume) * 10000));//1000mdb = 1db
+	}
 #endif
 }
-bool Sound::Decode(SoundSource* _data) {
-	Stop();
+
+void Sound::Decode(SoundSource* _data) {
+#ifdef _DEBUG
+	if (playing);
+	if (paused);
+#endif
+	soundMutex.lock();
 	data = _data;
-	return true;
+	pos = 0;
+	playing = false;
+	paused = false;
+	soundMutex.unlock();
 }
-SoundSource* Sound::GetData()const { return data; }
-Sound::Sound() :data(nullptr), pos(0), volume(1.f), playing(false), paused(false), loop(1), loopCount(0) { sounds.InsertLast(this); }
+SoundSource* Sound::GetData()const {
+#ifdef _DEBUG
+	if (!data);
+#endif
+	return data; 
+}
+#ifdef _DEBUG
+Sound::Sound() :volume(1.f), playing(false), paused(false), data(nullptr) { sounds.InsertLast(this); }
+#else
+Sound::Sound() : volume(1.f), playing(false) { sounds.InsertLast(this); }
+#endif
+
 void Sound::SetVolume(float _volume) { volume = _volume; }
 float Sound::GetVolume()const { return volume; }
-unsigned Sound::GetLoop()const { return loop; }
-unsigned Sound::GetLoopCount()const { return loopCount; }
+unsigned Sound::GetLoop()const {
+#ifdef _DEBUG
+	if (!playing&&!paused);
+#endif
+	return loop; 
+}
+unsigned Sound::GetLoopCount()const {
+#ifdef _DEBUG
+	if (!playing && !paused);
+#endif
+	return loopCount; 
+}
 
-unsigned Sound::GetSamplePlayPos() const { return pos; }
+unsigned Sound::GetPos() const {
+#ifdef _DEBUG
+	if (!data);
+#endif
+	return pos; 
+}
 
 Sound::~Sound() {
 	soundMutex.lock();
 	sounds.EraseIndex(sounds.Search(this));
 	soundMutex.unlock();
 }
-bool Sound::Play(unsigned _loop) {
-	if (playing || paused)return false;
+
+void Sound::Play(unsigned _loop) {
+#ifdef _DEBUG
+	if (!data);
+	if (playing);
+	if (paused);
+#endif
 	soundMutex.lock();
 	loop = _loop;
+	loopCount = 0;
 	playing = true;
 
 	soundMutex.unlock();
-	return true;
 }
-
-bool Sound::SetSamplePlayPos(unsigned _pos) {
+void Sound::SetPos(unsigned _pos) {
+#ifdef _DEBUG
+	if (!data);
+	if (_pos >= data->size);
+#endif
 	soundMutex.lock();
 	pos = _pos;
 	soundMutex.unlock();
-	return true;
 }
-bool Sound::Stop() {
-	if ((!playing) && (!paused))return false;
+void Sound::Stop() {
+#ifdef _DEBUG
+	if (!playing && !paused);
+#endif
 	soundMutex.lock();
 
 	playing = false;
 	paused = false;
-	loopCount = 0;
 	pos = 0;
 	soundMutex.unlock();
-	return true;
 }
-bool Sound::Pause() {
-	if (playing && (!paused)) {
-		soundMutex.lock();
-		playing = false;
-		paused = true;
-		soundMutex.unlock();
-		return true;
-	}
-	return false;
+void Sound::Pause() {
+#ifdef _DEBUG
+	if (paused);
+	if (!playing && !paused);
+#endif
+	soundMutex.lock();
+	playing = false;
+	paused = true;
+	soundMutex.unlock();
 }
-bool Sound::Resume() {
-	if ((!playing) && paused) {
-		soundMutex.lock();
-		playing = true;
-		paused = false;
-		soundMutex.unlock();
-		return true;
-	}
-	return false;
+void Sound::Resume() {
+#ifdef _DEBUG
+	if (playing);
+	if (!playing && !paused);
+#endif
+	soundMutex.lock();
+	playing = true;
+	paused = false;
+	soundMutex.unlock();
 }
-
-void Sound::ThreadFunc() {
 #ifdef _WIN32
-	_System::_Sound_Windows::soundClient->Start();
+void Sound::ThreadFunc() {
+	soundClient->Start();
 	while (!soundExit) {
-		unsigned soundDataSize;
-		unsigned soundDataSizeMulBit;
 		unsigned soundRemain;
 
 		unsigned padding;
-		_System::_Sound_Windows::soundClient->GetCurrentPadding(&padding);
-		soundDataSize = _System::_Sound_Windows::soundBufferSize - padding;
-		soundDataSizeMulBit = soundDataSize * 2;//채널 수를 곱함.
+		soundClient->GetCurrentPadding(&padding);
+		const unsigned soundDataSize = soundBufferSize - padding;
+		const unsigned soundDataSizeMulBit = soundDataSize * 2;//채널 수를 곱함.
+		const unsigned soundDataSizeByte = soundDataSizeMulBit * 2;//비트 수를 곱함.
 		short* bufferData;
-		_System::_Sound_Windows::soundRenderClient->GetBuffer(soundDataSize, (BYTE**)&bufferData);//soundDataSize는 적용할 데이터 크기(곱 채널,비트수하면 바이트수 나옴.)
+		soundRenderClient->GetBuffer(soundDataSize, (BYTE**)&bufferData);//soundDataSize는 적용할 데이터 크기(곱 채널,비트수하면 바이트수 나옴.)
 		Memory::Set(bufferData, (short)0, (size_t)soundDataSizeMulBit);
 		
 		for (auto sound : sounds) {
+			if (!sound->playing)continue;
 			sound->soundMutex.lock();
-			if (!sound->playing) {
-				sound->soundMutex.unlock();
-				continue;
-			}
-			const short*const sData = (short*)sound->data->rawData + sound->pos * 2;
-			if (sound->data->size  < ((sound->pos + soundDataSize) * 2*2)) {
-				soundRemain = (sound->data->size - sound->pos * 2*2) / 2;
+			const short*const sData = (short*)sound->data->rawData + sound->pos / 2;
+			sound->pos += soundDataSizeByte;
+			if (sound->data->size-1 <= sound->pos) {
+				soundRemain = (sound->data->size - (sound->pos - soundDataSizeByte)) / 2;
+				sound->loopCount++;
+				sound->pos = 0;
+				if (sound->loopCount == sound->loop) {
+					sound->playing = false;
+					sound->loopCount = 0;
+				}
 				if (sound->volume < 1.f) {
 					for (size_t j = 0; j < soundRemain; j++) {
 						const short soundShortData = (short)((float)sData[j] * sound->volume);
@@ -123,13 +246,7 @@ void Sound::ThreadFunc() {
 						else bufferData[j] += sData[j];
 					}
 				}
-				sound->loopCount++;
-				sound->pos = 0;
-				if (sound->loopCount == sound->loop) {
-					sound->playing = false;
-					sound->loopCount = 0;
-				}
-			} else {
+			} else {	
 				if (sound->volume < 1.f) {
 					for (size_t j = 0; j < soundDataSizeMulBit; j++) {
 						const short soundShortData = (short)((float)sData[j] * sound->volume);
@@ -146,36 +263,104 @@ void Sound::ThreadFunc() {
 						else bufferData[j] += sData[j];
 					}
 				}
-				sound->pos += soundDataSize;
 			}
 			sound->soundMutex.unlock();
 		}
-		_System::_Sound_Windows::soundRenderClient->ReleaseBuffer(soundDataSize, 0);
+		if (soundExit)break;
+		soundRenderClient->ReleaseBuffer(soundDataSize, 0);
 
-		WaitForSingleObject(_System::_Sound_Windows::hEvent, INFINITE);
+		WaitForSingleObject(hEvent, INFINITE);
 	}
-	CloseHandle(_System::_Sound_Windows::hEvent);
-	_System::_Sound_Windows::soundClient->Stop();
-	_System::_Sound_Windows::soundClient->Release();
-	_System::_Sound_Windows::soundRenderClient->Release();
-	_System::_Sound_Windows::soundVolume->Release();
-	_System::_Sound_Windows::soundClock->Release();
-	_System::_Sound_Windows::soundDevice->Release();
-	_System::_Sound_Windows::soundDeviceEnumerator->Release();
+	CloseHandle(hEvent);
+	soundClient->Stop();
+	soundClient->Release();
+	soundRenderClient->Release();
+	soundVolume->Release();
+	soundClock->Release();
+	soundDevice->Release();
+	soundDeviceEnumerator->Release();
 	CoUninitialize();
-	_System::_Sound_Windows::soundClient = nullptr;
-#elif __ANDROID__
-#endif
 	sounds.Free();
 }
+#elif __ANDROID__
+void Sound::ThreadFunc() {
+	unsigned soundRemain;
+	while (!soundExit) {
+		Memory::Set(buffer, 0, BUFFER_LEN/2);
+
+		for (auto sound : sounds) {
+			if (!sound->playing)continue;
+			sound->soundMutex.lock();
+			const short* const sData = (short*)sound->data->rawData + sound->pos / 2;
+			sound->pos += BUFFER_LEN;
+			if (sound->data->size-1 <= sound->pos) {
+				soundRemain = (sound->data->size - (sound->pos - BUFFER_LEN)) / 2;
+				sound->loopCount++;
+				sound->pos = 0;
+				if (sound->loopCount == sound->loop) {
+					sound->playing = false;
+					sound->loopCount = 0;
+				}
+				if (sound->volume < 1.f) {
+					for (size_t j = 0; j < soundRemain; j++) {
+						const short soundShortData = (short)((float)sData[j] * sound->volume);
+						const int totalShortSoundData = (int)buffer[j] + (int)soundShortData;
+						if (totalShortSoundData > SHRT_MAX) buffer[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) buffer[j] = SHRT_MIN;
+						else buffer[j] += soundShortData;
+					}
+				} else {
+					for (size_t j = 0; j < soundRemain; j++) {
+						const int totalShortSoundData = (int)buffer[j] + (int)sData[j];
+						if (totalShortSoundData > SHRT_MAX) buffer[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) buffer[j] = SHRT_MIN;
+						else buffer[j] += sData[j];
+					}
+				}
+			} else {
+				
+				if (sound->volume < 1.f) {
+					for (size_t j = 0; j < BUFFER_LEN / 2; j++) {
+						const short soundShortData = (short)((float)sData[j] * sound->volume);
+						const int totalShortSoundData = (int)buffer[j] + (int)soundShortData;
+						if (totalShortSoundData > SHRT_MAX) buffer[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN) buffer[j] = SHRT_MIN;
+						else buffer[j] += soundShortData;
+					}
+				} else {
+					for (size_t j = 0; j < BUFFER_LEN / 2; j++) {
+						const int totalShortSoundData = (int)buffer[j] + (int)sData[j];
+						if (totalShortSoundData > SHRT_MAX)buffer[j] = SHRT_MAX;
+						else if (totalShortSoundData < SHRT_MIN)buffer[j] = SHRT_MIN;
+						else buffer[j] += sData[j];
+					}
+				}
+			}
+			sound->soundMutex.unlock();
+		}
+		(*bufferQueueItf)->Enqueue(bufferQueueItf, buffer, BUFFER_LEN);
+
+		if (soundExit)break;
+		soundEvent.Wait();
+	}
+	(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_STOPPED);
+	(*playerObject)->Destroy(playerObject);
+	(*outputMixObject)->Destroy(outputMixObject);
+	(*engineObject)->Destroy(engineObject);
+	sounds.Free();
+}
+void Sound::BufferQueueCallback(SLBufferQueueItf caller, void* pContext) {
+	soundEvent.Set();
+}
+#endif
 void Sound::Init(size_t _maxSoundLen) {//반드시 44100,2채널 16비트여야함.
+	sounds.Alloc(_maxSoundLen);
 #ifdef _WIN32
 	CoInitializeEx(0, COINIT_MULTITHREADED);
-	sounds.Alloc(_maxSoundLen);
 
-	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (void**)&_System::_Sound_Windows::soundDeviceEnumerator);
-	hr = _System::_Sound_Windows::soundDeviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &_System::_Sound_Windows::soundDevice);
-	hr = _System::_Sound_Windows::soundDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, nullptr, (void**)&_System::_Sound_Windows::soundClient);
+	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (void**)&soundDeviceEnumerator);
+	hr = soundDeviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &soundDevice);
+	hr = soundDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, nullptr, (void**)&soundClient);
 
 	WAVEFORMATEXTENSIBLE soundFormat;
 	soundFormat.Format.cbSize = 22;
@@ -190,24 +375,77 @@ void Sound::Init(size_t _maxSoundLen) {//반드시 44100,2채널 16비트여야함.
 	soundFormat.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
 
 	//100000 == 0.01 second;
-	hr = _System::_Sound_Windows::soundClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_RATEADJUST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 100000, 0,
+	hr = soundClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_RATEADJUST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 100000, 0,
 		(WAVEFORMATEX*)&soundFormat, nullptr);
-	hr = _System::_Sound_Windows::soundClient->GetBufferSize(&_System::_Sound_Windows::soundBufferSize);
-	hr = _System::_Sound_Windows::soundClient->GetService(__uuidof(IAudioRenderClient), (void**)&_System::_Sound_Windows::soundRenderClient);
-	hr = _System::_Sound_Windows::soundClient->GetService(__uuidof(IChannelAudioVolume), (void**)&_System::_Sound_Windows::soundVolume);
-	hr = _System::_Sound_Windows::soundClient->GetService(__uuidof(IAudioClock), (void**)&_System::_Sound_Windows::soundClock);
-	hr = _System::_Sound_Windows::soundVolume->GetChannelCount(&_System::_Sound_Windows::channelCount);
+	hr = soundClient->GetBufferSize(&soundBufferSize);
+	hr = soundClient->GetService(__uuidof(IAudioRenderClient), (void**)&soundRenderClient);
+	hr = soundClient->GetService(__uuidof(IChannelAudioVolume), (void**)&soundVolume);
+	hr = soundClient->GetService(__uuidof(IAudioClock), (void**)&soundClock);
 
-	_System::_Sound_Windows::hEvent = CreateEvent(nullptr, false, false, nullptr);
+	SetMasterVolume(1.f);
 
-	hr = _System::_Sound_Windows::soundClient->SetEventHandle(_System::_Sound_Windows::hEvent);
+	hEvent = CreateEvent(nullptr, false, false, nullptr);
+
+	hr = soundClient->SetEventHandle(hEvent);
 #elif __ANDROID__
-#endif
+	slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr);
 
+	(*engineObject)->Realize(engineObject, SL_BOOLEAN_FALSE);
+
+	(*engineObject)->GetInterface(engineObject, SL_IID_ENGINE, &engine);
+
+	(*engine)->CreateOutputMix(engine, &outputMixObject,0,nullptr,nullptr);
+
+	(*outputMixObject)->Realize(outputMixObject, SL_BOOLEAN_FALSE);
+
+	bufferQueue.locatorType = SL_DATALOCATOR_BUFFERQUEUE;
+	bufferQueue.numBuffers = 2;
+
+	
+	format.formatType = SL_DATAFORMAT_PCM;
+	format.numChannels = 2;
+	format.samplesPerSec = SL_SAMPLINGRATE_44_1;
+	format.bitsPerSample = SL_PCMSAMPLEFORMAT_FIXED_16;
+	format.containerSize = 16;
+	format.channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
+	format.endianness = SL_BYTEORDER_LITTLEENDIAN;
+
+	audioSource.pFormat = (void*)&format;
+	audioSource.pLocator = (void*)&bufferQueue;
+
+	locatorOutputMix.locatorType = SL_DATALOCATOR_OUTPUTMIX;
+	locatorOutputMix.outputMix = outputMixObject;
+
+	audioSink.pLocator = (void*)&locatorOutputMix;
+	audioSink.pFormat = nullptr;
+	
+	iidArray[0] = SL_IID_BUFFERQUEUE;
+	required[0] = SL_BOOLEAN_TRUE;
+	iidArray[1] = SL_IID_VOLUME;
+	required[1] = SL_BOOLEAN_TRUE;
+
+	(*engine)->CreateAudioPlayer(engine, &playerObject, &audioSource, &audioSink, 2, iidArray, required);
+
+	(*playerObject)->Realize(playerObject, SL_BOOLEAN_FALSE);
+
+	(*playerObject)->GetInterface(playerObject, SL_IID_VOLUME, (void*)& volumeItf);
+
+	(*volumeItf)->GetMaxVolumeLevel(volumeItf, &maxLevel);
+
+	(*playerObject)->GetInterface(playerObject, SL_IID_PLAY, (void*)&playItf);
+
+	(*playerObject)->GetInterface(playerObject, SL_IID_BUFFERQUEUE, (void*)&bufferQueueItf);
+
+	(*bufferQueueItf)->RegisterCallback(bufferQueueItf, BufferQueueCallback, nullptr);
+
+	Memory::Set(buffer, 0, BUFFER_LEN / 2);
+	(*bufferQueueItf)->Enqueue(bufferQueueItf, buffer,BUFFER_LEN);
+
+	(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_PLAYING);
+#endif
 	soundThread = thread(Sound::ThreadFunc);
 }
 void Sound::Release() {
 	soundExit = true;
 	soundThread.join();
-
 }

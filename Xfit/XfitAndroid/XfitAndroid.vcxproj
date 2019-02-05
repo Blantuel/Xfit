@@ -65,6 +65,7 @@
     <ClCompile Include="..\Xfit\text\Label.cpp" />
     <ClCompile Include="..\Xfit\text\Text.cpp" />
     <ClCompile Include="..\Xfit\text\Textbox.cpp" />
+    <ClCompile Include="..\Xfit\time\Time.cpp" />
     <ClCompile Include="..\Xfit\view\Viewport.cpp" />
     <ClCompile Include="..\Xfit\_system\_Android.cpp" />
     <ClCompile Include="..\Xfit\_system\_Loop.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="..\Xfit\text\Label.h" />
     <ClInclude Include="..\Xfit\text\Text.h" />
     <ClInclude Include="..\Xfit\text\TextBox.h" />
+    <ClInclude Include="..\Xfit\time\Time.h" />
     <ClInclude Include="..\Xfit\view\Camera3D.h" />
     <ClInclude Include="..\Xfit\view\Viewport.h" />
     <ClInclude Include="..\Xfit\_system\_Android.h" />
@@ -145,7 +147,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-27</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
@@ -159,7 +161,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x86'" Label="Configuration">
@@ -173,7 +175,7 @@
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
     <PlatformToolset>Clang_5_0</PlatformToolset>
-    <AndroidAPILevel>android-26</AndroidAPILevel>
+    <AndroidAPILevel>android-23</AndroidAPILevel>
     <UseOfStl>c++_static</UseOfStl>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM64'" Label="Configuration">
@@ -237,8 +239,9 @@
       <CLanguageStandard>c11</CLanguageStandard>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <AdditionalIncludeDirectories>$(VULKAN_SDK)/Include;../Freetype/include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <EnableNeonCodegen>true</EnableNeonCodegen>
+      <EnableNeonCodegen>false</EnableNeonCodegen>
       <ExceptionHandling>Enabled</ExceptionHandling>
+      <AdditionalOptions>-mavx2 %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">

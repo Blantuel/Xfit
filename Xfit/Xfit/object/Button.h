@@ -21,6 +21,10 @@ protected:
 	virtual void ButtonOver(PointF _mousePos) {}
 	virtual void ButtonDown(PointF _mousePos) {}
 	virtual void ButtonUp(PointF _mousePos) {}
+
+#ifdef __ANDROID__
+	int clickIndex;
+#endif
 public:
 	Collision* collision;
 	Sampler * sampler;

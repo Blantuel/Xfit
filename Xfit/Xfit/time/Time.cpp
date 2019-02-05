@@ -12,5 +12,8 @@ double Time::GetTime() {
 	QueryPerformanceCounter(&time);
 
 	return (double)time.QuadPart / (double)frequency.QuadPart;
+#elif __ANDROID__
+	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &tsp);
+	return tsp.tv_nsec/1000000000.0+(double)tsp.tv_sec;
 #endif
 }

@@ -10,6 +10,7 @@ using namespace _System::_OpenGL;
 
 
 void Button::DrawImage(GLuint _posUV, GLuint _texture) {
+#ifdef _WIN32
 	if (renderMode.activeShaderProg != imgVertProg) {
 		glActiveShaderProgram(progPipeline, imgVertProg);
 		renderMode.activeShaderProg = imgVertProg;
@@ -22,12 +23,35 @@ void Button::DrawImage(GLuint _posUV, GLuint _texture) {
 		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 		renderMode.fragProg = imgFragProg;
 	}
-
 	glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
+#elif __ANDROID__
+	if (versionNumber >= 301) {
+		if (renderMode.activeShaderProg != imgVertProg) {
+			glActiveShaderProgram(progPipeline, imgVertProg);
+			renderMode.activeShaderProg = imgVertProg;
+		}
+		if (renderMode.vertProg != imgVertProg) {
+			glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, imgVertProg);
+			renderMode.vertProg = imgVertProg;
+		}
+		if (renderMode.fragProg != imgFragProg) {
+			glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
+			renderMode.fragProg = imgFragProg;
+		}
+		glUniformMatrix4fv(imgVert::matUniform, 1, GL_FALSE, mat.e);
+	} else {
+		if (renderMode.prog != imgProg) {
+			glUseProgram(imgProg);
+			renderMode.prog = imgProg;
+		}
+		glUniformMatrix4fv(img::matUniform, 1, GL_FALSE, mat.e);
+	}
+#endif
 
 	glBindBuffer(GL_ARRAY_BUFFER, _posUV);
 
-	glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(_System::PosUV2D), (void*)offsetof(_System::PosUV2D, UV));
 
 	if (renderMode.divisorSlot[0]) {
 		glVertexAttribDivisor(0, 0);
@@ -53,6 +77,9 @@ Button::Button() :state(State::UP),buttonOver(nullptr),buttonDown(nullptr),butto
 	openGL.overPosUV = 0;
 	openGL.downPosUV = 0;
 	openGL.disablePosUV = 0;
+#ifdef __ANDROID__
+	clickIndex = -1;
+#endif
 }
 void Button::Disible(bool _on) {
 	if (_on) state = State::DISABLE;
@@ -83,6 +110,7 @@ void Button::Update() {
 #ifdef _DEBUG
 		if (!collision);
 #endif
+#ifdef _WIN32
 		PointF mousePos = Input::GetMousePos();
 		if (collision->HitTest(mousePos)) {
 			if (Input::IsLMouseClick()) {
@@ -101,6 +129,33 @@ void Button::Update() {
 		} else {
 			state = State::UP;
 		}
+#elif __ANDROID__
+		if (clickIndex >= 0) {
+			PointF clickPos = Input::GetPointPos(clickIndex);
+			if (collision->HitTest(clickPos)) {
+				if (Input::IsPointerClicked(clickIndex)) {
+					state = State::UP;
+					clickIndex = -1;
+				}
+			} else {
+				state = State::UP;
+				clickIndex = -1;
+			}
+		} else {
+			for (unsigned i = 0; i < 10; i++) {
+				if (Input::IsPointerClick(i)) {
+					PointF clickPos = Input::GetPointPos(i);
+					if (collision->HitTest(clickPos)) {
+						clickIndex = (int)i;
+						state = State::DOWN;
+						if (buttonDown)buttonDown(this, clickPos);
+						ButtonDown(clickPos);
+						break;
+					}
+				}
+			}
+		}
+#endif
 	}
 }
 void Button::Draw() {
@@ -177,7 +232,11 @@ void Button::Build(const void* _data, unsigned _width, unsigned _height, const R
 
 	glBindBuffer(GL_ARRAY_BUFFER, *_outPosUV);
 #ifdef _WIN32
-	glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+	if (glBufferStorage) {
+		glBufferStorage(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, 0);
+	} else {
+		glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
+	}
 #elif __ANDROID__
 	glBufferData(GL_ARRAY_BUFFER, 4 * sizeof(_System::PosUV2D), vertexP, GL_STATIC_DRAW);
 #endif

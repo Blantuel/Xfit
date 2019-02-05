@@ -20,77 +20,82 @@ namespace _System::_OpenGL {
 #endif
 #ifdef _WIN32
 	static void APIENTRY OpenglDebugCallback(GLenum _source, GLenum _type, GLuint _id, GLenum _severity, GLsizei _length, const GLchar* _message, const void* _userParam) {
-	string str = "!!XFit OpenGL DebugLog ";
-
-	switch (_source) {
-	case GL_DEBUG_SOURCE_API:
-		str += "source=API ";
-		break;
-	case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
-		str += "source=WINDOW SYSTEM ";
-		break;
-	case GL_DEBUG_SOURCE_SHADER_COMPILER:
-		str += "source=SHADER COMPILER ";
-		break;
-	case GL_DEBUG_SOURCE_THIRD_PARTY:
-		str += "source=THIRD PARTY ";
-		break;
-	case GL_DEBUG_SOURCE_APPLICATION:
-		str += "source=APPLICATION ";
-		break;
-	case GL_DEBUG_SOURCE_OTHER:
-		str += "source=OTHER ";
-		break;
-	default:
-		str += "source=UNKNOWN ";
-		break;
-	}
-	switch (_type) {
-	case GL_DEBUG_TYPE_ERROR:
-		str += "type=ERROR id=";
-		break;
-	case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
-		str += "type=DEPRECATED_BEHAVIOR id=";
-		break;
-	case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
-		str += "type=UNDEFINED_BEHAVIOR id=";
-		break;
-	case GL_DEBUG_TYPE_PORTABILITY:
-		str += "type=PORTABILITY id=";
-		break;
-	case GL_DEBUG_TYPE_PERFORMANCE:
-		str += "type=PERFORMANCE id=";
-		break;
-	case GL_DEBUG_TYPE_OTHER:
-		str += "type=OTHER id=";
-		break;
-	default:
-		str += "type=UNKNOWN id=";
-		break;
-	}
-	char idStr[20];
-	_itoa_s(_id, idStr, 20, 10);
-	str += idStr;
-	switch (_severity) {
-	case GL_DEBUG_SEVERITY_LOW:
-		str += " severity=LOW message=";
-		break;
-	case GL_DEBUG_SEVERITY_MEDIUM:
-		str += " severity=MEDIUM message=";
-		break;
-	case GL_DEBUG_SEVERITY_HIGH:
-		str += " severity=HIGH message=";
-		break;
-	default:
-		str += " severity=UNKNOWN message=";
-		break;
-	}
-	str += _message;
-	str += "\n";
-	OutputDebugStringA(str.data());
-	}
 #elif __ANDROID__
+	static void GL_APIENTRY OpenglDebugCallback(GLenum _source, GLenum _type, GLuint _id, GLenum _severity, GLsizei _length, const GLchar* _message, const void* _userParam) {
 #endif
+		string str = "!!XFit OpenGL DebugLog ";
+
+		switch (_source) {
+		case GL_DEBUG_SOURCE_API:
+			str += "source=API ";
+			break;
+		case GL_DEBUG_SOURCE_WINDOW_SYSTEM:
+			str += "source=WINDOW SYSTEM ";
+			break;
+		case GL_DEBUG_SOURCE_SHADER_COMPILER:
+			str += "source=SHADER COMPILER ";
+			break;
+		case GL_DEBUG_SOURCE_THIRD_PARTY:
+			str += "source=THIRD PARTY ";
+			break;
+		case GL_DEBUG_SOURCE_APPLICATION:
+			str += "source=APPLICATION ";
+			break;
+		case GL_DEBUG_SOURCE_OTHER:
+			str += "source=OTHER ";
+			break;
+		default:
+			str += "source=UNKNOWN ";
+			break;
+		}
+		switch (_type) {
+		case GL_DEBUG_TYPE_ERROR:
+			str += "type=ERROR id=";
+			break;
+		case GL_DEBUG_TYPE_DEPRECATED_BEHAVIOR:
+			str += "type=DEPRECATED_BEHAVIOR id=";
+			break;
+		case GL_DEBUG_TYPE_UNDEFINED_BEHAVIOR:
+			str += "type=UNDEFINED_BEHAVIOR id=";
+			break;
+		case GL_DEBUG_TYPE_PORTABILITY:
+			str += "type=PORTABILITY id=";
+			break;
+		case GL_DEBUG_TYPE_PERFORMANCE:
+			str += "type=PERFORMANCE id=";
+			break;
+		case GL_DEBUG_TYPE_OTHER:
+			str += "type=OTHER id=";
+			break;
+		default:
+			str += "type=UNKNOWN id=";
+			break;
+		}
+		char num[20];
+#ifdef _WIN32
+		_itoa_s(_id, num, 10);
+#elif __ANDROID__
+		sprintf(num, "%d", _id);
+#endif
+		str += num;
+		switch (_severity) {
+		case GL_DEBUG_SEVERITY_LOW:
+			str += " severity=LOW message=";
+			break;
+		case GL_DEBUG_SEVERITY_MEDIUM:
+			str += " severity=MEDIUM message=";
+			break;
+		case GL_DEBUG_SEVERITY_HIGH:
+			str += " severity=HIGH message=";
+			break;
+		default:
+			str += " severity=UNKNOWN message=";
+			break;
+		}
+		str += _message;
+		str += "\n";
+		PRINTMSG(str.c_str());
+	}
 
 	static void LoadOpenGL() {
 	#ifdef _WIN32
@@ -291,9 +296,9 @@ namespace _System::_OpenGL {
 		}
 		const GLuint prog = glCreateProgram();
 
-		glAttachShader(prog, shader);
-
 		glProgramParameteri(prog, GL_PROGRAM_SEPARABLE, GL_TRUE);
+
+		glAttachShader(prog, shader);
 		glLinkProgram(prog);
 
 		GLint linkStatus;
@@ -309,17 +314,12 @@ namespace _System::_OpenGL {
 			PRINTMSG(linkLogDebugStr.data());
 			delete[]linkLogCharAr;
 		}
-
 		glDetachShader(prog, shader);
 		glDeleteShader(shader);
 
 		return prog;
 	}
 	void Init(System::RendererInfo* _info) {
-	#ifdef _DEBUG
-		if (System::IsRendererInited());
-	#endif
-
 #ifdef _WIN32
 		WNDCLASS wndClass;
 		wndClass.cbClsExtra = 0;
@@ -379,6 +379,7 @@ namespace _System::_OpenGL {
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		version.minorVersion = (unsigned)minor;
 		version.majorVersion = (unsigned)major;
+		versionNumber = version.majorVersion * 100 + version.minorVersion;
 
 		wglMakeCurrent(nullptr, nullptr);
 		wglDeleteContext(context);
@@ -441,20 +442,29 @@ namespace _System::_OpenGL {
 		if (_info->vSync) wglSwapIntervalEXT(1);
 		else wglSwapIntervalEXT(0);
 
-#ifdef _DEBUG
-		glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
-		glDebugMessageCallback(OpenglDebugCallback, nullptr);
-#endif
-
 #elif __ANDROID__
 		int major, minor;
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
 		version.minorVersion = (unsigned)minor;
 		version.majorVersion = (unsigned)major;
+
+		versionNumber = version.majorVersion * 100 + version.minorVersion;
 #endif
+
 		
-		
+#ifdef _DEBUG
+		glEnable(GL_DEBUG_OUTPUT);
+
+#ifdef _WIN32
+		glDebugMessageCallback(OpenglDebugCallback, nullptr);
+#elif __ANDROID__
+		PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback2 = (PFNGLDEBUGMESSAGECALLBACKPROC)eglGetProcAddress("glDebugMessageCallback");
+
+		if(glDebugMessageCallback2)glDebugMessageCallback2(OpenglDebugCallback, nullptr);
+#endif
+
+#endif
 		glGenVertexArrays(1, &vao);
 
 		glBindVertexArray(vao);
@@ -477,7 +487,7 @@ namespace _System::_OpenGL {
 
 		glUniform1i(imgFrag::samplerUniform, 0);
 #else __ANDROID__
-		if ((major >= 3) && (minor >= 1)) {
+		if (versionNumber >= 301) {
 			imgVertProg = LoadAndCompileShader("shaders/imgVert.glsl", GL_VERTEX_SHADER);
 			imgInsVertProg = LoadAndCompileShader("shaders/imgInsVert.glsl", GL_VERTEX_SHADER);
 

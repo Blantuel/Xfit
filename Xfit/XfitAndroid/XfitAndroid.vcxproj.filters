@@ -37,6 +37,7 @@
     <ClCompile Include="..\Xfit\view\Viewport.cpp" />
     <ClCompile Include="..\Xfit\_system\_Android.cpp" />
     <ClCompile Include="..\Xfit\_system\_Windows.cpp" />
+    <ClCompile Include="..\Xfit\time\Time.cpp" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Header">
@@ -216,6 +217,9 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="..\Xfit\file\AssetFile.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Xfit\time\Time.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>

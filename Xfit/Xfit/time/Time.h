@@ -13,6 +13,8 @@ class Time {
 	friend void System::Create(HINSTANCE _hInstance);
 	static inline LARGE_INTEGER frequency;
 	static inline thread_local LARGE_INTEGER time;
+#elif __ANDROID__
+	static inline thread_local timespec tsp;
 #endif
 	static void Init();
 public:

@@ -12,7 +12,7 @@ public:
 
 	void Wait() {
 		unique_lock<::mutex> lock(mutex);
-		value.wait(lock, trigger);
+		while (!trigger)value.wait(lock);
 		if constexpr (autoReset)trigger = false;
 	}
 	void Set() {

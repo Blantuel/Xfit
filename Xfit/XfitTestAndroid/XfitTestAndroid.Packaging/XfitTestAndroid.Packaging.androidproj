@@ -143,6 +143,7 @@
     <Content Include="assets\shaders\imgInsVert.glsl" />
     <Content Include="assets\shaders\imgVert.glsl" />
     <Content Include="assets\NanumBarunGothic.ttf" />
+    <Content Include="assets\test.ogg" />
     <Content Include="res\values\strings.xml" />
     <AntBuildXml Include="build.xml" />
     <AndroidManifest Include="AndroidManifest.xml" />

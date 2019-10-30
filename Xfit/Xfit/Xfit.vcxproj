@@ -1,17 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
-    <ProjectConfiguration Include="Debug|ARM">
-      <Configuration>Debug</Configuration>
-      <Platform>ARM</Platform>
-    </ProjectConfiguration>
     <ProjectConfiguration Include="Debug|x64">
       <Configuration>Debug</Configuration>
       <Platform>x64</Platform>
-    </ProjectConfiguration>
-    <ProjectConfiguration Include="Release|ARM">
-      <Configuration>Release</Configuration>
-      <Platform>ARM</Platform>
     </ProjectConfiguration>
     <ProjectConfiguration Include="Release|x64">
       <Configuration>Release</Configuration>
@@ -31,20 +23,7 @@
     <CharacterSet>Unicode</CharacterSet>
     <PlatformToolset>v142</PlatformToolset>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>true</UseDebugLibraries>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
-    <UseDebugLibraries>false</UseDebugLibraries>
-    <WholeProgramOptimization>true</WholeProgramOptimization>
-    <CharacterSet>Unicode</CharacterSet>
-    <PlatformToolset>v142</PlatformToolset>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
@@ -60,33 +39,24 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="XfitPropertySheetDebug.props" />
   </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="PropertySheets">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="XfitPropertySheetDebug.props" />
-  </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="XfitPropertySheetRelease.props" />
-  </ImportGroup>
-  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
     <Import Project="XfitPropertySheetRelease.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" />
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILE_XFIT;WIN_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <SDLCheck>true</SDLCheck>
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -97,39 +67,8 @@
       </IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
-    </Lib>
-    <FxCompile>
-      <HeaderFileOutput>
-      </HeaderFileOutput>
-      <VariableName>
-      </VariableName>
-    </FxCompile>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <ClCompile>
-      <Optimization>Disabled</Optimization>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <SDLCheck>true</SDLCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-    </Link>
-    <Lib>
-      <IgnoreSpecificDefaultLibraries>
-      </IgnoreSpecificDefaultLibraries>
-      <IgnoreAllDefaultLibraries>
-      </IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;Imm32.lib;OpenCL.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib;../WebP/lib;$(CUDA_PATH)/lib/x64</AdditionalLibraryDirectories>
     </Lib>
     <FxCompile>
       <HeaderFileOutput>
@@ -145,14 +84,14 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
       <OmitFramePointers>true</OmitFramePointers>
       <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>COMPILE_XFIT;WIN_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
       <SDLCheck>true</SDLCheck>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
+      <WarningLevel>Level4</WarningLevel>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -168,60 +107,40 @@
       </VariableName>
     </FxCompile>
     <Lib>
-      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
-    </Lib>
-  </ItemDefinitionGroup>
-  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <ClCompile>
-      <Optimization>MaxSpeed</Optimization>
-      <FunctionLevelLinking>true</FunctionLevelLinking>
-      <IntrinsicFunctions>true</IntrinsicFunctions>
-      <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
-      <LanguageStandard>stdcpp17</LanguageStandard>
-      <EnableEnhancedInstructionSet>AdvancedVectorExtensions2</EnableEnhancedInstructionSet>
-      <OmitFramePointers>true</OmitFramePointers>
-      <ConformanceMode>true</ConformanceMode>
-      <PreprocessorDefinitions>COMPILE_XFIT;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <CompileAs>CompileAsCpp</CompileAs>
-      <SDLCheck>true</SDLCheck>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
-      <WarningLevel>EnableAllWarnings</WarningLevel>
-    </ClCompile>
-    <Link>
-      <SubSystem>Windows</SubSystem>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
-      <EnableCOMDATFolding>true</EnableCOMDATFolding>
-      <OptimizeReferences>true</OptimizeReferences>
-    </Link>
-    <Lib />
-    <FxCompile>
-      <HeaderFileOutput>
-      </HeaderFileOutput>
-      <VariableName>
-      </VariableName>
-    </FxCompile>
-    <Lib>
-      <AdditionalDependencies>ws2_32.lib;</AdditionalDependencies>
-      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>ws2_32.lib;Imm32.lib;OpenCL.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib;../WebP/lib;$(CUDA_PATH)/lib/x64</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="data\Array.h" />
+    <ClInclude Include="data\ImageType.h" />
+    <ClInclude Include="data\ImageUtil.h" />
     <ClInclude Include="data\Memory.h" />
     <ClInclude Include="data\Compress.h" />
-    <ClInclude Include="data\Converter.h" />
     <ClInclude Include="data\PriorityQueue.h" />
     <ClInclude Include="data\Sort.h" />
+    <ClInclude Include="decoder\Decoder.h" />
+    <ClInclude Include="decoder\ImageDecoder.h" />
+    <ClInclude Include="decoder\JPEGDecoder.h" />
+    <ClInclude Include="decoder\OGGDecoder.h" />
+    <ClInclude Include="decoder\PNGDecoder.h" />
+    <ClInclude Include="decoder\SoundDecoder.h" />
+    <ClInclude Include="decoder\WAVDecoder.h" />
+    <ClInclude Include="decoder\WebPAnimateDecoder.h" />
+    <ClInclude Include="decoder\WebPDecoder.h" />
     <ClInclude Include="effect\Blend.h" />
     <ClInclude Include="effect\Effect.h" />
     <ClInclude Include="effect\Filter.h" />
     <ClInclude Include="effect\Light.h" />
+    <ClInclude Include="encoder\Encoder.h" />
+    <ClInclude Include="encoder\ImageEncoder.h" />
+    <ClInclude Include="encoder\WebPAnimateLosslessEncoder.h" />
+    <ClInclude Include="encoder\WebPLosslessEncoder.h" />
     <ClInclude Include="file\AssetFile.h" />
     <ClInclude Include="file\File.h" />
     <ClInclude Include="file\Register.h" />
     <ClInclude Include="file\ResourceManager.h" />
-    <ClInclude Include="math\Collision.h" />
+    <ClInclude Include="object\Line.h" />
     <ClInclude Include="math\Hexagon.h" />
     <ClInclude Include="math\Lines.h" />
     <ClInclude Include="math\Math.h" />
@@ -233,24 +152,41 @@
     <ClInclude Include="object3D\Image3D.h" />
     <ClInclude Include="object3D\Object3D.h" />
     <ClInclude Include="object3D\Shape3D.h" />
-    <ClInclude Include="object\AnimateLoopObject.h" />
+    <ClInclude Include="object\AnimateMultiInstance.h" />
     <ClInclude Include="object\AnimateObject.h" />
-    <ClInclude Include="object\Button.h" />
-    <ClInclude Include="object\Checkbox.h" />
+    <ClInclude Include="component\Button.h" />
+    <ClInclude Include="component\Checkbox.h" />
     <ClInclude Include="object\Image.h" />
-    <ClInclude Include="object\ImageInstance.h" />
+    <ClInclude Include="object\ImageBase.h" />
+    <ClInclude Include="object\LineInstance.h" />
+    <ClInclude Include="object\MatrixObject.h" />
     <ClInclude Include="object\Object.h" />
-    <ClInclude Include="object\RadioButton.h" />
+    <ClInclude Include="component\RadioButton.h" />
+    <ClInclude Include="object\Shape.h" />
     <ClInclude Include="physics\Collision.h" />
-    <ClInclude Include="physics\RectCollision.h" />
+    <ClInclude Include="physics\HitTest.h" />
+    <ClInclude Include="physics\RectHitTest.h" />
+    <ClInclude Include="resource\AnimateBase.h" />
+    <ClInclude Include="resource\AnimateFrame.h" />
+    <ClInclude Include="resource\CenterPointPos.h" />
+    <ClInclude Include="resource\Frame.h" />
+    <ClInclude Include="resource\FrameArray.h" />
+    <ClInclude Include="resource\FrameCompressFormat.h" />
+    <ClInclude Include="resource\FrameFormat.h" />
+    <ClInclude Include="resource\Index.h" />
+    <ClInclude Include="resource\MultiInstanceNode.h" />
+    <ClInclude Include="resource\RTAnimateFrame.h" />
+    <ClInclude Include="resource\ShapeVertex.h" />
+    <ClInclude Include="resource\Vertex.h" />
+    <ClInclude Include="object\ShapeInstance.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\Context.h" />
     <ClInclude Include="system\Error.h" />
     <ClInclude Include="system\Event.h" />
     <ClInclude Include="resource\Sampler.h" />
-    <ClInclude Include="resource\Vertex.h" />
     <ClInclude Include="sound\Sound.h" />
     <ClInclude Include="system\Input.h" />
+    <ClInclude Include="system\Screen.h" />
     <ClInclude Include="system\System.h" />
     <ClInclude Include="system\WriteFlag.h" />
     <ClInclude Include="text\Font.h" />
@@ -261,38 +197,68 @@
     <ClInclude Include="view\Camera3D.h" />
     <ClInclude Include="view\Viewport.h" />
     <ClInclude Include="_system\_Android.h" />
+    <ClInclude Include="_system\_DirectX11.h" />
+    <ClInclude Include="_system\_DXGI.h" />
     <ClInclude Include="_system\_GraphicsBase.h" />
     <ClInclude Include="_system\_Loop.h" />
     <ClInclude Include="_system\_OpenGL.h" />
+    <ClInclude Include="_system\_Renderer.h" />
     <ClInclude Include="_system\_Vulkan.h" />
     <ClInclude Include="_system\_Windows.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="data\Compress.cpp" />
-    <ClCompile Include="data\Converter.cpp" />
+    <ClCompile Include="data\ImageUtil.cpp" />
+    <ClCompile Include="decoder\Decoder.cpp" />
+    <ClCompile Include="decoder\ImageDecoder.cpp" />
+    <ClCompile Include="decoder\JPEGDecoder.cpp" />
+    <ClCompile Include="decoder\OGGDecoder.cpp" />
+    <ClCompile Include="decoder\PNGDecoder.cpp" />
+    <ClCompile Include="decoder\SoundDecoder.cpp" />
+    <ClCompile Include="decoder\WAVDecoder.cpp" />
+    <ClCompile Include="decoder\WebPAnimateDecoder.cpp" />
+    <ClCompile Include="decoder\WebPDecoder.cpp" />
     <ClCompile Include="effect\Blend.cpp" />
     <ClCompile Include="effect\Filter.cpp" />
-    <ClCompile Include="math\Collision.cpp" />
+    <ClCompile Include="encoder\Encoder.cpp" />
+    <ClCompile Include="encoder\ImageEncoder.cpp" />
+    <ClCompile Include="encoder\WebPAnimateLosslessEncoder.cpp" />
+    <ClCompile Include="encoder\WebPLosslessEncoder.cpp" />
+    <ClCompile Include="object\Line.cpp" />
     <ClCompile Include="math\Hexagon.cpp" />
     <ClCompile Include="math\Lines.cpp" />
     <ClCompile Include="math\Matrix.cpp" />
     <ClCompile Include="object3D\Image3D.cpp" />
     <ClCompile Include="object3D\Object3D.cpp" />
     <ClCompile Include="object3D\Shape3D.cpp" />
-    <ClCompile Include="object\AnimateLoopObject.cpp" />
+    <ClCompile Include="object\AnimateMultiInstance.cpp" />
     <ClCompile Include="object\AnimateObject.cpp" />
-    <ClCompile Include="object\Button.cpp" />
-    <ClCompile Include="object\Checkbox.cpp" />
+    <ClCompile Include="component\Button.cpp" />
+    <ClCompile Include="component\Checkbox.cpp" />
     <ClCompile Include="object\Image.cpp" />
-    <ClCompile Include="object\ImageInstance.cpp" />
+    <ClCompile Include="object\ImageBase.cpp" />
     <ClCompile Include="file\ResourceManager.cpp" />
+    <ClCompile Include="object\LineInstance.cpp" />
+    <ClCompile Include="object\MatrixObject.cpp" />
     <ClCompile Include="object\Object.cpp" />
-    <ClCompile Include="object\RadioButton.cpp" />
-    <ClCompile Include="physics\RectCollision.cpp" />
+    <ClCompile Include="component\RadioButton.cpp" />
+    <ClCompile Include="object\Shape.cpp" />
+    <ClCompile Include="physics\Collision.cpp" />
+    <ClCompile Include="physics\RectHitTest.cpp" />
+    <ClCompile Include="resource\AnimateBase.cpp" />
+    <ClCompile Include="resource\AnimateFrame.cpp" />
+    <ClCompile Include="resource\Frame.cpp" />
+    <ClCompile Include="resource\FrameArray.cpp" />
+    <ClCompile Include="resource\Index.cpp" />
+    <ClCompile Include="resource\RTAnimateFrame.cpp" />
+    <ClCompile Include="resource\ShapeVertex.cpp" />
+    <ClCompile Include="resource\Vertex.cpp" />
+    <ClCompile Include="object\ShapeInstance.cpp" />
     <ClCompile Include="sound\Sound.cpp" />
     <ClCompile Include="resource\Sampler.cpp" />
-    <ClCompile Include="resource\Vertex.cpp" />
+    <ClCompile Include="system\Context.cpp" />
     <ClCompile Include="system\Input.cpp" />
+    <ClCompile Include="system\Screen.cpp" />
     <ClCompile Include="system\System.cpp" />
     <ClCompile Include="text\Font.cpp" />
     <ClCompile Include="text\Label.cpp" />
@@ -301,6 +267,8 @@
     <ClCompile Include="time\Time.cpp" />
     <ClCompile Include="view\Viewport.cpp" />
     <ClCompile Include="_system\_Android.cpp" />
+    <ClCompile Include="_system\_DirectX11.cpp" />
+    <ClCompile Include="_system\_DXGI.cpp" />
     <ClCompile Include="_system\_Loop.cpp" />
     <ClCompile Include="_system\_OpenGL.cpp" />
     <ClCompile Include="_system\_Vulkan.cpp" />
@@ -334,6 +302,56 @@
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="lineGeo2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="lineInsGeo2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="lineInsVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shapeInsGeo2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">4.0</ShaderModel>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">4.0</ShaderModel>
+    </FxCompile>
+    <FxCompile Include="linePx2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="imgPx2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shapePx2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shapeVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="imgVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shapeGeo2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
+    </FxCompile>
+    <FxCompile Include="shapeInsVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

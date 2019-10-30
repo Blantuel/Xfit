@@ -1,39 +1,21 @@
 #pragma once
 
-#include "Object.h"
-#include "../math/Rect.h"
+#include "ImageBase.h"
+#include "../resource/AnimateBase.h"
 
-class Sampler;
+class AnimateFrame;
 
-class AnimateObject : public Object {
-	union {
-		struct {
-			GLuint* posUVs;
-			GLuint* textures;
-		}openGL;
-	};
-protected:
-	unsigned cFrame, len;
-	bool playing;
+
+template <typename T> class Array;
+
+class AnimateObject : public ImageBase, public AnimateBase {
 public:
-	Sampler * sampler;
+	Array<AnimateFrame>* frames;
 
 	AnimateObject();
-	~AnimateObject();
-	void Play();
-	void Stop();
-	bool IsPlay()const;
-	void GoToAndStop(unsigned _frame = 0);
-	void GoToAndPlay(unsigned _frame = 0);
-	unsigned NextFrame();
-	unsigned PrevFrame();
-	unsigned GetCurrectFrame()const;
-	unsigned GetTotalFrame()const;
-
-	virtual void Update();
+	AnimateObject(PointF _pos,PointF _scale,float _rotation,Blend* _blend,Sampler* _sampler,Array<AnimateFrame>* _frames);
 
 	virtual void Draw();
 
-	void Build(unsigned _len,const void*const* _datas, const unsigned* _widths, const unsigned* _heights, const RectF* _rects, const PointF*const* _UVs);
-	void Build(unsigned _len,const void*const* _datas, const unsigned* _widths, const unsigned* _heights, const RectF* _rects);
+	virtual unsigned GetTotalFrame();
 };

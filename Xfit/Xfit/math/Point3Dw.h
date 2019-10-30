@@ -27,6 +27,7 @@ public:
 		x = _x; y = _y; z = _z; w = _w;
 #endif
 	}
+	Point3Dw() {}
 
 	unsigned Distance(const Point3Dw& _point)const {
 		Point3Dw point = *this-_point;
@@ -216,6 +217,7 @@ public:
 	operator __m128() { return m; }
 #else
 #endif
+	Point3DwF() {}
 	Point3DwF(float _x, float _y, float _z, float _w = 1.f) :x(_x), y(_y), z(_z), w(_w) {}
 	
 
@@ -250,17 +252,23 @@ public:
 	Point3DwF& DirectionPoint3DwThis(float _distance, const Point3DwF& _direction) { return *this += (_direction*_distance); }
 
 	Point3DwF& SetTransform(const Matrix& _matrix) { return *this *= _matrix; }
+	/*
+	 [1,2,3,    4]   [x]
+	 [5,6,7,    8]   [y]
+	 [9,10,11, 12] * [z]
+	 [13,14,15,16]   [w]
+	*/
 	Point3DwF operator*(const Matrix& _matrix) const {
-		return Point3DwF(x*_matrix._11 + y * _matrix._21 + z * _matrix._31 + w * _matrix._41,
-			x*_matrix._12 + y * _matrix._22 + z * _matrix._32 + w * _matrix._42,
-			x*_matrix._13 + y * _matrix._23 + z * _matrix._33 + w * _matrix._43,
-			x*_matrix._14 + y * _matrix._24 + z * _matrix._34 + w * _matrix._44);
+		return Point3DwF(x*_matrix._11 + y * _matrix._12 + z * _matrix._13 + w * _matrix._14,
+			x*_matrix._21 + y * _matrix._22 + z * _matrix._23 + w * _matrix._24,
+			x*_matrix._31 + y * _matrix._32 + z * _matrix._33 + w * _matrix._34,
+			x*_matrix._41 + y * _matrix._42 + z * _matrix._43 + w * _matrix._44);
 	}
 	Point3DwF& operator*=(const Matrix& _matrix) {
-		x = x * _matrix._11 + y * _matrix._21 + z * _matrix._31 + w * _matrix._41;
-		y = x * _matrix._12 + y * _matrix._22 + z * _matrix._32 + w * _matrix._42;
-		z = x * _matrix._13 + y * _matrix._23 + z * _matrix._33 + w * _matrix._43;
-		w = x * _matrix._14 + y * _matrix._24 + z * _matrix._34 + w * _matrix._44;
+		x = x * _matrix._11 + y * _matrix._12 + z * _matrix._13 + w * _matrix._14;
+		y = x * _matrix._21 + y * _matrix._22 + z * _matrix._23 + w * _matrix._24;
+		z = x * _matrix._31 + y * _matrix._32 + z * _matrix._33 + w * _matrix._34;
+		w = x * _matrix._41 + y * _matrix._42 + z * _matrix._43 + w * _matrix._44;
 		return *this;
 	}
 	Point3DwF operator/(const Matrix& _matrix) const { return *this * _matrix.Inverse(); }

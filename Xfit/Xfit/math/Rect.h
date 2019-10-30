@@ -61,14 +61,14 @@ public:
 	bool IsRectIn(const RectF& rect)const {
 		return (left <= rect.right) && (right >= rect.left) && (top >= rect.bottom) && (bottom <= rect.top);
 	}
-	bool IsRectInOBB(const RectF& rect, const Point& dd1, const Point& dd2)const {
-		Point m((rect.right - rect.left) / 2.f + rect.left, (rect.bottom - rect.top) / 2.f + rect.bottom);
-		Point m2((right - left) / 2.f + left, (bottom - top) / 2.f + bottom);
+	bool IsRectInOBB(const RectF& rect, const PointF& dd1, const PointF& dd2)const {
+		PointF m((rect.right - rect.left) / 2.f + rect.left, (rect.bottom - rect.top) / 2.f + rect.bottom);
+		PointF m2((right - left) / 2.f + left, (bottom - top) / 2.f + bottom);
 
-		Point d1 = dd1;
-		Point d2(dd1.y, -dd1.x);
-		Point d3 = dd2;
-		Point d4(dd2.y, -dd2.x);
+		PointF d1 = dd1;
+		PointF d2(dd1.y, -dd1.x);
+		PointF d3 = dd2;
+		PointF d4(dd2.y, -dd2.x);
 
 		float a = fabs(d1.InnerProduct(d3)) + fabs(d2.InnerProduct(d3));
 		float b = (rect.right - rect.left) / 2.f;
@@ -106,4 +106,78 @@ public:
 			rect1.bottom<rect2.bottom ? rect2.bottom : rect1.bottom);
 		return rect;
 	}
+	const RectF operator+(const PointF& _point) {
+		return RectF(left + _point.x, right + _point.x, top + _point.y, bottom + _point.y);
+	}
 };
+
+
+class Rect {
+public:
+	int left, right, top, bottom;
+	Rect() {}
+	Rect(int nLeft, int nRight, int nTop, int nBottom) :left(nLeft), right(nRight), top(nTop), bottom(nBottom) {}
+	void SetRect(int nLeft, int nRight, int nTop, int nBottom) {
+		left = nLeft;
+		right = nRight;
+		top = nTop;
+		bottom = nBottom;
+	}
+	const Point GetPoint1() const { return Point(left, top); }
+	const Point GetPoint2() const { return Point(right, top); }
+	const Point GetPoint3() const { return Point(left, bottom); }
+	const Point GetPoint4() const { return Point(right, bottom); }
+	bool IsEmpty() const {
+		return (left == right) && (top == bottom);
+	}
+	bool IsPointIn(const Point& point)const {
+		return (point.x >= left) && (point.x <= right) && (point.y <= top) && (point.y >= bottom);
+	}
+	bool Compare(const Rect& nRect)const {
+		return (nRect.left == left) && (nRect.right == right) && (nRect.top == top) && (nRect.bottom == bottom);
+	}
+	Rect& Move(float x, float y) {
+		left += x;
+		right += x;
+		top += y;
+		bottom += y;
+		return *this;
+	}
+	Rect& Extend(float x, float y) {
+		left -= x / 2.f;
+		right += x / 2.f;
+		top += y / 2.f;
+		bottom -= y / 2.f;
+		return *this;
+	}
+	Rect& ExtendRatio(float x, float y) {
+		const float rx = (right - left) / 2.f;
+		const float ry = -(bottom - top) / 2.f;
+		left += rx - (rx * x);
+		right -= rx - (rx * x);
+		top += -(ry - (ry * x));
+		bottom -= -(ry - (ry * x));
+		return *this;
+	}
+	bool IsRectIn(const Rect& rect)const {
+		return (left <= rect.right) && (right >= rect.left) && (top >= rect.bottom) && (bottom <= rect.top);
+	}
+	static const Rect And(const Rect& rect1, const Rect& rect2) {
+		Rect rect(rect1.left > rect2.left ? rect1.left : rect2.left,
+			rect1.right > rect2.right ? rect2.right : rect1.right,
+			rect1.top > rect2.top ? rect1.top : rect2.top,
+			rect1.bottom > rect2.bottom ? rect2.bottom : rect1.bottom);
+		return rect;
+	}
+	static const Rect Or(const Rect& rect1, const Rect& rect2) {
+		Rect rect(rect1.left < rect2.left ? rect1.left : rect2.left,
+			rect1.right < rect2.right ? rect2.right : rect1.right,
+			rect1.top < rect2.top ? rect1.top : rect2.top,
+			rect1.bottom < rect2.bottom ? rect2.bottom : rect1.bottom);
+		return rect;
+	}
+	const Rect operator+(const Point& _point) {
+		return Rect(left + _point.x, right + _point.x, top + _point.y, bottom + _point.y);
+	}
+};
+

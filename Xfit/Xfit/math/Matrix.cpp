@@ -1,9 +1,14 @@
 #include "Matrix.h"
 #include "../data/Memory.h"
+#include "../system/System.h"
 
 Matrix::Matrix() {}
 Matrix::Matrix(initializer_list<float> _initializer_list) {
 	Memory::Copy(e, 16, _initializer_list.begin(), 16);
+}
+void Matrix::Identity() {
+	memset(e,0,sizeof(float)*16);
+	e[0]=1.f;e[5]=1.f;e[10]=1.f;e[15]=1.f;
 }
 Matrix& Matrix::Transpose() {
 	swap(_14, _41);
@@ -14,25 +19,32 @@ Matrix& Matrix::Transpose() {
 	swap(_23, _32);
 	return *this;
 }
-Matrix Matrix::GetMatrix2D(float _dx, float _dy, float _sx, float _sy, float _r) {
-	const float c = cosf(_r), s = sinf(_r);
-
-	const Matrix mat = { c*_sx, -s*_sy, 0.f, 0.f,
-		s * _sx, c*_sy, 0.f, 0.f,
+Matrix Matrix::GetIdentity() {
+	const Matrix mat = {1.f, 0.f, 0.f, 0.f,
+		0.f, 1.f, 0.f, 0.f,
 		0.f, 0.f, 1.f, 0.f,
-		_dx,_dy, 0.f, 1.f };
+		0.f, 0.f, 0.f, 1.f};
 	return mat;
 }
 Matrix Matrix::GetMatrix2DTranspose(float _dx, float _dy, float _sx, float _sy, float _r) {
 	const float c = cosf(_r), s = sinf(_r);
 
-	const Matrix mat={ c*_sx, s * _sx, 0.f, _dx,
-		-s*_sy, c*_sy, 0.f, _dy,
+	const Matrix mat = { c*_sx, -s * _sx, 0.f, 0.f,
+		s * _sy, c*_sy, 0.f, 0.f,
+		0.f, 0.f, 1.f, 0.f,
+		_dx,_dy, 0.f, 1.f };
+	return mat;
+}
+Matrix Matrix::GetMatrix2D(float _dx, float _dy, float _sx, float _sy, float _r) {
+	const float c = cosf(_r), s = sinf(_r);
+
+	const Matrix mat = { c*_sx, s * _sy, 0.f, _dx,
+		-s * _sx, c*_sy, 0.f, _dy,
 		0.f, 0.f, 1.f, 0.f,
 		0.f, 0.f, 0.f, 1.f };
 	return mat;
 }
-Matrix Matrix::GetMatrix3D(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz) {
+Matrix Matrix::GetMatrix3DTranspose(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz) {
 	const float cx = cosf(_rx), ssx = sinf(_rx);
 	const float cy = cosf(_ry), ssy = sinf(_ry);
 	const float cz = cosf(_rz), ssz = sinf(_rz);
@@ -52,7 +64,7 @@ Matrix Matrix::GetMatrix3D(float _dx, float _dy, float _dz, float _sx, float _sy
 		_dx,_dy,_dz,1.f };
 	return mat;
 }
-Matrix Matrix::GetMatrix3DTranspose(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz) {
+Matrix Matrix::GetMatrix3D(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz) {
 	const float cx = cosf(_rx),ssx = sinf(_rx);
 	const float cy = cosf(_ry), ssy = sinf(_ry);
 	const float cz = cosf(_rz),ssz = sinf(_rz);
@@ -72,7 +84,7 @@ Matrix Matrix::GetMatrix3DTranspose(float _dx, float _dy, float _dz, float _sx, 
 		0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetMove(float _dx, float _dy, float _dz/* = 0.f*/) {
+Matrix Matrix::GetMoveTranspose(float _dx, float _dy, float _dz/* = 0.f*/) {
 	const Matrix mat = {
 	1.f,0.f,0.f,0.f,
 	0.f,1.f,0.f,0.f,
@@ -80,7 +92,7 @@ Matrix Matrix::GetMove(float _dx, float _dy, float _dz/* = 0.f*/) {
 	_dx,_dy,_dz,1.f };
 	return mat;
 }
-Matrix Matrix::GetMoveTranspose(float _dx, float _dy, float _dz /*= 0.f*/) {
+Matrix Matrix::GetMove(float _dx, float _dy, float _dz /*= 0.f*/) {
 	const Matrix mat = {
 	1.f,0.f,0.f,_dx,
 	0.f,1.f,0.f,_dy,
@@ -96,7 +108,7 @@ Matrix Matrix::GetScale(float _sx, float _sy, float _sz/* = 1.f*/) {
 	0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationXYZ(float _rx, float _ry, float _rz) {
+Matrix Matrix::GetRotationXYZTranspose(float _rx, float _ry, float _rz) {
 	const float cx = cosf(_rx),sx = sinf(_rx);
 	const float cy = cosf(_ry),sy = sinf(_ry);
 	const float cz = cosf(_rz),sz = sinf(_rz);
@@ -116,7 +128,7 @@ Matrix Matrix::GetRotationXYZ(float _rx, float _ry, float _rz) {
 		0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationXYZTranspose(float _rx, float _ry, float _rz) {
+Matrix Matrix::GetRotationXYZ(float _rx, float _ry, float _rz) {
 	const float cx = cosf(_rx), sx = sinf(_rx);
 	const float cy = cosf(_ry), sy = sinf(_ry);
 	const float cz = cosf(_rz), sz = sinf(_rz);
@@ -136,7 +148,7 @@ Matrix Matrix::GetRotationXYZTranspose(float _rx, float _ry, float _rz) {
 		0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationX(float _rx) {
+Matrix Matrix::GetRotationXTranspose(float _rx) {
 	const float c = cosf(_rx), s = sinf(_rx);
 
 	const Matrix mat = { 1.f, 0.f, 0.f, 0.f,
@@ -145,7 +157,7 @@ Matrix Matrix::GetRotationX(float _rx) {
 		0.f, 0.f, 0.f, 1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationY(float _ry) {
+Matrix Matrix::GetRotationYTranspose(float _ry) {
 	const float c = cosf(_ry), s = sinf(_ry);
 
 	const Matrix mat = { c, 0.f, s, 0.f,
@@ -154,7 +166,7 @@ Matrix Matrix::GetRotationY(float _ry) {
 		0.f, 0.f, 0.f, 1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationZ(float _rz) {
+Matrix Matrix::GetRotationZTranspose(float _rz) {
 	const float c = cosf(_rz), s = sinf(_rz);
 
 	const Matrix mat = { c, -s, 0.f,  0.f,
@@ -163,7 +175,7 @@ Matrix Matrix::GetRotationZ(float _rz) {
 		0.f, 0.f, 0.f, 1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationXTranspose(float _rx) {
+Matrix Matrix::GetRotationX(float _rx) {
 	const float c = cosf(_rx), s = sinf(_rx);
 
 	const Matrix mat = { 1.f,0.f,0.f,0.f,
@@ -172,7 +184,7 @@ Matrix Matrix::GetRotationXTranspose(float _rx) {
 		0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationYTranspose(float _ry) {
+Matrix Matrix::GetRotationY(float _ry) {
 	const float c = cosf(_ry), s = sinf(_ry);
 
 	const Matrix mat = { c, 0.f, -s, 0.f,
@@ -181,7 +193,7 @@ Matrix Matrix::GetRotationYTranspose(float _ry) {
 		0.f,0.f,0.f,1.f };
 	return mat;
 }
-Matrix Matrix::GetRotationZTranspose(float _rz) {
+Matrix Matrix::GetRotationZ(float _rz) {
 	const float c = cosf(_rz), s = sinf(_rz);
 
 	const Matrix mat = { c,s,0.f,0.f,

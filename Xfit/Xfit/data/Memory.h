@@ -2,7 +2,22 @@
 
 #include "../system/Error.h"
 
-
+class MemoryError : public Error {
+public:
+	enum class Code {
+		NullData,
+		NullData2,
+		NullDest,
+		NullSrc,
+		ZeroSize,
+		ZeroDestSize
+	};
+protected:
+	Code code;
+public:
+	Code GetCode()const{return code;}
+	MemoryError(MemoryError::Code _code) :code(_code) {}
+};
 class Memory{
 	template<typename T> static size_t _Search(const T* _ar, const T& _value, size_t _count) {
 		if (_count == 0)return UINTPTR_MAX;
@@ -13,23 +28,34 @@ class Memory{
 	}
 	template<typename T> static T* _Set(T* _ar, const T& _value, size_t _count) {
 		if (_count == 0)return _ar;
-		if constexpr (sizeof(T) == 1) memset(_ar, (int)_value, _count);
-		else {
-			for (size_t s = 0; s < _count; s++) _ar[s] = _value;
-		}
+		for (size_t s = 0; s < _count; s++) _ar[s] = _value;
+
 		return _ar;
 	}
 public:
 	template<typename T> static bool Equal(const T* _ar, const T* _ar2, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(!_ar2)throw MemoryError(MemoryError::Code::NullData2);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 		return memcmp(_ar, _ar2, _count * sizeof(T))==0;
 	}
 	template <typename T> static size_t Search(const T* _ar, const T&_value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 		for (size_t i = 0; i < _count; i++) {
 			if (_ar[i] == _value)return i;
 		}
 		return UINTPTR_MAX;
 	}
 	static size_t Search(const int* _ar, const int& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t s = 0, ss = _count % 8;
 		_count -= ss;
@@ -63,6 +89,10 @@ public:
 #endif
 	}
 	static size_t Search(const short* _ar, const short& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t s = 0, ss = _count % 16;
 		_count -= ss;
@@ -96,11 +126,19 @@ public:
 #endif
 	}
 	static size_t Search(const char* _ar, const char& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 		const char* result = (const char*)memchr(_ar, _value, _count);
 		if (!result)return UINTPTR_MAX;
 		return size_t(result - _ar);
 	}
 	static size_t Search(const long long* _ar, const long long& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t s = 0, ss = _count % 4;
 		_count -= ss;
@@ -146,10 +184,18 @@ public:
 		return Search((char*)_ar, (char)_value, _count);
 	}
 	template<typename T> static T* Set(T* _ar, const T& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 		for (size_t i = 0; i < _count; i++) _ar[i] = _value;
 		return _ar;
 	}
 	static int* Set(int* _ar, const int &_value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t ss = _count % 8;
 		_count -= ss;
@@ -171,6 +217,10 @@ public:
 #endif
 	}
 	static short* Set(short* _ar, const short &_value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t ss = _count % 16;
 		_count -= ss;
@@ -192,9 +242,17 @@ public:
 #endif
 	}
 	static char* Set(char* _ar, char _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 		return (char*)memset((void*)_ar, (int)_value, _count);
 	}
 	static long long* Set(long long* _ar,const long long& _value, size_t _count) {
+#ifdef _DEBUG
+		if(!_ar)throw MemoryError(MemoryError::Code::NullData);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+#endif
 #ifdef AVX2
 		size_t ss = _count % 4;
 		_count -= ss;
@@ -228,20 +286,24 @@ public:
 		return (unsigned char*)Set((char*)_ar, (char)_value, _count);
 	}
 
-	template <typename T> static T* Copy(T* _dest, size_t _destCount, const T* _source, size_t _count) {
-#ifdef _WIN32
-		memcpy_s(_dest, _destCount * sizeof(T),_source, _count*sizeof(T));
-#else
-		memcpy(_dest, _source, _count * sizeof(T));
+	template <typename T> static T* Copy(T* _dest, size_t _destCount, const T* _src, size_t _count) {
+#ifdef _DEBUG
+		if(!_dest)throw MemoryError(MemoryError::Code::NullDest);
+		if(!_src)throw MemoryError(MemoryError::Code::NullSrc);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+		if(_destCount==0)throw MemoryError(MemoryError::Code::ZeroDestSize);
 #endif
+		memcpy_s(_dest, _destCount * sizeof(T),_src, _count*sizeof(T));
 		return _dest;
 	}
-	template <typename T> static T* CopyInThis(T* _dest, size_t _destCount, const T* _source, size_t _count) {
-#ifdef _WIN32
-		memmove_s(_dest, _destCount * sizeof(T), _source, _count * sizeof(T));
-#else
-		memmove(_dest, _source, _count * sizeof(T));
+	template <typename T> static T* CopyInThis(T* _dest, size_t _destCount, const T* _src, size_t _count) {
+#ifdef _DEBUG
+		if(!_dest)throw MemoryError(MemoryError::Code::NullDest);
+		if(!_src)throw MemoryError(MemoryError::Code::NullSrc);
+		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
+		if(_destCount==0)throw MemoryError(MemoryError::Code::ZeroDestSize);
 #endif
+		memmove_s(_dest, _destCount * sizeof(T), _src, _count * sizeof(T));
 		return _dest;
 	}
 };

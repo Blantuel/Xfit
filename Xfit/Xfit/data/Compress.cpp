@@ -1,14 +1,15 @@
 #include "Compress.h"
 
-#ifdef __ANDROID__
-#include "zlib.h"
-#elif _WIN32
-#include "../../Zlib/zlib.h"
-#endif
 
-void* Compress::CompressZip(const void* input, unsigned len, unsigned* destLen) {
-	*destLen = len + len / 100 + 12;
-	unsigned char* output = new unsigned char[*destLen];
+
+void Compress::CompressZip(const void* _input, unsigned _inputSize, void* _output, unsigned* _outOutputSize) {
+#ifdef _DEBUG
+	if(!_input)throw CompressError(CompressError::Code::NullInput);
+	if(!_output)throw CompressError(CompressError::Code::NullOutput);
+	if(_inputSize==0)throw CompressError(CompressError::Code::ZeroInputSize);
+	if(!_outOutputSize)throw CompressError(CompressError::Code::NullOutOutputSize);
+#endif
+	*_outOutputSize = _inputSize + _inputSize / 100 + 12;
 
 	int err;
 	z_stream stream;
@@ -24,30 +25,38 @@ void* Compress::CompressZip(const void* input, unsigned len, unsigned* destLen) 
 
 	stream.adler = 0;
 
-	stream.next_in = (Bytef*)input;
-	stream.avail_in = len;
+	stream.next_in = (Bytef*)_input;
+	stream.avail_in = _inputSize;
 	
-	stream.next_out = output;
-	stream.avail_out = *destLen;
+	stream.next_out = (Bytef*)_output;
+	stream.avail_out = *_outOutputSize;
 	stream.data_type = Z_BINARY;
-
+	
 	err = deflateInit(&stream, Z_DEFAULT_COMPRESSION);
-	if (err != Z_OK) return nullptr;
+	if (err != Z_OK) {
+		deflateEnd(&stream);
+		throw CompressError(CompressError::Code::Compress);
+	}
 
 	err = deflate(&stream, Z_FINISH);
 	if (err != Z_STREAM_END) {
 		deflateEnd(&stream);
-		return nullptr;
+		throw CompressError(CompressError::Code::Compress);
 	}
-	*destLen = stream.total_out;
+	*_outOutputSize = stream.total_out;
 
-	deflateEnd(&stream);
-
-	return output;
+	err = deflateEnd(&stream);
+	if (err == Z_STREAM_ERROR) {
+		throw CompressError(CompressError::Code::Compress);
+	}
 }
-void* Compress::UncompressZip(const void* input, unsigned len, unsigned destLen) {
-	unsigned char* output = new unsigned char[destLen];
-
+void Compress::UncompressZip(const void* _input, unsigned _inputSize, void* _output, unsigned _outputSize) {
+#ifdef _DEBUG
+	if(!_input)throw CompressError(CompressError::Code::NullInput);
+	if(!_output)throw CompressError(CompressError::Code::NullOutput);
+	if(_inputSize==0)throw CompressError(CompressError::Code::ZeroInputSize);
+	if(_outputSize==0)throw CompressError(CompressError::Code::ZeroOutputSize);
+#endif
 	int err;
 	z_stream stream;
 	stream.total_in=0; 
@@ -62,23 +71,26 @@ void* Compress::UncompressZip(const void* input, unsigned len, unsigned destLen)
 
 	stream.adler=0;
 
-	stream.next_in = (Bytef*)input;
-	stream.avail_in = len;
+	stream.next_in = (Bytef*)_input;
+	stream.avail_in = _inputSize;
 
-	stream.next_out = output;
-	stream.avail_out = destLen;
+	stream.next_out = (Bytef*)_output;
+	stream.avail_out = _outputSize;
 	stream.data_type = Z_BINARY;
 
 	err = inflateInit(&stream);
-	if (err != Z_OK) return nullptr;
+	if (err != Z_OK) {
+		inflateEnd(&stream);
+		throw CompressError(CompressError::Code::Uncompress);
+	}
 
 	err = inflate(&stream, Z_FINISH);
 	if (err != Z_STREAM_END) {
 		inflateEnd(&stream);
-		return nullptr;
+		throw CompressError(CompressError::Code::Uncompress);
 	}
-
 	err = inflateEnd(&stream);
-
-	return output;
+	if (err == Z_STREAM_ERROR) {
+		throw CompressError(CompressError::Code::Uncompress);
+	}
 }

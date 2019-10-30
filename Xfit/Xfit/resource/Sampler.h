@@ -4,16 +4,55 @@
 
 
 class Sampler  {
-	friend class Button;
-	friend class Image;
+	friend class ImageBase;
 	friend class Image3D;
 	friend class ImageInstance;
+	friend class ImageMultiInstance;
 	friend class ImageInstance3D;
-	friend class AnimateObject;
+	friend class RTAnimateObjectBase;
 
+#ifdef _WIN32
+	static constexpr D3D11_FILTER DirectX11Filter[] = {
+		D3D11_FILTER_MIN_MAG_MIP_POINT,
+		D3D11_FILTER_MIN_MAG_POINT_MIP_LINEAR,
+		D3D11_FILTER_MIN_POINT_MAG_LINEAR_MIP_POINT,
+		D3D11_FILTER_MIN_POINT_MAG_MIP_LINEAR,
+		D3D11_FILTER_MIN_LINEAR_MAG_MIP_POINT,
+		D3D11_FILTER_MIN_LINEAR_MAG_POINT_MIP_LINEAR,
+		D3D11_FILTER_MIN_MAG_LINEAR_MIP_POINT,
+		D3D11_FILTER_MIN_MAG_MIP_LINEAR,
+		D3D11_FILTER_ANISOTROPIC
+	};
+	static constexpr D3D11_TEXTURE_ADDRESS_MODE DirectX11TextureAdressMode[] = {
+		D3D11_TEXTURE_ADDRESS_WRAP,
+		D3D11_TEXTURE_ADDRESS_MIRROR,
+		D3D11_TEXTURE_ADDRESS_CLAMP,
+		D3D11_TEXTURE_ADDRESS_BORDER,
+		D3D11_TEXTURE_ADDRESS_MIRROR_ONCE
+	};
+#elif __ANDROID__
+#endif
 public:
-#ifdef OPENGL
-	enum class MagFilter {
+	enum class Filter {
+		MinMagMipPoint,
+		MinMagPoint_MipLinear,
+		MinPoint_MagLinear_MipPoint,
+		MinPoint_MagMipLinear,
+		MinLinear_MagMipPoint,
+		MinLinear_MagPoint_MipLinear,
+		MinMagLinear_MipPoint,
+		MinMagMipLinear,
+		Anisotropic
+	};
+	enum class TextureAdressMode {
+		Warp,
+		Mirror,
+		Clamp,
+		Border,
+		MirrorOnce
+	};
+
+	/*enum class MagFilter {
 		Nearest = GL_NEAREST,
 		Linear = GL_LINEAR
 	};
@@ -29,17 +68,24 @@ public:
 		Repeat=GL_REPEAT,
 		ClampToEdge=GL_CLAMP_TO_EDGE,
 		MirroredRepeat=GL_MIRRORED_REPEAT
-	};
-#elif VULKAN
-#endif
-	Sampler();
+	};*/
 
-	void SetMinFilter(MinFilter _minFilter);
-	void SetMagFilter(MagFilter _magFilter);
-	void SetWrapModeU(WarpMode _warpModeU);
-	void SetWrapModeV(WarpMode _warpModeV);
+	Sampler(Filter _filter = Filter::MinMagMipLinear, TextureAdressMode _textureAdressModeU = TextureAdressMode::Clamp
+		,TextureAdressMode _textureAdressModeV = TextureAdressMode::Clamp, TextureAdressMode _textureAdressModeW = TextureAdressMode::Clamp,
+		unsigned _maxAnisotropy = 16);
+
+	//void SetMinFilter(MinFilter _minFilter);
+	//void SetMagFilter(MagFilter _magFilter);
+	//void SetWrapModeU(WarpMode _warpModeU);
+	//void SetWrapModeV(WarpMode _warpModeV);
 
 	~Sampler();
 private:
+#ifdef _WIN32
+	union {
+		ID3D11SamplerState* sampler;
+	};
+#elif __ANDROID__
 	GLuint sampler;
+#endif
 };

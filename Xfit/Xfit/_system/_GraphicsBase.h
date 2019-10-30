@@ -8,8 +8,6 @@ class Camera3D;
 class Camera;
 
 struct Light;
-class Frame;
-class FrameArray;
 class Sampler;
 class Blend;
 class Vertices;
@@ -62,7 +60,4 @@ namespace _System {
 		Point3DwF position;
 	};
 #pragma pack(pop)
-
-
-	inline PointF defaultUV2D[4] = { PointF(0.f,0.f),PointF(1.f,0.f) ,PointF(0.f,1.f) ,PointF(1.f,1.f) };
 }

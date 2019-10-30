@@ -9,6 +9,7 @@
 #include <typeinfo>
 #include <sstream>
 #include <thread>
+#include <memory>
 
 
 #if defined(_M_AMD64) || defined(_M_IX86) || defined(__amd64__) || defined(__i386__)
@@ -41,8 +42,6 @@
 
 #endif
 
-#define OPENGL 1
-//#define VULKAN 1
 
 #if defined(_M_AMD64) || defined(__amd64__) || defined(_M_ARM64) || defined(__aarch64__)
 #define BIT64 1
@@ -59,31 +58,23 @@
 #include <Audioclient.h>
 #include <io.h>
 
-#ifndef _tWinmain
+#ifndef _tWinMain
 #ifdef UNICODE
-#define _tWinmain wWinMain
+#define _tWinMain wWinMain
 #else
-#define _tWinmain WinMain
+#define _tWinMain WinMain
 #endif
 #endif
 
-#ifdef OPENGL
-#include <gl/GL.h>
-#include "_GL/glext.h"
-#include "_GL/wglext.h"
 
-#pragma comment(lib,"opengl32.lib")
+#include <d3d11_4.h>
+#include <d3d12.h>
+#include <d3dcompiler.h>
 
-#elif VULKAN
-
-#pragma comment(lib,"vulkan-1.lib")
-#define VK_USE_PLATFORM_WIN32_KHR 1
-
-#endif
 
 #ifdef _DEBUG
 
-#define PRINTMSG(...) ((void)0)
+#define PRINTMSG(...) {char* __str = new char[16384];sprintf_s(__str,16384,__VA_ARGS__);OutputDebugStringA(__str);delete[]__str;} 
 
 #else
 
@@ -108,6 +99,7 @@
 #include <android/looper.h>
 #include <android/native_activity.h>
 #include <android/asset_manager.h>
+#include <SLES/OpenSLES.h>
 
 #ifdef OPENGL
 
@@ -116,6 +108,7 @@
 #include <GLES3/gl3.h>
 #include <GLES3/gl3ext.h>
 #include <GLES3/gl31.h>
+#include <GLES3/gl32.h>
 
 #elif VULKAN
 #define VK_USE_PLATFORM_ANDROID_KHR 1
@@ -135,9 +128,17 @@
 
 #endif
 
-#ifdef VULKAN
-#include <vulkan/vulkan.h>
-#endif
+#include <ft2build.h>
+#include FT_FREETYPE_H
+#include "../../Libpng/png.h"
+#include "../../Libjpeg/jpeglib.h"
+#include "../../Libogg/vorbis/vorbisfile.h"
+#include "../../Zlib/zlib.h"
+#include "webp/decode.h"
+#include "webp/encode.h"
+#include "webp/mux.h"
+#include "webp/demux.h"
+
 using namespace std;
 
 #ifdef UNICODE
@@ -171,3 +172,11 @@ using Tostringstream = ostringstream;
 #else
 #define ALIGN alignas(16)
 #endif
+
+
+template<typename T> void SafeRelease(T** ppT) {
+	if (*ppT) {
+		(*ppT)->Release();
+		*ppT = nullptr;
+	}
+}

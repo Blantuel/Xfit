@@ -1,13 +1,50 @@
 #pragma once
 
-#include "../object/Image.h"
+#include "../resource/Frame.h"
 
 class Font;
+struct FontSize;
+struct FontColor;
+struct FontContainer;
 
 
-class TextBox : public Image {
-	unsigned width, height;
+
+
+class TextBox : public Frame {
 public:
-	void PrepareDraw(const wchar_t* _text, const Font* font, unsigned _width,unsigned _height, unsigned _pixelSize, unsigned _color);
-	void PrepareDrawEdit(const wchar_t* _text, const Font* font, unsigned _pixelSize, unsigned _color);
+	enum class Align {
+		Left, Center, Right
+	};
+	enum class VerticalAlign {
+		High, Middle, Bottom
+	};
+	struct AlignPack {
+		unsigned len;
+		Align align;
+	};
+	struct LineSpacing {
+		unsigned len;
+		float lineSpacing;
+	};
+protected:
+	void _PrepareDraw();
+public:
+	bool isScrollBox;
+protected:
+	unsigned scrollHeight;
+public:
+	unsigned scrollPx;
+	VerticalAlign verticalAlign;
+	unsigned width, height;
+	const wchar_t* text;
+	FontContainer* fonts;
+	FontColor* colors;
+	FontSize* sizes;
+	AlignPack* aligns;
+	LineSpacing* lineSpacings;
+
+	
+	void PrepareDraw();
+	void PrepareDrawEdit();
+	unsigned GetScrollHeight()const;
 };

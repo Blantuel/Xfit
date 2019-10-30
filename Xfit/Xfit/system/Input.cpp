@@ -6,14 +6,15 @@
 
 namespace Input {
 #ifdef _WIN32
-	PointF GetMousePos() {
+	Point GetMousePosScreen() {
 		POINT p;
 		GetCursorPos(&p);
 		ScreenToClient(_System::_Windows::hWnd, &p);
-		PointF mousePos;
-		mousePos.x = (float)p.x / (float)_System::_Windows::windowWidth*2.f - 1.f;
-		mousePos.y = (float)p.y / (float)_System::_Windows::windowHeight*2.f - 1.f;
-		return mousePos;
+		return Point(p.x, p.y);
+	}
+	PointF GetMousePos() {
+		const Point p = GetMousePosScreen();
+		return PointF((float)p.x - (float)System::GetWindowWidth()/2.f, (float)-p.y + (float)System::GetWindowHeight() / 2.f);
 	}
 	bool IsLMouseClicked() { return _System::_Windows::click == 3; }
 	bool IsLMouseClick() { return _System::_Windows::click == 1; }
@@ -24,12 +25,23 @@ namespace Input {
 	bool IsWheelClicked() { return _System::_Windows::click3 == 3; }
 	bool IsWheelClick() { return _System::_Windows::click3 == 1; }
 	bool IsWheelClicking() { return _System::_Windows::click3 == 2; }
-	Tchar GetEnterChar() { return _System::_Windows::tchar; }
-	bool IsKeyPress(unsigned char _keyCode) { return _System::_Windows::keyState[_keyCode]==1; }
-	bool IsKeyPressing(unsigned char _keyCode) { return _System::_Windows::keyState[_keyCode] == 2;}
-	bool IsKeyPressed(unsigned char _keyCode) { return _System::_Windows::keyState[_keyCode] == 3;}
+	wstring& GetChars() {
+		return _System::_Windows::chars;
+	}
+	EnterCharState GetEnterCharState() {
+		return _System::_Windows::enterCharState;
+	}
+	unsigned GetPrevCharsLen() {
+		return _System::_Windows::prevCharsLen;
+	}
+
+	bool IsKeyPress(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 1; }
+	bool IsKeyPressing(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 2 || _System::_Windows::keyState[(unsigned char)_keyCode] == 1; }
+	bool IsKeyPressed(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 3; }
 	short GetWheelScrolling() { return _System::_Windows::zScroll; }
 	void ShowCursor(bool _show) { ::ShowCursor(_show); }
+
+	bool IsMouseOut() { return _System::_Windows::mouseOut; }
 #elif __ANDROID__
 
 	bool IsPointerClick(unsigned _index/* = 0*/) { 

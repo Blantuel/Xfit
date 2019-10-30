@@ -1,10 +1,21 @@
 #pragma once
 
-#include "../object/Image.h"
+#include "../resource/Frame.h"
 
 class Font;
+struct FontSize;
+struct FontColor;
+struct FontContainer;
+struct FontRender;
 
-class Label : public Image {
+class Label : public Frame {
 public:
-	void PrepareDraw(const wchar_t* _text,const Font* font,unsigned _pixelSize,unsigned _color, unsigned* _outWidth = nullptr,unsigned* _outHeight = nullptr);
+	const wchar_t* text;
+	FontContainer* fonts;
+	FontColor* colors;
+	FontSize* sizes;
+	FontRender* renders;
+
+	Label();
+	void PrepareDraw();
 };

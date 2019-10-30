@@ -5,8 +5,8 @@
 #include "../view/Camera3D.h"
 
 
-
-bool Image3D::Draw(unsigned index, unsigned viewIndex)
-{
-	return true;
-}
+//
+//bool Image3D::Draw(unsigned index, unsigned viewIndex)
+//{
+//	return true;
+//}

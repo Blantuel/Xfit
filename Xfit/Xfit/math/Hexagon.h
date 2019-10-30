@@ -1,12 +1,11 @@
 #pragma once
 
 #include "Point.h"
-
-template <typename T> class Array;
+#include "../data/Array.h"
 
 class HexagonF {
 public:
-	Array<PointF>* points;
+	Array<PointF> points;
 
 	const PointF GetCenterPoint()const;
 	float GetArea()const;

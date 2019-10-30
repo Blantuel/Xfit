@@ -1,11 +1,10 @@
 #pragma once
 #include "Point.h"
-
-template <typename T> class Array;
+#include "../data/Array.h"
 
 class LinesF {
 public:
-	Array<PointF>* points;
+	Array<PointF> points;
 
 	float Distance() const;
 };

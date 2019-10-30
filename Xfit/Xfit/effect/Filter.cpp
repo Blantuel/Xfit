@@ -1,11 +1,8 @@
 
 #include "Filter.h"
 
-#ifdef OPENGL
 #include "../_system/_OpenGL.h"
-#elif VULKAN
 #include "../_system/_Vulkan.h"
-#endif
 
 void Filter::Init()
 {	

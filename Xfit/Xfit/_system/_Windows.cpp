@@ -1,53 +1,89 @@
-#ifdef _WIN32
+#ifdef WIN_DESKTOP
+
 #include "_Windows.h"
 #include "_Loop.h"
 #include "../data/Array.h"
+#include "_Renderer.h"
 
-#include "_OpenGL.h"
-#include "_Vulkan.h"
+#include "_DirectX11.h"
+#include "_DXGI.h"
+
 
 namespace _System::_Windows {
 	void Release() {}
 
-	bool sizeInited = false;//WM_SIZE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
 	bool activateInited = false;//WM_ACTIVATE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
 
 	LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
 		switch (_message) {
 		case WM_ACTIVATE:
 			if (activateInited) {
-				_Windows::pause = HIWORD(_wParam);
+				_Windows::pause = HIWORD(_wParam);//윈도우가 최소화 됬는지 확인
 				_Windows::activated = (LOWORD(_wParam) != WA_INACTIVE);
-				if (System::GetScreenMode() == System::ScreenMode::Fullscreen) {
-					_Windows::pause = !_Windows::activated;
-					if (_Windows::activated) {
-						if (ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN | CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
-						{
-						}
-					} else {
-						if (ChangeDisplaySettings(&restoreMode, CDS_RESET) != DISP_CHANGE_SUCCESSFUL)
-						{
-						}
-						CloseWindow(hWnd);
-					}
-				}
-				System::activateFunc(_Windows::activated, _Windows::pause);
+
+				System::activateFunc(System::activateData);
 			}
 			activateInited = true;
 			return 0;
 		case WM_SIZE:
-			if ((System::GetScreenMode() != System::ScreenMode::Fullscreen) && (_wParam != SIZE_MINIMIZED) && sizeInited) {
-				_Windows::windowWidth = LOWORD(_lParam);
-				_Windows::windowHeight = HIWORD(_lParam);
-				_System::_OpenGL::Resize();
-			}
-			sizeInited = true;
+			_Renderer::windowSize.width = LOWORD(_lParam);
+			_Renderer::windowSize.height = HIWORD(_lParam);
+
+			if(_System::_DXGI::swapChain)_System::_DirectX11::Resize();
+			if (_wParam != SIZE_MINIMIZED && System::sizeFunc)System::sizeFunc(System::sizeData);
+			return 0;
+		case WM_GETMINMAXINFO:
+			((MINMAXINFO*)_lParam)->ptMinTrackSize.x = 320;
+			((MINMAXINFO*)_lParam)->ptMinTrackSize.y = 240;
 			return 0;
 		case WM_KEYDOWN:
 			if (keyState[_wParam] == 0)keyState[_wParam] = 1;
 			return 0;
 		case WM_KEYUP:
 			keyState[_wParam] = 3;
+			return 0;
+		case WM_IME_COMPOSITION:
+		{
+			HIMC hIMC = ImmGetContext(hWnd);
+
+			unsigned len;
+			if (_lParam & GCS_RESULTSTR) {
+				if ((len = ImmGetCompositionString(hIMC, GCS_RESULTSTR, NULL, 0)) > 0) {
+					wchar_t* tempChars = new wchar_t[len];
+					ImmGetCompositionString(hIMC, GCS_RESULTSTR, (LPVOID)tempChars, len);
+
+					tempChars[len - 1] = 0;
+					chars.resize(chars.size() - prevCharsLen);
+					chars += tempChars;
+				}
+				enterCharState = EnterCharState::Finish;
+			} else if (_lParam & GCS_COMPSTR) {
+				if ((len = ImmGetCompositionString(hIMC, GCS_COMPSTR, NULL, 0)) > 0) {
+					wchar_t* tempChars = new wchar_t[len];
+					ImmGetCompositionString(hIMC, GCS_COMPSTR, (LPVOID)tempChars, len);
+
+					tempChars[len - 1] = 0;
+					chars += tempChars;
+					prevCharsLen = len-1;
+				}
+				enterCharState = EnterCharState::Making;
+			}
+			
+			//{
+			//	wchar_t buf[20];
+			//	swprintf_s(buf, L"%c : %d\n", (wchar_t)_wParam, _wParam);
+			//	OutputDebugString(buf);
+			//}
+			return 0;
+		}
+		case WM_CHAR:
+			chars += (wchar_t)_wParam;
+			enterCharState = EnterCharState::Finish;
+			return 0;
+		case WM_IME_CHAR:
+			return 0;
+		case WM_KILLFOCUS:
+			memset(keyState, 0, 256);
 			return 0;
 		case WM_LBUTTONDOWN:
 			click = 1;
@@ -67,6 +103,16 @@ namespace _System::_Windows {
 		case WM_MBUTTONUP:
 			click3 = 3;
 			return 0;
+		case WM_MOUSEMOVE:
+			TRACKMOUSEEVENT mouseEvent;
+			mouseEvent.cbSize = sizeof(mouseEvent);
+			mouseEvent.dwFlags = TME_LEAVE;
+			mouseEvent.hwndTrack = _hWnd;
+			TrackMouseEvent(&mouseEvent);
+			return 0;
+		case WM_MOUSELEAVE://MOUSEMOVE 메시지에서 TrackMouseEvent를 호출하면 호출되는 메시지
+			mouseOut = true;
+			return 0;
 		case WM_MOUSEWHEEL:
 			zScroll = GET_WHEEL_DELTA_WPARAM(_wParam);
 			return 0;
@@ -76,7 +122,38 @@ namespace _System::_Windows {
 		}
 		return DefWindowProc(_hWnd, _message, _wParam, _lParam);
 	}
-	void Init(System::WindowInfo* _info) {
+	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex) {
+		SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
+		SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+		/*
+		WS_EX_APPWINDOW : 창이 표시되면 최상위 창을 작업 표시 줄에 강제로 표시합니다.
+		윈도우가 작업 표시 줄에 들어가는 몇 가지 기본 규칙이 있습니다. 한마디로 :
+
+		WS_EX_APPWINDOW 확장 스타일이 설정되면 (표시 될 때) 표시됩니다.
+		윈도우가 최상위 레벨의 소유되지 않은 윈도우 인 경우 (표시 될 때)가 표시됩니다.
+		그렇지 않으면 표시되지 않습니다.
+		*/
+		//HWND_TOPMOST : 윈도우를 최상위 윈도우로 표시합니다.
+		SetWindowPos(hWnd, HWND_TOPMOST, _DXGI::displays[_displayIndex].displayPos.x, _DXGI::displays[_displayIndex].displayPos.y,
+			_DXGI::displays[_displayIndex].modes[_displayModeIndex].width, _DXGI::displays[_displayIndex].modes[_displayModeIndex].height, 0);
+		ShowWindow(hWnd, SW_SHOWNORMAL);
+
+		DEVMODE mode = { 0 };
+		mode.dmSize = sizeof(mode);
+		mode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFREQUENCY;
+		mode.dmPelsWidth = _DXGI::displays[_displayIndex].modes[_displayModeIndex].width;
+		mode.dmPelsHeight = _DXGI::displays[_displayIndex].modes[_displayModeIndex].height;
+		mode.dmDisplayFrequency = _DXGI::displays[_displayIndex].modes[_displayModeIndex].refleshRate;
+
+		DISPLAY_DEVICE displayDevice;
+		displayDevice.cb = sizeof(displayDevice);
+		EnumDisplayDevices(NULL, _displayIndex, &displayDevice, 0);
+	
+		ChangeDisplaySettingsEx(displayDevice.DeviceName, &mode, nullptr, CDS_FULLSCREEN | CDS_RESET, nullptr);
+
+		screenMode = System::ScreenMode::Fullscreen;
+	}
+	void Create() {
 		RTL_OSVERSIONINFOEXW osversioninfo;
 		osversioninfo.dwOSVersionInfoSize = sizeof(osversioninfo);
 		const auto RtlGetVersion = (NTSTATUS(NTAPI*)(PRTL_OSVERSIONINFOEXW))GetProcAddress(GetModuleHandle(_T("ntdll.dll")), "RtlGetVersion");
@@ -97,9 +174,9 @@ namespace _System::_Windows {
 		processorCoreNum = infoi.dwNumberOfProcessors;
 		processorArchitecture = infoi.wProcessorArchitecture;
 
-		maximized = _info->maximized;
-		minimized = _info->minimized;
-
+		_DXGI::Create();
+	}
+	void Init(System::CreateInfo* _info) {
 		WNDCLASS wc;
 		wc.style = CS_OWNDC;
 		wc.lpfnWndProc = WndProc;
@@ -111,54 +188,46 @@ namespace _System::_Windows {
 		else wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wc.hbrBackground = nullptr;
 		wc.lpszMenuName = nullptr;
-		wc.lpszClassName = _T("WGXR");
+		wc.lpszClassName = _T("Xfit");
 		RegisterClass(&wc);
-	
-		windowWidth = _info->windowWidth;
-		windowHeight = _info->windowHeight;
+
 		resizeWindow = _info->resizeWindow;
 
 		screenMode = _info->screenMode;
 
-		DWORD style;
-		DWORD exStyle=0;
-		if (screenMode == System::ScreenMode::Fullscreen) {
-			style = WS_POPUP;
-			exStyle= WS_EX_APPWINDOW;
-			EnumDisplaySettings(nullptr, ENUM_CURRENT_SETTINGS, &restoreMode);
+		maximized = _info->maximized;
+		minimized = _info->minimized;
 
-			memset(&fullscreenMode, 0, sizeof(fullscreenMode));// DEVMODE 구조체를 초기화
-			fullscreenMode.dmSize = sizeof(fullscreenMode);// 구조체의 크기 
-			fullscreenMode.dmPelsWidth = windowWidth;
-			fullscreenMode.dmPelsHeight = windowHeight;
-			fullscreenMode.dmBitsPerPel = 32;// set the bits per pixel
-			fullscreenMode.dmFields = DM_PELSWIDTH | DM_PELSHEIGHT | DM_BITSPERPEL;
-		}else style = WS_CAPTION | WS_SYSMENU | (resizeWindow?WS_THICKFRAME:0) | (maximized ? WS_MAXIMIZEBOX : 0) | (minimized ? WS_MINIMIZEBOX : 0);
+		_DXGI::Init(_info);
 
-
-		hWnd = CreateWindowEx(exStyle,wc.lpszClassName, _info->title.data(), style, _info->windowPos.x, _info->windowPos.y, _info->windowWidth, _info->windowHeight, nullptr, nullptr, hInstance, nullptr);
-		if (hWnd == nullptr);
+		_DirectX11::Init(_info);
 
 		ShowWindow(hWnd, (int)_info->windowShow);
 
-		if (screenMode == System::ScreenMode::Fullscreen)ChangeDisplaySettings(&fullscreenMode, CDS_FULLSCREEN | CDS_RESET);
-		_Windows::pause = false;
-		_Windows::activated = true;
 
 		hdc = GetDC(hWnd);
+
+		_Windows::activated = true;
 	}
+	
 	bool Loop() {
+		mouseOut = false;
 		if (click == 1)click = 2;
 		else if (click == 3)click = 0;
 		if (click2 == 1)click2 = 2;
 		else if (click2 == 3)click2 = 0;
 		if (click3 == 1)click3 = 2;
 		else if (click3 == 3)click3 = 0;
+		
 		for (unsigned i = 0; i < 256; i++) {
 			if (keyState[i] == 1)keyState[i] = 2;
 			else if (keyState[i] == 3)keyState[i] = 0;
 		}
-		if (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
+		zScroll = 0;
+		chars.clear();
+		prevCharsLen = 0;
+		enterCharState = EnterCharState::None;
+		while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			if (msg.message == WM_QUIT) {
 				_System::_Loop::exited = true;
 				return false;
@@ -167,6 +236,35 @@ namespace _System::_Windows {
 			DispatchMessage(&msg);
 		}
 		return true;
+	}
+	void SetWindowMode(Point _pos, PointU _size, System::WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow) {
+		resizeWindow = _resizeWindow;
+		maximized = _maximized;
+		minimized = _minimized;
+
+		DISPLAY_DEVICE displayDevice;
+		displayDevice.cb = sizeof(displayDevice);
+		EnumDisplayDevices(NULL, _DXGI::currentDisplay, &displayDevice, 0);
+
+		ChangeDisplaySettingsEx(displayDevice.DeviceName, nullptr, nullptr, CDS_RESET, nullptr);
+
+		DWORD style = WS_CAPTION | WS_SYSMENU | (resizeWindow ? WS_THICKFRAME : 0) | (maximized ? WS_MAXIMIZEBOX : 0)
+			| (minimized ? WS_MINIMIZEBOX : 0);
+
+		//SWP_DRAWFRAME : 윈도우 프레임(표시줄 등)을 그린다.
+
+		RECT rect = {0, 0, _size.x, _size.y};
+		AdjustWindowRect(&rect, style, FALSE);
+
+		SetWindowLongPtr(hWnd, GWL_STYLE, style);
+		SetWindowLongPtr(hWnd, GWL_EXSTYLE, 0);
+		SetWindowPos(hWnd, 0, _pos.x, _pos.y, rect.right-rect.left, rect.bottom-rect.top, SWP_DRAWFRAME);
+
+		if (_state == System::WindowState::Maximized)ShowWindow(hWnd, SW_MAXIMIZE);
+		else if (_state == System::WindowState::Minimized)ShowWindow(hWnd, SW_MINIMIZE);
+		else ShowWindow(hWnd, SW_RESTORE);
+		
+		screenMode = System::ScreenMode::Window;
 	}
 }
 #endif

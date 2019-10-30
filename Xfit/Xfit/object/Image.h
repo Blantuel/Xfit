@@ -1,27 +1,34 @@
 #pragma once
 
+#include "ImageBase.h"
 
-#include "Object.h"
-#include "../math/Rect.h"
 
-class Sampler;
+class Vertex;
+class Index;
 
-class Image :public Object{
-#ifdef OPENGL
-	GLuint posUV;//..PosUV변수는 0으로 이미지가 Build됐는지를 판별함.
-	GLuint texture;
-#elif VULKAN
-#endif
+template <typename T> class Array;
+
+class ImageError : public Error {
 public:
-	Sampler * sampler;
+	enum class Code {
+		InvalidFile
+	};
+protected:
+	Code code;
+public:
+	Code GetCode()const{return code;}
+	ImageError(Code _code):code(_code) {}
+};
+class Image :public ImageBase {
+public:
+	Frame* frame;
+	Vertex* vertex;
+	Vertex* uv;
+	Index* index;
 
 	virtual void Draw();
 
-	void Build(const void* _data, unsigned _width, unsigned _height, const RectF& _rect, const PointF* _UVs);
-	void Build(const void* _data, unsigned _width, unsigned _height, const RectF& _rect);
-	void BuildEdit(const void* _data, unsigned _width, unsigned _height, unsigned _offsetX = 0, unsigned _offsetY = 0);
-
 	Image();
-	virtual ~Image();
+	Image(PointF _pos,PointF _scale,float _rotation,Blend* _blend,Sampler* _sampler,Frame* _frame,Vertex* _vertex,Vertex* _uv,Index* _index);
 };
 

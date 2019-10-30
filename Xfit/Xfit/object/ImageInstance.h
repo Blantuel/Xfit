@@ -1,36 +1,61 @@
 #pragma once
 
 #include "Object.h"
-#include "../math/Rect.h"
+#include "../math/Matrix.h"
+#include "../system/Error.h"
 
 class Sampler;
+class Frame;
+class Vertex2D;
 
-class ImageInstance :public Object{
-#ifdef OPENGL
-	struct {
-		GLuint posUV;//..PosUV변수는 0으로 이미지가 Build됐는지를 판별함.
-		GLuint ins;//ins변수는 0으로 이미지가 BuildInstance됐는지를 판별함.
-		GLuint texture;
-	}openGL;
-#elif VULKAN
-#endif
-	unsigned insNum,maxInsNum;
+template <typename T> class Array;
 
-	unsigned width, height;
+class ImageInstanceError : public Error {
+public:
+	enum class Code {
+		NullVertex,
+		NullUV,
+		NullFrame,
+		NullSampler,
+		NullNodes,
+		NotVertexBuild,
+		NotUVBuild,
+		NotFrameBuild,
+		VertexUVMismatch,
+		NotBuild,
+		AlreadyBuild,
+		TooBigNode
+	};
+protected:
+	Code code;
+public:
+	Code GetCode()const{return code;}
+	ImageInstanceError(Code _code):code(_code){}
+};
+
+class ImageInstance :public Object {
+	GLuint ins;//ins변수는 0으로 이미지가 BuildInstance됐는지를 판별함.
+
+	unsigned insLen, insMaxLen;
 public:
 	Sampler * sampler;
+	Frame* frame;
+	Vertex2D* vertex;
+	Vertex2D* uv;
+	Matrix colorMat;
+	Array<Matrix>* nodes;
 
 	virtual void Draw();
 
-	unsigned GetWidth() const;
-	unsigned GetHeight() const;
-
-	void Build(const void* _data, unsigned _width, unsigned _height, const RectF& _rect, const PointF* _UVs);
-	void Build(const void* _data, unsigned _width, unsigned _height, const RectF& _rect);
-	void BuildInstance(unsigned _maxInsNum, unsigned _insNum,Matrix* _insMatries);
-	void UpdateInstance(unsigned _insNum, Matrix* _insMatries);
+	void BuildInstance();
+	void UpdateInstance();
+	void Delete();
 
 	ImageInstance();
 	virtual ~ImageInstance();
+
+	unsigned GetNum()const;
+	unsigned GetMaxNum()const;
+	bool IsBuild()const;
 };
 

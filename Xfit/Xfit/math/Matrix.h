@@ -4,7 +4,6 @@
 #include "Math.h"
 
 
-
 class alignas(16) Matrix {
 public:
 	union {
@@ -26,7 +25,9 @@ public:
 	Matrix();
 	Matrix(initializer_list<float> _initializer_list);
 	Matrix& Transpose();
+	void Identity();
 
+	static Matrix GetIdentity();
 	static Matrix GetMatrix2D(float _dx, float _dy, float _sx, float _sy, float _r);
 	static Matrix GetMatrix2DTranspose(float _dx, float _dy, float _sx, float _sy, float _r);
 	static Matrix GetMatrix3D(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz);

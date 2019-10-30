@@ -2,8 +2,6 @@
 
 #include "../math/Point3D.h"
 
-class Frame;
-
 class Blend;
 class Object3D;
 

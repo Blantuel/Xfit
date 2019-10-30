@@ -48,10 +48,13 @@ public:
 };
 class PointF {
 public:
-	float x, y;
+	union {
+		struct { float x, y; };
+		struct { float width, height; };
+	};
 
 	PointF() {}
-	PointF(float _x, float _y) :x(_x), y(_y) {}
+	constexpr PointF(float _x, float _y) :x(_x), y(_y) {}
 	float Distance(const PointF& _point) const {
 		const float a = x - _point.x, b = y - _point.y;
 		return sqrtf((a*a + b * b));
@@ -61,27 +64,27 @@ public:
 		return (a*a + b * b);
 	}
 
-	PointF AnglePoint(float _distance, float _angle = 0) const { return PointF(x + cosf(_angle*Math::DIVPI_180)*_distance, y + sinf(_angle*Math::DIVPI_180)*_distance); }
+	PointF AnglePoint(float _distance, float _angle = 0) const { return PointF(x + cosf(_angle*Math::DIVPI_180F)*_distance, y + sinf(_angle*Math::DIVPI_180F)*_distance); }
 	PointF DirectionPoint(float _distance, const PointF& _direction) const { return *this + (_direction*_distance); }
 
 	PointF& AnglePointThis(float _distance, float _angle = 0) {
-		x += cosf(_angle*Math::DIVPI_180)*_distance;
-		y += sinf(_angle*Math::DIVPI_180)*_distance;
+		x += cosf(_angle*Math::DIVPI_180F)*_distance;
+		y += sinf(_angle*Math::DIVPI_180F)*_distance;
 		return *this;
 	}
 	PointF& DirectionPointThis(float _distance, const PointF& _direction) { return *this += (_direction*_distance); }
 
-	float GetAngle(const PointF& _point) const { return atan2f((_point.y - y), (_point.x - x))*Math::DIV180_PI + 180; }
+	float GetAngle(const PointF& _point) const { return atan2f((_point.y - y), (_point.x - x))*Math::DIV180_PIF + 180.f; }
 
 	PointF& operator*=(const Matrix& _matrix) {
-		const PointF xx(_matrix._11, _matrix._21), yy(_matrix._12, _matrix._22);
-		x = InnerProduct(xx) + _matrix._41;
-		y = InnerProduct(yy) + _matrix._42;
+		const PointF xx(_matrix._11, _matrix._12), yy(_matrix._21, _matrix._22);
+		x = InnerProduct(xx) + _matrix._14;
+		y = InnerProduct(yy) + _matrix._24;
 		return *this;
 	}
 	PointF operator*(const Matrix& _matrix) const {
-		const PointF xx(_matrix._11, _matrix._21), yy(_matrix._12, _matrix._22);
-		return PointF(InnerProduct(xx) + _matrix._41, InnerProduct(yy) + _matrix._42);
+		const PointF xx(_matrix._11, _matrix._12), yy(_matrix._21, _matrix._22);
+		return PointF(InnerProduct(xx) + _matrix._14, InnerProduct(yy) + _matrix._24);
 	}
 	PointF& SetTransform(const Matrix& _matrix) { return *this *= _matrix; }
 
@@ -119,7 +122,10 @@ public:
 };
 class PointD {
 public:
-	double x, y;
+	union {
+		struct { double x, y; };
+		struct { double width, height; };
+	};
 
 	PointD() {}
 	PointD(double _x, double _y) :x(_x), y(_y) {}
@@ -127,7 +133,7 @@ public:
 		const double a = x - _point.x, b = y - _point.y;
 		return sqrt((a*a + b * b));
 	}
-	constexpr double DistancePow(const PointD& _point) const {
+	double DistancePow(const PointD& _point) const {
 		const double a = x - _point.x, b = y - _point.y;
 		return (a*a + b * b);
 	}

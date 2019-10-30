@@ -60,13 +60,7 @@
     <ClInclude Include="sound\Sound.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="resource\Vertex.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="view\Viewport.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="data\Converter.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="math\Point.h">
@@ -91,9 +85,6 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="math\Hexagon.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="math\Collision.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="math\Lines.h">
@@ -150,28 +141,10 @@
     <ClInclude Include="object\Image.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="object\ImageInstance.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="object\Button.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="physics\Collision.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="physics\RectCollision.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="object\Checkbox.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="system\Input.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="object\RadioButton.h">
-      <Filter>Header</Filter>
-    </ClInclude>
-    <ClInclude Include="object\AnimateLoopObject.h">
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="text\Font.h">
@@ -192,6 +165,135 @@
     <ClInclude Include="time\Time.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="resource\Frame.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\MultiInstanceNode.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\RTAnimateFrame.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\AnimateBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\AnimateFrame.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\FrameArray.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\FrameCompressFormat.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\FrameFormat.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ImageBase.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\MatrixObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\RadioButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\Checkbox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\Button.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\HitTest.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\RectHitTest.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\ImageType.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="data\ImageUtil.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\Decoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\ImageDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\JPEGDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\OGGDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\PNGDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\SoundDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\WAVDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="system\Screen.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="encoder\Encoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="encoder\ImageEncoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="encoder\WebPLosslessEncoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\WebPDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="encoder\WebPAnimateLosslessEncoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="decoder\WebPAnimateDecoder.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\AnimateMultiInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\CenterPointPos.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_DirectX11.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_Renderer.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_DXGI.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Index.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\Vertex.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Shape.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="resource\ShapeVertex.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\Line.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ShapeInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\LineInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="view\Viewport.cpp">
@@ -209,28 +311,13 @@
     <ClCompile Include="_system\_Windows.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="object\AnimateLoopObject.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="object\AnimateObject.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="effect\Blend.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="object\Button.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\Checkbox.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="math\Collision.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="data\Compress.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="data\Converter.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="effect\Filter.cpp">
@@ -246,9 +333,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="object3D\Image3D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\ImageInstance.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="system\Input.cpp">
@@ -267,12 +351,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="object3D\Object3D.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="object\RadioButton.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="physics\RectCollision.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="file\ResourceManager.cpp">
@@ -296,14 +374,138 @@
     <ClCompile Include="text\Textbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
-    <ClCompile Include="resource\Vertex.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
     <ClCompile Include="_system\_Android.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="time\Time.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="resource\Frame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\RTAnimateFrame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\AnimateBase.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\AnimateFrame.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\FrameArray.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ImageBase.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\MatrixObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\RadioButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\Checkbox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\Button.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\Collision.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\RectHitTest.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="data\ImageUtil.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\Decoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\ImageDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\JPEGDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\OGGDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\PNGDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\SoundDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\WAVDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="system\Screen.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="system\Context.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="encoder\Encoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="encoder\ImageEncoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="encoder\WebPLosslessEncoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\WebPDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="encoder\WebPAnimateLosslessEncoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="decoder\WebPAnimateDecoder.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\AnimateMultiInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_DirectX11.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="_system\_DXGI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Index.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\Vertex.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Shape.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="resource\ShapeVertex.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\Line.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ShapeInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\LineInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="imgPx2D.hlsl" />
+    <FxCompile Include="imgVert2D.hlsl" />
+    <FxCompile Include="shapeVert2D.hlsl" />
+    <FxCompile Include="shapeGeo2D.hlsl" />
+    <FxCompile Include="lineGeo2D.hlsl" />
+    <FxCompile Include="shapeInsVert2D.hlsl" />
+    <FxCompile Include="shapeInsGeo2D.hlsl" />
+    <FxCompile Include="lineInsVert2D.hlsl" />
+    <FxCompile Include="lineInsGeo2D.hlsl" />
+    <FxCompile Include="linePx2D.hlsl" />
+    <FxCompile Include="shapePx2D.hlsl" />
   </ItemGroup>
 </Project>

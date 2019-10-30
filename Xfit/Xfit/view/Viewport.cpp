@@ -1,11 +1,8 @@
 #include "Viewport.h"
 #include "Camera3D.h"
 
-#ifdef OPENGL
 #include "../_system/_OpenGL.h"
-#elif VULKAN
 #include "../_system/_Vulkan.h"
-#endif
 
 
 Viewport::Viewport(Camera* _camera/* = nullptr*/, Camera3D* _camera3D/* = nullptr*/) :camera(_camera), camera3D(_camera3D) { }

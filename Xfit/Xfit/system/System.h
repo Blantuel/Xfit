@@ -5,13 +5,22 @@
 
 template <typename T> class Array;
 
+class Vertex;
+class ShapeVertex;
+class Index;
+class Sampler;
+class Blend;
 
 class SystemError : public Error {
 public:
 	enum class Code {
 
 	};
-	SystemError(Code _code);
+protected:
+	Code code;
+public:
+	Code GetCode()const { return code; }
+	SystemError(Code _code) :code(_code) {}
 };
 
 namespace System {
@@ -78,30 +87,41 @@ namespace System {
 	constexpr int WindowDefaultPos = CW_USEDEFAULT;
 #endif
 
-	struct WindowInfo {
-		ScreenMode screenMode;
+	struct CreateInfo {
+		bool vSync;
 
-		unsigned windowWidth, windowHeight;
-		WindowShow windowShow;
-		
 #ifdef _WIN32
-		Point windowPos;
-		Tstring title;
-		Tchar* cursorResource;
-
 		bool maximized;
 		bool minimized;
 		bool resizeWindow;
 #endif
-	};
-	struct RendererInfo {
-		bool vSync;
-		unsigned char msaaCount;
+
+		ScreenMode screenMode;
+		WindowShow windowShow;
+
+		float maxFrame;
+		unsigned msaaCount, msaaQuality;
+		unsigned screenIndex;
+		unsigned refleshRate;
+
+#ifdef _WIN32
+		const Tchar* title;
+		const Tchar* cursorResource;
+		Point windowPos;
+#endif
+		PointU windowSize;
+
 	};
 	enum class RendererName {
 		None,
 		OpenGL,
-		Vulkan
+		Vulkan,
+		DirectX
+	};
+	enum class WindowState {
+		Restore,
+		Maximized,
+		Minimized
 	};
 	struct RendererVersion {
 		RendererName name;
@@ -110,9 +130,24 @@ namespace System {
 	};
 	
 	inline void(*createFunc)();
-	inline void(*activateFunc)(bool _activated, bool _minimized);
-	inline void(*updateFuncs)();
+	inline void(*activateFunc)(void* _data);
+	inline void(*sizeFunc)(void* _data);
+	inline void(*updateFuncs)(void* _data);
 	inline void(*destroyFunc)();
+	inline void* activateData = nullptr;
+	inline void* sizeData = nullptr;
+	inline void* updateData = nullptr;
+
+	inline Vertex* defaultUV;
+	inline Sampler* defaultSampler;
+	inline Sampler* pointSampler;
+	inline Blend* defaultBlend;
+	inline Vertex* defaultVertex2D;
+	inline ShapeVertex* rectShapeVertex2D;
+
+	inline Vertex* reverseUV;
+
+	inline Index* defaultIndex;
 
 	RendererVersion GetCurrentRendererVersion();
 
@@ -127,17 +162,13 @@ namespace System {
 	void Create(ANativeActivity* _activity);
 #endif
 
-	void RendererInit(RendererInfo* _info);
-	void WindowInit(WindowInfo* _info);
+	void Init(CreateInfo* _info);
 
-	float GetRefleshRate();
 	bool IsVSync();
 
-	constexpr double NotInitedDeltaTime = -1.0;
-	double GetDeltaTime();
+	float GetDeltaTime();
 
-	void SetScreenMode(ScreenMode _screenMode);
-	
+
 	unsigned GetProcessorCoresNum();
 
 	unsigned short GetProcessorArchitecture();
@@ -145,16 +176,16 @@ namespace System {
 	bool IsExiting();
 	unsigned GetWindowWidth();
 	unsigned GetWindowHeight();
+	PointU GetWindowSize();
+	Point GetWindowPos();
 
-	void GetTitle(Tstring& _title);
-
-#ifdef _WIN32
 	bool IsResizeWindow();
 	bool IsMaximizedWindow();
 	bool IsMinimizedWindow();
 	void SetTitle(const Tchar* _title);
 	void SetWindowShow(WindowShow _windowShow);
-#endif
+
+	void MsgBox(const Tchar* _msg, const Tchar* _title);
 	
 	void ResizeWindow(unsigned _width, unsigned _height);
 	ScreenMode GetScreenMode();
@@ -175,5 +206,32 @@ namespace System {
 	void CloseConsole();
 
 	void Clear(bool _clearDepth = false);
+	void SetClearColor(float _r,float _g,float _b,float _a);
+
 	void Render();
+
+	int GetDisplayNum();
+	int GetCurrentDisplayIndex();
+	int GetCurrentDisplayModeIndex();//게임에 적용된 현재 해상도 가져옴.
+	int GetCurrentDisplayModeIndex(unsigned _displayIndex);//해당 모니터 기본 해상도 가져옴.
+	int GetDisplayFromWindow();
+
+	PointU GetDisplayModeSize(unsigned _displayIndex, unsigned _displayModeIndex);
+
+	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex);
+	void SetWindowMode(PointU _size, Point _pos, WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow);
+	WindowState GetWindowState();
+
+	void MoveWindow(Point _pos);
+
+	void SetMaxFrame(double _maxFrame);
+	float GetMaxFrame();
+
+	bool IsActivated();
+
+#ifdef _WIN32
+	void Wait(unsigned _milisecond);
+#elif __ANDROID__
+	void Wait(unsigned _time);
+#endif
 };

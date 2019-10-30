@@ -5,7 +5,7 @@
 
 #ifdef _WIN32
 
-class FileError :public Error{
+class FileError :public Error {
 public:
 	enum class Code {
 		AccessDenined = ERROR_ACCESS_DENIED,
@@ -20,10 +20,13 @@ public:
 		OverflowIndex,
 		MinusIndex,
 		InvalidOpenMode,
-		AlreadyOpened,
-		Other
+		AlreadyOpened
 	};
-	FileError(FileError::Code _code) :Error((int)_code) {}
+protected:
+	Code code;
+public:
+	Code GetCode()const { return code; }
+	FileError(FileError::Code _code) :code(_code) {}
 };
 class File {
 	HANDLE hFile;
@@ -43,7 +46,12 @@ public:
 	};
 	bool IsOpen()const { return hFile != INVALID_HANDLE_VALUE; }
 	File() :hFile(INVALID_HANDLE_VALUE){}
-	File(const char* _path, OpenMode _openMode = OpenMode::Read) {Open(_path, _openMode);}
+	File(const char* _path, OpenMode _openMode = OpenMode::Read) {
+#ifdef _DEBUG
+		hFile = INVALID_HANDLE_VALUE;
+#endif
+		Open(_path, _openMode);
+	}
 	void Open(const char* _path, OpenMode _openMode = OpenMode::Read) {
 #ifdef _DEBUG
 		if (IsOpen()) throw FileError(FileError::Code::AlreadyOpened);
@@ -59,11 +67,9 @@ public:
 		case OpenMode::ReadWriteCreate:
 			hFile = CreateFileA(_path, GENERIC_ALL, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
 			break;
-#ifdef _DEBUG
 		default:
 			throw FileError(FileError::Code::InvalidOpenMode);
 			break;
-#endif
 		}
 		if (!IsOpen()) throw FileError((FileError::Code)GetLastError());
 	}
@@ -133,30 +139,33 @@ public:
 #endif
 		return SetFilePointer(hFile, 0, nullptr, DWORD(MoveOption::Current));
 	}
-	template<typename T> unsigned Read(T* _data)const {return ReadBytes(sizeof(T) , _data);}
-	template <typename T> unsigned Write(const T& _data) { return WriteBytes(sizeof(T), &_data); }
 	~File() { if (IsOpen())Close(); }
 };
 
 #elif __ANDROID__
 
-class FileError :public Error{
+class FileError :public Error {
 public:
 	enum class Code {
+		AccessDenined = ERROR_ACCESS_DENIED,
+		NotFound = ERROR_FILE_NOT_FOUND,
+		SharingViolation = ERROR_SHARING_VIOLATION,
+		AlreadyExists = ERROR_ALREADY_EXISTS,
+		NotEnoughMemory = ERROR_NOT_ENOUGH_MEMORY,
+		InvalidBuffer = ERROR_INVALID_USER_BUFFER,
 		CopyFailed,
 		CopyCreateFailed,
 		NotOpened,
 		OverflowIndex,
 		MinusIndex,
-		AccessDenined,
-		NotFound,
-		SharingViolation,
-		AlreadyExists,
-		NotEnoughMemory,
-		InvalidBuffer,
-		Other
+		InvalidOpenMode,
+		AlreadyOpened
 	};
-	FileError(FileError::Code _code) :Error((int)_code) {}
+protected:
+	Code code;
+public:
+	Code GetCode()const { return code; }
+	FileError(FileError::Code _code) :code(_code) {}
 };
 class File {
 	FILE* hFile;

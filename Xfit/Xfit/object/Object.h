@@ -1,16 +1,17 @@
 #pragma once
 
-#include "../math/Matrix.h"
-#include "../physics/Collision.h"
+#include "../stdafx.h"
 
 class Blend;
 class Viewport;
 
-class Object  {
+class Object {
 public:
-	Matrix mat;
 	Blend * blend;
 
+	Object(Blend* _blend);
+	Object();
+	bool visible;
 	virtual ~Object() {}
 	virtual void Draw();
 };

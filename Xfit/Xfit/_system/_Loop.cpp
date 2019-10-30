@@ -3,8 +3,7 @@
 #include "_Windows.h"
 #include "_Android.h"
 
-#include "_OpenGL.h"
-#include "_Vulkan.h"
+#include "_DirectX11.h"
 
 #include "../data/Array.h"
 #include "../time/Time.h"
@@ -17,9 +16,15 @@ namespace _System::_Loop {
 		} else {
 			const auto time2 = time;
 			time = Time::GetTime();
-			deltaTime = time - time2;
+			deltaTime = (float)(time - time2);
+			if (maxFrame > 0.0) {
+				while ((1.f / maxFrame) > deltaTime) {
+					const auto time2 = time;
+					time = Time::GetTime();
+					deltaTime += (float)(time - time2);
+				}
+			}
 		}
-		System::updateFuncs();
-
+		System::updateFuncs(System::updateData);
 	}
 }

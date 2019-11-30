@@ -99,7 +99,7 @@ Title::Title() {
 	exitButton = new FadeLabelButton(PosType::Stretch, &exitLabel, PointF(300.f, -140.f), CenterPointPos::Center);
 	exitButton->faded = Exit;
 
-
+	long double a = 3.4;
 	/*
 
 	File file("The Record.ogg");

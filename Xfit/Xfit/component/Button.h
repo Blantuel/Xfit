@@ -33,6 +33,7 @@ public:
 
 	virtual bool Update();
 	HitTest* hitTest;
+	void* data;
 	ButtonFrame upFrame, overFrame, downFrame, disableFrame;
 
 	enum class State {

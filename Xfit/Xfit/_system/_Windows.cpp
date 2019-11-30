@@ -29,7 +29,7 @@ namespace _System::_Windows {
 			_Renderer::windowSize.width = LOWORD(_lParam);
 			_Renderer::windowSize.height = HIWORD(_lParam);
 
-			if(_System::_DXGI::swapChain)_System::_DirectX11::Resize();
+			if (_System::_DXGI::swapChain)_System::_DirectX11::Resize();
 			if (_wParam != SIZE_MINIMIZED && System::sizeFunc)System::sizeFunc(System::sizeData);
 			return 0;
 		case WM_GETMINMAXINFO:
@@ -38,9 +38,11 @@ namespace _System::_Windows {
 			return 0;
 		case WM_KEYDOWN:
 			if (keyState[_wParam] == 0)keyState[_wParam] = 1;
+			keyDownUpState[_wParam] = 1;
 			return 0;
 		case WM_KEYUP:
 			keyState[_wParam] = 3;
+			keyDownUpState[_wParam] = 2;
 			return 0;
 		case WM_IME_COMPOSITION:
 		{
@@ -55,6 +57,7 @@ namespace _System::_Windows {
 					tempChars[len - 1] = 0;
 					chars.resize(chars.size() - prevCharsLen);
 					chars += tempChars;
+					prevCharsLen = 0;
 				}
 				enterCharState = EnterCharState::Finish;
 			} else if (_lParam & GCS_COMPSTR) {
@@ -64,11 +67,13 @@ namespace _System::_Windows {
 
 					tempChars[len - 1] = 0;
 					chars += tempChars;
-					prevCharsLen = len-1;
+					prevCharsLen = len - 1;
 				}
 				enterCharState = EnterCharState::Making;
 			}
-			
+
+			ImmReleaseContext(hWnd, hIMC);
+
 			//{
 			//	wchar_t buf[20];
 			//	swprintf_s(buf, L"%c : %d\n", (wchar_t)_wParam, _wParam);
@@ -77,13 +82,16 @@ namespace _System::_Windows {
 			return 0;
 		}
 		case WM_CHAR:
-			chars += (wchar_t)_wParam;
-			enterCharState = EnterCharState::Finish;
+			if (!Input::IsKeyPressing(Input::Key::Control)) {
+				chars += (wchar_t)_wParam;
+				enterCharState = EnterCharState::Finish;
+			}
 			return 0;
 		case WM_IME_CHAR:
 			return 0;
 		case WM_KILLFOCUS:
 			memset(keyState, 0, 256);
+			memset(keyDownUpState, 0, 256);
 			return 0;
 		case WM_LBUTTONDOWN:
 			click = 1;
@@ -222,10 +230,11 @@ namespace _System::_Windows {
 		for (unsigned i = 0; i < 256; i++) {
 			if (keyState[i] == 1)keyState[i] = 2;
 			else if (keyState[i] == 3)keyState[i] = 0;
+			keyDownUpState[i] = 0;
 		}
 		zScroll = 0;
-		chars.clear();
 		prevCharsLen = 0;
+		chars.clear();
 		enterCharState = EnterCharState::None;
 		while(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE)) {
 			if (msg.message == WM_QUIT) {

@@ -5,15 +5,15 @@
 
 Button::Button(const ButtonFrame& _upFrame, const ButtonFrame& _overFrame, const ButtonFrame& _downFrame, const ButtonFrame& _disableFrame, HitTest* _hitTest,
 	PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler) :
-	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr),
+	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
 	upFrame(_upFrame), overFrame(_overFrame), downFrame(_downFrame), disableFrame(_disableFrame), hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
 Button::Button(HitTest* _hitTest, PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler):
-	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr),
+	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
 	upFrame(nullptr, nullptr, System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV),
 	hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
-Button::Button() : state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr),
+Button::Button() : state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr), data(nullptr),
 upFrame(nullptr,nullptr,System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV) {}
 
 void Button::Disable(bool _on) {
@@ -40,20 +40,20 @@ bool Button::Update() {
 
 				state = State::DOWN;
 
-				if (result) ButtonDown(mousePos, nullptr);
-				 else result = ButtonDown(mousePos, nullptr);
+				if (result) ButtonDown(mousePos, data);
+				 else result = ButtonDown(mousePos, data);
 				if (buttonDown) {
-					if (result) buttonDown(this, mousePos, nullptr);
-					else result = buttonDown(this, mousePos, nullptr);
+					if (result) buttonDown(this, mousePos, data);
+					else result = buttonDown(this, mousePos, data);
 				}
 				return result;
 			} else if (Input::IsLMouseClicked()) {
 				state = State::OVER;
 
-				result = ButtonUp(mousePos, nullptr);
+				result = ButtonUp(mousePos, data);
 				if (buttonUp) {
-					if (result) buttonUp(this, mousePos, nullptr);
-					else result = buttonUp(this, mousePos, nullptr);
+					if (result) buttonUp(this, mousePos, data);
+					else result = buttonUp(this, mousePos, data);
 				}
 
 				if (!result) result = downFrame.frame && downFrame.uv && downFrame.vertex;
@@ -61,10 +61,10 @@ bool Button::Update() {
 			} else if ((state != State::DOWN) && (state != State::OVER)) {
 				state = State::OVER;
 
-				result = ButtonOver(mousePos, nullptr);
+				result = ButtonOver(mousePos, data);
 				if (buttonOver) {
-					if (result) buttonOver(this, mousePos, nullptr);
-					else result = buttonOver(this, mousePos, nullptr);
+					if (result) buttonOver(this, mousePos, data);
+					else result = buttonOver(this, mousePos, data);
 				}
 
 				if (!result) result = overFrame.frame && overFrame.uv && overFrame.vertex;
@@ -83,12 +83,12 @@ bool Button::Update() {
 
 			state = State::UP;
 
-			if (result) ButtonOut(mousePos, nullptr);
-			else result = ButtonOut(mousePos, nullptr);
+			if (result) ButtonOut(mousePos, data);
+			else result = ButtonOut(mousePos, data);
 
 			if (buttonOut) {
-				if (result) buttonOut(this, mousePos, nullptr);
-				else result = buttonOut(this, mousePos, nullptr);
+				if (result) buttonOut(this, mousePos, data);
+				else result = buttonOut(this, mousePos, data);
 			}
 			return result;
 		}

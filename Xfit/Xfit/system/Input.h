@@ -77,8 +77,11 @@ namespace Input {
 	wstring& GetChars();
 	EnterCharState GetEnterCharState();
 	unsigned GetPrevCharsLen();
+	void IMEFinish();
 
 	void ClearMakingChar();
+	bool IsKeyDown(Key _keyCode);
+	bool IsKeyUp(Key _keyCode);
 	bool IsKeyPress(Key _keyCode);
 	bool IsKeyPressing(Key _keyCode);
 	bool IsKeyPressed(Key _keyCode);

@@ -10,6 +10,8 @@
 
 #define SHADER_PATH "../Xfit/_shader/out/"
 
+#define RELEASE_SHADER_PATH "shaders/"
+
 namespace _System::_DirectX11 {
 	static void LoadVertexShaderDebug(const char* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize, 
 		ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
@@ -318,6 +320,8 @@ namespace _System::_DirectX11 {
 		LoadVertexShaderDebug(SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
 		LoadPixelShaderDebug(SHADER_PATH"imgPx2D.cso",&imgPx2DShader,&imgPx2DClassLinkage,&imgPx2DReflection);
 #else
+		LoadVertexShaderDebug(RELEASE_SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
+		LoadPixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.cso", &imgPx2DShader, &imgPx2DClassLinkage, &imgPx2DReflection);
 #endif
 		imgPx2DInterfaceNum = imgPx2DReflection->GetNumInterfaceSlots();;
 		imgPx2DClassInstances = new ID3D11ClassInstance * [imgPx2DInterfaceNum];
@@ -338,6 +342,9 @@ namespace _System::_DirectX11 {
 		LoadGeometryShaderDebug(SHADER_PATH"shapeGeo2D.cso", &shapeGeo2DShader);
 		LoadPixelShaderDebug(SHADER_PATH"shapePx2D.cso", &shapePx2DShader);
 #else
+		LoadVertexShaderDebug(RELEASE_SHADER_PATH"shapeVert2D.cso", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
+		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"shapeGeo2D.cso", &shapeGeo2DShader);
+		LoadPixelShaderDebug(RELEASE_SHADER_PATH"shapePx2D.cso", &shapePx2DShader);
 #endif
 
 #ifdef _DEBUG
@@ -391,6 +398,8 @@ namespace _System::_DirectX11 {
 		LoadGeometryShaderDebug(SHADER_PATH"shapeInsGeo2D.cso", &shapeInsGeo2DShader);
 		//shapePx2DShader
 #else
+		LoadVertexShaderDebug(RELEASE_SHADER_PATH"shapeInsVert2D.cso", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
+		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"shapeInsGeo2D.cso", &shapeInsGeo2DShader);
 #endif
 
 		D3D11_INPUT_ELEMENT_DESC lineInsElement[] = {
@@ -407,6 +416,8 @@ namespace _System::_DirectX11 {
 		LoadGeometryShaderDebug(SHADER_PATH"lineInsGeo2D.cso", &lineInsGeo2DShader);
 		//shapePx2DShader
 #else
+		LoadVertexShaderDebug(RELEASE_SHADER_PATH"lineInsVert2D.cso", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
+		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"lineInsGeo2D.cso", &lineInsGeo2DShader);
 #endif
 
 		D3D11_VIEWPORT viewport;

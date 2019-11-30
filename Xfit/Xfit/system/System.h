@@ -192,6 +192,9 @@ namespace System {
 
 	bool IsPause();
 
+	TCHAR* GetClipboardData();
+	void ClipboardClose();
+
 	unsigned GetMsaaCount();
 	unsigned GetMsaaQuality();
 

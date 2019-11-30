@@ -22,7 +22,8 @@ VisualTextBox::VisualTextBox(unsigned _width, unsigned _height):textImage(PointF
 	textBox.sizes[0].pixelSize = 20;
 	textBox.sizes[0].len = 0;
 	textBox.isScrollBox = true;
-	textBox.scrollPx = 100;
+	textBox.scrollPx = UINT_MAX;
+
 
 	textBox.width = _width;
 	textBox.height = _height;
@@ -32,7 +33,6 @@ VisualTextBox::VisualTextBox(unsigned _width, unsigned _height):textImage(PointF
 bool VisualTextBox::Update() {
 	
 	if (Input::GetEnterCharState() == EnterCharState::Making) {
-		unsigned len = Input::GetChars().size();
 
 		text.resize(text.size() - prevCharsLen);
 		text += Input::GetChars();
@@ -41,7 +41,6 @@ bool VisualTextBox::Update() {
 		textBox.PrepareDrawEdit();
 		prevCharsLen = Input::GetPrevCharsLen();
 	} else if (Input::GetEnterCharState() == EnterCharState::Finish) {
-		unsigned len = Input::GetChars().size();
 		if (Input::GetChars()[0] == L'\b') {
 			if(text.size()>0)text.pop_back();
 		} else {

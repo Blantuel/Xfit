@@ -28,6 +28,9 @@ namespace Input {
 	wstring& GetChars() {
 		return _System::_Windows::chars;
 	}
+	void IMEFinish() {
+		
+	}
 	EnterCharState GetEnterCharState() {
 		return _System::_Windows::enterCharState;
 	}
@@ -38,6 +41,8 @@ namespace Input {
 	bool IsKeyPress(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 1; }
 	bool IsKeyPressing(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 2 || _System::_Windows::keyState[(unsigned char)_keyCode] == 1; }
 	bool IsKeyPressed(Key _keyCode) { return _System::_Windows::keyState[(unsigned char)_keyCode] == 3; }
+	bool IsKeyDown(Key _keyCode) { return _System::_Windows::keyDownUpState[(unsigned char)_keyCode] == 1; }
+	bool IsKeyUp(Key _keyCode) { return _System::_Windows::keyDownUpState[(unsigned char)_keyCode] == 2; }
 	short GetWheelScrolling() { return _System::_Windows::zScroll; }
 	void ShowCursor(bool _show) { ::ShowCursor(_show); }
 

@@ -22,6 +22,7 @@ namespace _System::_Windows {
 	inline unsigned processorCoreNum=0;
 	inline unsigned short processorArchitecture=0;
 
+	inline HANDLE clipBoardMem = 0;
 
 	inline HDC hdc;
 
@@ -38,6 +39,7 @@ namespace _System::_Windows {
 	inline wstring chars;
 	inline EnterCharState enterCharState;
 	inline unsigned char keyState[256] = {};
+	inline unsigned char keyDownUpState[256] = {};
 	inline short zScroll=0;
 	inline bool mouseOut;
 	inline unsigned prevCharsLen = 0;

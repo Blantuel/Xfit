@@ -2,12 +2,15 @@
 #include "Font.h"
 #include "../data/Memory.h"
 
-Label::Label() :text(nullptr), fonts(nullptr), colors(nullptr), sizes(nullptr), renders(nullptr) {}
+unsigned Label::GetMaxScrollTextCount()const {
+	return maxScrollTextCount;
+}
+Label::Label() :text(nullptr), fonts(nullptr), colors(nullptr), sizes(nullptr), renders(nullptr), maxScrollTextCount(0), scrollTextCount(0), charWidths(nullptr) {}
 void Label::PrepareDraw() {
 	unsigned len = wcslen(text);
 
 	int top = INT_MIN;
-	int width = 0, height = 0;
+	int width = 1, height = 1;
 	int imageSize;
 	unsigned currentSize = 0;
 	unsigned sizeIndex = 0;
@@ -176,17 +179,50 @@ void Label::PrepareDraw() {
 	}
 	Font::mutex.unlock();
 	width += padding;
-	
+
+	if (textWidth > 0) {
+		unsigned textWidthG = 0;
+		int e = (int)len;
+		e--;
+		for (; e >= 0; e--) {
+			if (textWidthG + Font::charImages_t[e]->advanceX > textWidth) {
+				maxScrollTextCount = e + 1;
+				if (scrollTextCount > maxScrollTextCount)scrollTextCount = maxScrollTextCount;
+				break;
+			}
+			textWidthG += Font::charImages_t[e]->advanceX;
+		}
+		if (e == -1) {
+			maxScrollTextCount = 0;
+			scrollTextCount = maxScrollTextCount;
+		}
+		width = textWidth;
+	}
+
 	imageSize = width * height;
-	if (imageSize > Font::imageSize) {
-		delete[]Font::image;
+	bool refresh = false;
+	while (imageSize > Font::imageSize) {
 		Font::imageSize = imageSize + Font::blockImageSize;
+		refresh = true;
+	}
+	if (refresh) {
+		delete[]Font::image;
+
 		Font::image = new unsigned[Font::imageSize];
 	}
 	Memory::Set(Font::image, 0U, (size_t)imageSize);
 
+
 	int advanceX = 0;
-	for (size_t i = 0; i < len; i++, colorLenIndex++) {
+	
+	if (charWidths) {
+		for (unsigned i = 0; i < scrollTextCount; i++) {
+			charWidths[i] = -1;
+		}
+	}
+
+	unsigned i;
+	for (i = scrollTextCount; i < len; i++, colorLenIndex++) {
 		if (colorLenIndex >= colorLen) {
 			colorIndex++;
 			if (colors[colorIndex].len == 0)colorLen = len - i;
@@ -204,8 +240,13 @@ void Label::PrepareDraw() {
 
 		if (Font::charImages_t[i]->bitmap) {
 			const int xx = advanceX + Font::charImages_t[i]->left+padding;
+			int textWidth = Font::charImages_t[i]->width;
+			if (xx >= width)break;
+			else if (xx + textWidth >= width) {
+				textWidth = width - xx;
+			}
+
 			const int yy = top - Font::charImages_t[i]->top;
-			const int textWidth = Font::charImages_t[i]->width;
 			const int textPitch = Font::charImages_t[i]->pitch;
 			const int textHeight = Font::charImages_t[i]->height;
 
@@ -242,9 +283,22 @@ void Label::PrepareDraw() {
 			} else {
 
 			}
+		} else {
+			if (advanceX + Font::charImages_t[i]->advanceX + padding >= width)break;
 		}
 		advanceX += Font::charImages_t[i]->advanceX;
+		if (charWidths) {
+			if (advanceX <= width) {
+				charWidths[i] = Font::charImages_t[i]->advanceX;
+			} else charWidths[i] = -1;
+		}
 	}
+	if (charWidths) {
+		for (; i < len; i++) {
+			charWidths[i] = -1;
+		}
+	}
+	
 	if (IsBuild())Delete();
 
 	

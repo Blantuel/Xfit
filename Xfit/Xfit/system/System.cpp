@@ -399,5 +399,18 @@ namespace System {
 	void MoveWindow(Point _pos) {
 		SetWindowPos(_System::_Windows::hWnd, 0, _pos.x, _pos.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
+
+	TCHAR* GetClipboardData() {
+		if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
+			OpenClipboard(_System::_Windows::hWnd);
+			_System::_Windows::clipBoardMem = ::GetClipboardData(CF_UNICODETEXT);
+			return (TCHAR*)GlobalLock(_System::_Windows::clipBoardMem);
+		}
+		return nullptr;
+	}
+	void ClipboardClose() {
+		GlobalUnlock(_System::_Windows::clipBoardMem);
+		CloseClipboard();
+	}
 }
 

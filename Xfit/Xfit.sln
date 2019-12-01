@@ -21,8 +21,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XfitUWP", "XfitUWP\XfitUWP.
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "MakeLocalTable", "MakeLocalTable\MakeLocalTable.vcxproj", "{D1616B35-7103-45E2-9F02-F429AE44E618}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WordCombination", "WordCombination\WordCombination.vcxproj", "{7CD77A15-C3BE-4FE5-916F-E496F81ECB96}"
-EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x64 = Debug|x64
@@ -65,10 +63,6 @@ Global
 		{D1616B35-7103-45E2-9F02-F429AE44E618}.Debug|x64.Build.0 = Debug|x64
 		{D1616B35-7103-45E2-9F02-F429AE44E618}.Release|x64.ActiveCfg = Release|x64
 		{D1616B35-7103-45E2-9F02-F429AE44E618}.Release|x64.Build.0 = Release|x64
-		{7CD77A15-C3BE-4FE5-916F-E496F81ECB96}.Debug|x64.ActiveCfg = Debug|x64
-		{7CD77A15-C3BE-4FE5-916F-E496F81ECB96}.Debug|x64.Build.0 = Debug|x64
-		{7CD77A15-C3BE-4FE5-916F-E496F81ECB96}.Release|x64.ActiveCfg = Release|x64
-		{7CD77A15-C3BE-4FE5-916F-E496F81ECB96}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

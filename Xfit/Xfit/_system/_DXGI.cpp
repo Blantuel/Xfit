@@ -14,14 +14,16 @@ namespace _System::_DXGI {
 		if (library == NULL) {//실패하면 NULL반환
 
 		}
+		;
+		const auto _CreateDXGIFactory2 = (HRESULT(*WINAPI)(UINT, REFIID, _COM_Outptr_ void**))GetProcAddress(library, "CreateDXGIFactory2");
 
-		if (GetProcAddress(library, "CreateDXGIFactory2")) {//실패하면 NULL반환
+		if (_CreateDXGIFactory2) {//실패하면 NULL반환
 #ifdef _DEBUG
 			constexpr UINT flag = DXGI_CREATE_FACTORY_DEBUG;
 #else
 			constexpr UINT flag = 0;
 #endif
-			CreateDXGIFactory2(flag, __uuidof(IDXGIFactory2), (void**)& factory2);
+			_CreateDXGIFactory2(flag, __uuidof(IDXGIFactory2), (void**)& factory2);
 			if (factory2 == nullptr);
 		} else {
 			CreateDXGIFactory1(__uuidof(IDXGIFactory1), (void**)& factory1);
@@ -214,8 +216,8 @@ namespace _System::_DXGI {
 		_Renderer::msaaQuality = _info->msaaQuality;
 	}
 	void Render() {
-		//if (swapChain1)
-		swapChain1->Present(_Renderer::vSync ? 1 : 0, 0);
+		if (swapChain1)swapChain1->Present(_Renderer::vSync ? 1 : 0, 0);
+		else swapChain->Present(_Renderer::vSync ? 1 : 0, 0);
 	}
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex) {
 		_Renderer::windowSize.width = displays[_displayIndex].modes[_displayModeIndex].width;

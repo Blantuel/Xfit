@@ -91,35 +91,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="FadeLabelButton.cpp" />
-    <ClCompile Include="LabelButton.cpp" />
-    <ClCompile Include="LabelListButton.cpp" />
-    <ClCompile Include="LabelToggleButton.cpp" />
-    <ClCompile Include="LabelImage.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="Map.cpp" />
     <ClCompile Include="Option.cpp" />
-    <ClCompile Include="Place.cpp" />
-    <ClCompile Include="PlaceEvent.cpp" />
-    <ClCompile Include="SizeLabel.cpp" />
-    <ClCompile Include="Slider.cpp" />
     <ClCompile Include="Title.cpp" />
     <ClCompile Include="VisualTextBox.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="FadeLabelButton.h" />
-    <ClInclude Include="LabelButton.h" />
-    <ClInclude Include="LabelListButton.h" />
-    <ClInclude Include="LabelToggleButton.h" />
-    <ClInclude Include="LabelImage.h" />
     <ClInclude Include="List.h" />
     <ClInclude Include="main.h" />
-    <ClInclude Include="Map.h" />
     <ClInclude Include="Option.h" />
-    <ClInclude Include="Place.h" />
-    <ClInclude Include="PlaceEvent.h" />
-    <ClInclude Include="SizeLabel.h" />
-    <ClInclude Include="Slider.h" />
     <ClInclude Include="Title.h" />
     <ClInclude Include="VisualTextBox.h" />
   </ItemGroup>

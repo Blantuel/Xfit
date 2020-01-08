@@ -1,8 +1,8 @@
 ﻿#include "Title.h"
 
 #include "main.h"
-#include "LabelImage.h"
-#include "FadeLabelButton.h"
+#include <object/LabelImage.h>
+#include <component/FadeLabelButton.h>
 
 
 #include <system/System.h>
@@ -30,9 +30,9 @@ Title::Title() {
 
 	titleLabel.renders = fontRender;
 
-	titleLabel.text = L"The Record";
+	titleLabel.text = L"어떤 용사";
 
-	titleImage = new LabelImage(PosType::Stretch, &titleLabel, PointF(-300.f, 0.f),CenterPointPos::Center, Math::DIVPI_180F * -90.f,true);
+	titleImage = new LabelImage(PosType::Stretch, &titleLabel, PointF(-1000.f, 500.f),CenterPointPos::Center, 0);
 
 
 	titleButtonBaseSize[0] = titleButtonPx;
@@ -54,7 +54,7 @@ Title::Title() {
 
 	startLabel.text = L"시작";
 
-	startButton = new FadeLabelButton(PosType::Stretch, &startLabel, PointF(300.f, 140.f), CenterPointPos::Center);
+	startButton = new FadeLabelButton(PosType::Stretch, &startLabel, PointF(1400.f, -350.f), CenterPointPos::Center);
 
 
 	statsLabel.fonts = statsFontContainer;
@@ -75,7 +75,7 @@ Title::Title() {
 
 	statsLabel.text = L"통계";
 
-	statsButton = new FadeLabelButton(PosType::Stretch, &statsLabel, PointF(300.f, 0.f), CenterPointPos::Center);
+	statsButton = new FadeLabelButton(PosType::Stretch, &statsLabel, PointF(1400.f, -600.f), CenterPointPos::Center);
 
 
 	exitLabel.fonts = exitFontContainer;
@@ -96,7 +96,7 @@ Title::Title() {
 	
 	exitLabel.text = L"종료";
 
-	exitButton = new FadeLabelButton(PosType::Stretch, &exitLabel, PointF(300.f, -140.f), CenterPointPos::Center);
+	exitButton = new FadeLabelButton(PosType::Stretch, &exitLabel, PointF(1400.f, -850.f), CenterPointPos::Center);
 	exitButton->faded = Exit;
 
 
@@ -129,10 +129,10 @@ Title::~Title() {
 	delete exitButton;
 }
 void Title::Size() {
-	titleImage->Size();
-	startButton->Size();
-	statsButton->Size();
-	exitButton->Size();
+	titleImage->Size(textPx);
+	startButton->Size(true, textPx);
+	statsButton->Size(true, textPx);
+	exitButton->Size(true, textPx);
 }
 bool Title::Update() {
 	bool result = startButton->Update();

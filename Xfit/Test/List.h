@@ -3,7 +3,7 @@
 #include <object/Shape.h>
 #include <object/ShapeInstance.h>
 #include <resource/ShapeVertex.h>
-#include "SizeLabel.h"
+#include <text/SizeLabel.h>
 #include <object/Image.h>
 #include "main.h"
 
@@ -175,7 +175,7 @@ public:
 	
 	List(PosType _posType, PointF _size, float _nodeHeight, PointF _pos, PointF _scale = PointF(1.f, 1.f)) :nodeShape(_pos* WindowRatioPoint(posType), _scale* WindowRatio(), 0, nullptr, System::rectShapeVertex2D),
 		baseScale(_scale), basePos(_pos), posType(_posType), blockNum(0), size(_size), nodeHeight(_nodeHeight), selectIndex(UINT_MAX), scrollIndex(0), selectIndex2(UINT_MAX), scrollBarY(0),scrolling(false),
-		nodeImage(PointF(0.f, 0.f), PointF(1.f, 1.f), 0.f, System::defaultBlend, nullptr, nullptr, leftVertex, System::defaultUV, System::defaultIndex), scrollVisibleTime(0), scrollBarHeight(0),
+		nodeImage(PointF(0.f, 0.f), PointF(1.f, 1.f), 0.f, System::defaultBlend, nullptr, nullptr, ObjectVertex::left, System::defaultUV, System::defaultIndex), scrollVisibleTime(0), scrollBarHeight(0),
 		rectShape(_pos* WindowRatioPoint(posType), _size* _scale* WindowRatio(), 0.f, nullptr, System::rectShapeVertex2D, Point3DwF(0.85f, 0.85f, 0.85f, 1.f), Point3DwF(0.f, 0.f, 0.f, 1.f), GetLineWidth()),
 		scrollBar(PointF(0.f, 0.f), PointF(7.f, 1.f)* _scale * WindowRatio(), 0, nullptr, System::rectShapeVertex2D, Point3DwF(0.f, 0.f, 0.f, 1.f), Point3DwF(0.f, 0.f, 0.f, 1.f), 0.f) {
 		scrollBar.visible = false;

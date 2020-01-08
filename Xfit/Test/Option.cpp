@@ -1,8 +1,10 @@
 ﻿#include "Option.h"
 #include "main.h"
-#include "LabelToggleButton.h"
+#include <component/LabelToggleButton.h>
 #include <system/System.h>
 #include <system/Input.h>
+#include <file/File.h>
+#include <decoder/PNGDecoder.h>
 
 #include "Title.h"
 
@@ -23,16 +25,16 @@ static bool ResetButtonUp(Button* _target, Point _mousePos, void* _data) {
 }
 bool Option::Reset() {
 	bool result = false;
-	if (bgVolSlider.GetValue() != 0.5f) {
-		bgVolSlider.SetValue(0.5f);
+	if (bgVolSlider->GetValue() != 0.5f) {
+		bgVolSlider->SetValue(0.5f);
 		result = true;
 	}
-	if (effectVolSlider.GetValue() != 0.5f) {
-		effectVolSlider.SetValue(0.5f);
+	if (effectVolSlider->GetValue() != 0.5f) {
+		effectVolSlider->SetValue(0.5f);
 		result = true;
 	}
-	if (pxSlider.GetValue() != 0.5f) {
-		pxSlider.SetValue(0.5f);
+	if (pxSlider->GetValue() != 0.5f) {
+		pxSlider->SetValue(0.5f);
 		result = true;
 	}
 	return result;
@@ -61,7 +63,7 @@ static bool ToggleTextAniButtonUp(Button* _target, Point _mousePos, void* _data)
 	} else {
 		((LabelToggleButton*)_target)->GetLabel()->text = L"꺼짐";
 	}
-	((LabelToggleButton*)_target)->PrepareDraw();
+	((LabelToggleButton*)_target)->PrepareDraw(textPx);
 	return true;
 }
 static void BgVolControlling(Slider* _target) {
@@ -74,11 +76,45 @@ static void PxControlling(Slider* _target) {
 
 Option::Option():
 rectShape(PointF(0.f,0.f), WindowRatioPoint(), 0,nullptr,&rectShapeVertex,Point3DwF(1.f,1.f,1.f,1.f), Point3DwF(0.f, 0.f, 0.f, 1.f)),
-bgVolSlider(PosType::Center, PointF(50.f, 180.f),0.5f),
-effectVolSlider(PosType::Center, PointF(50.f, 130.f), 0.5f),
-pxSlider(PosType::Center, PointF(50.f, 80.f),0.5f),
 outClick(false),sized(false)
 {
+	File file;
+	PNGDecoder decoder;
+
+	file.Open("bar.png");
+	unsigned size = file.GetSize();
+	unsigned char* data = new unsigned char[size];
+	file.ReadBytes(size, data);
+
+	decoder.LoadHeader(data, size);
+	unsigned char* outData = new unsigned char[decoder.GetOutputSize()];
+	decoder.Decode(outData);
+
+	barFrame.Build(outData, decoder.GetWidth(), decoder.GetHeight());
+
+	delete[]data;
+	delete[]outData;
+
+	file.Close();
+	file.Open("stick.png");
+	size = file.GetSize();
+	data = new unsigned char[size];
+	file.ReadBytes(size, data);
+
+	decoder.LoadHeader(data, size);
+	outData = new unsigned char[decoder.GetOutputSize()];
+	decoder.Decode(outData);
+
+	stickFrame.Build(outData, decoder.GetWidth(), decoder.GetHeight());
+
+	delete[]data;
+	delete[]outData;
+
+	bgVolSlider = new Slider(PosType::Center, &barFrame, &stickFrame, PointF(200.f, 600.f), 0.5f);
+	effectVolSlider = new Slider(PosType::Center, &barFrame, &stickFrame, PointF(200.f, 400.f), 0.5f);
+	pxSlider = new Slider(PosType::Center, &barFrame, &stickFrame, PointF(200.f, 200.f), 0.5f);
+
+
 	toggleLabel.fonts = toggleFontContainer;
 	toggleLabel.fonts[0].font = font;
 	toggleLabel.fonts[0].len = 0;
@@ -94,13 +130,14 @@ outClick(false),sized(false)
 
 	uiBaseSize[0] = uiButtonPx;
 	optionBaseSize[0] = optionLabelPx;
+	optionSmallSize[0] = optionSmallLabelPx;
 	resetBaseSize[0] = resetLabelPx;
 
 	toggleLabel.renders = fontRender;
 
 	toggleLabel.text = L"옵션";
 
-	toggleButton = new LabelToggleButton(PosType::Stretch, &toggleLabel, PointF((float)windowWidth / 2.f, (float)windowHeight / 2.f), CenterPointPos::TopRight);
+	toggleButton = new LabelToggleButton(PosType::Stretch, &toggleLabel, PointF(originalWindowWidth / 2.f, originalWindowHeight / 2.f), CenterPointPos::TopRight);
 
 	toggleButton->buttonUp = OptionButtonUp;
 
@@ -121,8 +158,8 @@ outClick(false),sized(false)
 
 	bgVolLabel.text = L"배경음";
 
-	bgVolImage = new LabelImage(PosType::Center, &bgVolLabel, PointF(-110.f, 180.f));
-	bgVolSlider.controlling = BgVolControlling;
+	bgVolImage = new LabelImage(PosType::Center, &bgVolLabel, PointF(-300.f, 590.f));
+	bgVolSlider->controlling = BgVolControlling;
 
 
 	effectVolLabel.fonts = fontContainer;
@@ -136,7 +173,7 @@ outClick(false),sized(false)
 	effectVolLabel.renders = fontRender;
 
 	effectVolLabel.text = L"효과음";
-	effectVolImage = new LabelImage(PosType::Center, &effectVolLabel,  PointF(-110.f, 130.f));
+	effectVolImage = new LabelImage(PosType::Center, &effectVolLabel,  PointF(-300.f, 390.f));
 
 
 	pxLabel.fonts = fontContainer;
@@ -150,8 +187,8 @@ outClick(false),sized(false)
 	pxLabel.renders = fontRender;
 
 	pxLabel.text = L"글자크기";
-	pxImage = new LabelImage(PosType::Center, &pxLabel,  PointF(-110.f, 80.f));
-	pxSlider.controlling = PxControlling;
+	pxImage = new LabelImage(PosType::Center, &pxLabel,  PointF(-300.f, 190.f));
+	pxSlider->controlling = PxControlling;
 
 
 	screenModeLabel.fonts = fontContainer;
@@ -165,7 +202,7 @@ outClick(false),sized(false)
 	screenModeLabel.renders = fontRender;
 
 	screenModeLabel.text = L"화면모드";
-	screenModeImage = new LabelImage(PosType::Center, &screenModeLabel,  PointF(-110.f, 10.f));
+	screenModeImage = new LabelImage(PosType::Center, &screenModeLabel,  PointF(-300.f, -10.f));
 
 	toggleScreenModeLabel.fonts = fontContainer;
 
@@ -178,7 +215,7 @@ outClick(false),sized(false)
 
 	toggleScreenModeLabel.text = L"창";
 
-	toggleScreenModeButton = new LabelToggleButton(PosType::Center, &toggleScreenModeLabel,  PointF(50.f, 10.f));
+	toggleScreenModeButton = new LabelToggleButton(PosType::Center, &toggleScreenModeLabel,  PointF(300.f, -10.f));
 
 	toggleScreenModeButton->buttonUp = ToggleScreenModeButtonUp;
 	//toggleScreenModeButton->SetToogle(true);
@@ -189,12 +226,12 @@ outClick(false),sized(false)
 
 	textAniLabel.sizes = fontSize;
 	textAniLabel.sizeLen = 1;
-	textAniLabel.baseSizes = optionBaseSize;
+	textAniLabel.baseSizes = optionSmallSize;
 
 	textAniLabel.renders = fontRender;
 
 	textAniLabel.text = L"텍스트 애니메이션";
-	textAniImage = new LabelImage(PosType::Center, &textAniLabel, PointF(-50.f, -40.f));
+	textAniImage = new LabelImage(PosType::Center, &textAniLabel, PointF(-300.f, -210.f));
 
 	toggleTextAniLabel.fonts = fontContainer;
 
@@ -208,7 +245,7 @@ outClick(false),sized(false)
 	toggleTextAniLabel.sizeLen = 1;
 	toggleTextAniLabel.baseSizes = optionBaseSize;
 
-	toggleTextAniButton = new LabelToggleButton(PosType::Center, &toggleTextAniLabel, PointF(110.f, -40.f));
+	toggleTextAniButton = new LabelToggleButton(PosType::Center, &toggleTextAniLabel, PointF(300.f, -210.f));
 
 	toggleTextAniButton->buttonUp = ToggleTextAniButtonUp;
 
@@ -233,7 +270,7 @@ outClick(false),sized(false)
 
 	resetLabel.text = L"초기화";
 
-	resetButton = new LabelButton(PosType::Center, &resetLabel, PointF(120.f, 50.f));
+	resetButton = new LabelButton(PosType::Center, &resetLabel, PointF(400.f, 100.f));
 
 	resetButton->buttonUp = ResetButtonUp;
 
@@ -243,14 +280,14 @@ outClick(false),sized(false)
 
 	rectShapeVertex.Build();
 
-	rectShape.lineWidth = GetLineWidth();
+	rectShape.lineWidth = GetLineWidth(7);
 }
 bool Option::Update() {
 	bool result = false;
 	if (toggleButton->IsToggle()) {
-		result = bgVolSlider.Update() ? true : result;
-		result = effectVolSlider.Update() ? true : result;
-		result = pxSlider.Update() ? true : result;
+		result = bgVolSlider->Update() ? true : result;
+		result = effectVolSlider->Update() ? true : result;
+		result = pxSlider->Update() ? true : result;
 
 		result = toggleScreenModeButton->Update() ? true : result;
 		result = toggleTextAniButton->Update() ? true : result;
@@ -288,13 +325,13 @@ void Option::Draw() {
 		}
 		rectShape.Draw();
 
-		bgVolSlider.Draw();
+		bgVolSlider->Draw();
 		bgVolImage->Draw();
 
-		effectVolSlider.Draw();
+		effectVolSlider->Draw();
 		effectVolImage->Draw();
 
-		pxSlider.Draw();
+		pxSlider->Draw();
 		pxImage->Draw();
 
 		screenModeImage->Draw();
@@ -306,26 +343,26 @@ void Option::Draw() {
 	}
 }
 void Option::OnSize() {
-	rectShape.lineWidth = GetLineWidth();
+	rectShape.lineWidth = GetLineWidth(7);
 	rectShape.SetScale(WindowRatioPoint());
 
 
-	bgVolSlider.Size();
-	bgVolImage->Size();
+	bgVolSlider->Size();
+	bgVolImage->Size(textPx);
 
-	effectVolSlider.Size();
-	effectVolImage->Size();
+	effectVolSlider->Size();
+	effectVolImage->Size(textPx);
 
-	pxSlider.Size();
-	pxImage->Size();
+	pxSlider->Size();
+	pxImage->Size(textPx);
 
-	screenModeImage->Size();
-	toggleScreenModeButton->Size();
+	screenModeImage->Size(textPx);
+	toggleScreenModeButton->Size(true, textPx);
 
-	textAniImage->Size();
-	toggleTextAniButton->Size();
+	textAniImage->Size(textPx);
+	toggleTextAniButton->Size(true, textPx);
 
-	resetButton->Size();
+	resetButton->Size(true, textPx);
 
 	sized = false;
 }

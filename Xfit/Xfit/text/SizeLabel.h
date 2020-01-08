@@ -1,5 +1,5 @@
 #pragma once
-#include <text/Label.h>
+#include "Label.h"
 
 
 class SizeLabel : public Label {

@@ -17,5 +17,5 @@ public:
 	virtual bool Update();
 	FadeLabelButton(PosType _posType, SizeLabel* _label, PointF _pos = PointF(0.f, 0.f), CenterPointPos _centerPointPos = CenterPointPos::Center, float _mag = 2.f, float _fadeTime = 0.5f);
 
-	virtual void Size(bool _scale = true);
+	virtual void Size(bool _scale = true, float _scaleRatio = 1.f);
 };

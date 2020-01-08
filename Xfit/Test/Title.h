@@ -1,6 +1,6 @@
 #pragma once
 
-#include "SizeLabel.h"
+#include <text/SizeLabel.h>
 #include <resource/Vertex.h>
 #include <text/Font.h>
 
@@ -41,8 +41,8 @@ class Title {
 	SizeLabel statsLabel;
 	SizeLabel exitLabel;
 public:
-	constexpr static unsigned titlePx = 65;
-	constexpr static unsigned titleButtonPx = 50;
+	constexpr static unsigned titlePx = 250;
+	constexpr static unsigned titleButtonPx = 150;
 
 	Title();
 	~Title();

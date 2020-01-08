@@ -16,6 +16,12 @@
 
 #define RELEASE_SHADER_PATH "shaders/"
 
+#define I 1
+
+#if I == 1
+#define f 3
+#endif
+
 namespace _System::_DirectX11 {
 	static void LoadVertexShaderDebug(const char* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize, 
 		ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {

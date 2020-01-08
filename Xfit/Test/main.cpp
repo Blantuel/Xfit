@@ -19,10 +19,7 @@
 #include <object/Shape.h>
 #include <object/ShapeInstance.h>
 
-#include "LabelImage.h"
-#include "FadeLabelButton.h"
-#include "LabelImage.h"
-#include "LabelToggleButton.h"
+
 #include "Title.h"
 #include "Option.h"
 #include "List.h"
@@ -42,61 +39,7 @@ List<>* list;
 
 VisualTextBox* visualTextBox;
 
-const PointF PixelPerfectPoint(PointF _p, unsigned _width, unsigned _height, CenterPointPos _centerPointPos, bool _isVertical /*= false*/) {
-	_p.x = floor(_p.x);
-	_p.y = floor(_p.y);
-	if (System::GetWindowWidth() % 2 != 0)_p.x -= 0.5f;
-	if (System::GetWindowHeight() % 2 != 0)_p.y += 0.5f;
 
-	switch (_centerPointPos) {
-	case CenterPointPos::Center:
-		if (_isVertical) {
-			if (_width % 2 != 0)_p.y -= 0.5f;
-			if (_height % 2 != 0)_p.x += 0.5f;
-		} else {
-			if (_width % 2 != 0)_p.x += 0.5f;
-			if (_height % 2 != 0)_p.y -= 0.5f;
-		}
-		break;
-	case CenterPointPos::TopRight:break;
-	case CenterPointPos::TopLeft:break;
-	case CenterPointPos::BottomRight:break;
-	case CenterPointPos::BottomLeft:break;
-	case CenterPointPos::Left:
-	case CenterPointPos::Right:
-		if (_isVertical) {
-			if (_height % 2 != 0)_p.x += 0.5f;
-		} else {
-			if (_height % 2 != 0)_p.y -= 0.5f;
-		}
-		break;
-	case CenterPointPos::Top:
-	case CenterPointPos::Bottom:
-		if (_isVertical) {
-			if (_width % 2 != 0)_p.y -= 0.5f;
-		} else {
-			if (_width % 2 != 0)_p.x += 0.5f;
-		}
-		break;
-	}
-
-
-	return _p;
-}
-
-Vertex* SelectVertex2D(CenterPointPos _centerPointPos) {
-	switch (_centerPointPos) {
-	case CenterPointPos::Center:return System::defaultVertex2D;
-	case CenterPointPos::TopRight:return topRightVertex;
-	case CenterPointPos::TopLeft:return topLeftVertex;
-	case CenterPointPos::BottomRight:return bottomRightVertex;
-	case CenterPointPos::BottomLeft:return bottomLeftVertex;
-	case CenterPointPos::Left:return leftVertex;
-	case CenterPointPos::Right:return rightVertex;
-	case CenterPointPos::Top:return topVertex;
-	case CenterPointPos::Bottom:return bottomVertex;
-	}
-}
 Image* vectorImage;
 wchar_t texts[1000][3];
 
@@ -157,6 +100,9 @@ static void Init() {
 
 	delete[]data;*/
 
+	originalWindowWidth = 3840.f;
+	originalWindowHeight = 2160.f;
+
 	//------------------------------------------------------------------------------------------------
 
 	fontRender = new FontRender[1];
@@ -166,9 +112,6 @@ static void Init() {
 	//------------------------------------------------------------------------------------------------
 
 	System::SetClearColor(1.f, 1.f, 1.f, 1.f);
-
-	lineVertex = new Vertex;
-	lineVertex->vertices.Alloc(2);
 
 	//"DungGeunMo.otf"//16배수 크기 픽셀 폰트
 	File file("Spoqa Han Sans Regular.ttf");//16배수 크기 픽셀 폰트
@@ -189,45 +132,6 @@ static void Init() {
 
 	bgSound->SetVolume(0.5f);
 
-	topRightVertex = new Vertex;
-	topRightVertex->vertices.Alloc(4);
-	topRightVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::TopRight);
-	topRightVertex->Build();
-
-	topLeftVertex = new Vertex;
-	topLeftVertex->vertices.Alloc(4);
-	topLeftVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::TopLeft);
-	topLeftVertex->Build();
-
-	bottomRightVertex = new Vertex;
-	bottomRightVertex->vertices.Alloc(4);
-	bottomRightVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::BottomRight);
-	bottomRightVertex->Build();
-
-	bottomLeftVertex = new Vertex;
-	bottomLeftVertex->vertices.Alloc(4);
-	bottomLeftVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::BottomLeft);
-	bottomLeftVertex->Build();
-
-	rightVertex = new Vertex;
-	rightVertex->vertices.Alloc(4);
-	rightVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Right);
-	rightVertex->Build();
-
-	leftVertex = new Vertex;
-	leftVertex->vertices.Alloc(4);
-	leftVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Left);
-	leftVertex->Build();
-
-	topVertex = new Vertex;
-	topVertex->vertices.Alloc(4);
-	topVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Top);
-	topVertex->Build();
-
-	bottomVertex = new Vertex;
-	bottomVertex->vertices.Alloc(4);
-	bottomVertex->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Bottom);
-	bottomVertex->Build();
 
 	//------------------------------------------------------------------------------------------------
 
@@ -397,7 +301,7 @@ static void Create() {
 	createInfo.windowShow = System::WindowShow::Default;
 
 #ifdef _WIN32
-	createInfo.title = _T("The Record");
+	createInfo.title = _T("어떤 용사");
 	createInfo.windowPos.x = System::WindowDefaultPos;
 	createInfo.windowPos.y = System::WindowDefaultPos;
 	createInfo.cursorResource = nullptr;

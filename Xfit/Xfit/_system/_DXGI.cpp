@@ -14,7 +14,7 @@ namespace _System::_DXGI {
 		if (library == NULL) {//실패하면 NULL반환
 
 		}
-		;
+		
 		const auto _CreateDXGIFactory2 = (HRESULT(*WINAPI)(UINT, REFIID, _COM_Outptr_ void**))GetProcAddress(library, "CreateDXGIFactory2");
 
 		if (_CreateDXGIFactory2) {//실패하면 NULL반환

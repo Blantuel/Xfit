@@ -112,6 +112,11 @@
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="component\FadeLabelButton.h" />
+    <ClInclude Include="component\LabelButton.h" />
+    <ClInclude Include="component\LabelListButton.h" />
+    <ClInclude Include="component\LabelToggleButton.h" />
+    <ClInclude Include="component\Slider.h" />
     <ClInclude Include="data\Array.h" />
     <ClInclude Include="data\ImageType.h" />
     <ClInclude Include="data\ImageUtil.h" />
@@ -140,6 +145,7 @@
     <ClInclude Include="file\File.h" />
     <ClInclude Include="file\Register.h" />
     <ClInclude Include="file\ResourceManager.h" />
+    <ClInclude Include="object\LabelImage.h" />
     <ClInclude Include="object\Line.h" />
     <ClInclude Include="math\Hexagon.h" />
     <ClInclude Include="math\Lines.h" />
@@ -162,13 +168,15 @@
     <ClInclude Include="object\MatrixObject.h" />
     <ClInclude Include="object\Object.h" />
     <ClInclude Include="component\RadioButton.h" />
+    <ClInclude Include="object\ScaleImage.h" />
     <ClInclude Include="object\Shape.h" />
     <ClInclude Include="physics\Collision.h" />
     <ClInclude Include="physics\HitTest.h" />
     <ClInclude Include="physics\RectHitTest.h" />
+    <ClInclude Include="object\ScaleHeader.h" />
     <ClInclude Include="resource\AnimateBase.h" />
     <ClInclude Include="resource\AnimateFrame.h" />
-    <ClInclude Include="resource\CenterPointPos.h" />
+    <ClInclude Include="object\CenterPointPos.h" />
     <ClInclude Include="resource\Frame.h" />
     <ClInclude Include="resource\FrameArray.h" />
     <ClInclude Include="resource\FrameCompressFormat.h" />
@@ -191,6 +199,7 @@
     <ClInclude Include="system\WriteFlag.h" />
     <ClInclude Include="text\Font.h" />
     <ClInclude Include="text\Label.h" />
+    <ClInclude Include="text\SizeLabel.h" />
     <ClInclude Include="text\Text.h" />
     <ClInclude Include="text\TextBox.h" />
     <ClInclude Include="time\Time.h" />
@@ -207,6 +216,11 @@
     <ClInclude Include="_system\_Windows.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="component\FadeLabelButton.cpp" />
+    <ClCompile Include="component\LabelButton.cpp" />
+    <ClCompile Include="component\LabelListButton.cpp" />
+    <ClCompile Include="component\LabelToggleButton.cpp" />
+    <ClCompile Include="component\Slider.cpp" />
     <ClCompile Include="data\Compress.cpp" />
     <ClCompile Include="data\ImageUtil.cpp" />
     <ClCompile Include="decoder\Decoder.cpp" />
@@ -224,6 +238,7 @@
     <ClCompile Include="encoder\ImageEncoder.cpp" />
     <ClCompile Include="encoder\WebPAnimateLosslessEncoder.cpp" />
     <ClCompile Include="encoder\WebPLosslessEncoder.cpp" />
+    <ClCompile Include="object\LabelImage.cpp" />
     <ClCompile Include="object\Line.cpp" />
     <ClCompile Include="math\Hexagon.cpp" />
     <ClCompile Include="math\Lines.cpp" />
@@ -242,6 +257,8 @@
     <ClCompile Include="object\MatrixObject.cpp" />
     <ClCompile Include="object\Object.cpp" />
     <ClCompile Include="component\RadioButton.cpp" />
+    <ClCompile Include="object\ScaleHeader.cpp" />
+    <ClCompile Include="object\ScaleImage.cpp" />
     <ClCompile Include="object\Shape.cpp" />
     <ClCompile Include="physics\Collision.cpp" />
     <ClCompile Include="physics\RectHitTest.cpp" />
@@ -262,6 +279,7 @@
     <ClCompile Include="system\System.cpp" />
     <ClCompile Include="text\Font.cpp" />
     <ClCompile Include="text\Label.cpp" />
+    <ClCompile Include="text\SizeLabel.cpp" />
     <ClCompile Include="text\Text.cpp" />
     <ClCompile Include="text\Textbox.cpp" />
     <ClCompile Include="time\Time.cpp" />

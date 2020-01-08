@@ -1,28 +1,23 @@
 #pragma once
 
-#include <object/Shape.h>
-#include <object/Line.h>
-#include <resource/ShapeVertex.h>
-#include "main.h"
+#include "../resource/Vertex.h"
+#include "../object/ScaleHeader.h"
+#include "../object/ScaleImage.h"
 
 class Slider {
 	bool sliding;
 
-	float width,value;
-	PointF barVertexData[2];
-	PointF stickVertexData[4];
+	float value;
 
 	PointF barBasePos;
-	Line bar;
-	Shape stick;
-	ShapeVertex barVertex;
-	ShapeVertex stickVertex;
+	ScaleImage bar;
+	ScaleImage stick;
 public:
 	PosType posType;
 	void (*controlFinish)(Slider* _target);
 	void (*controlling)(Slider* _target);
 
-	Slider(PosType _posType, PointF _pos, float _value, float _width = 200.f);
+	Slider(PosType _posType, Frame* _barFrame, Frame* _stickFrame, PointF _pos, float _value);
 
 	float GetValue()const;
 

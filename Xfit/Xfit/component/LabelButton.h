@@ -1,8 +1,8 @@
 #pragma once
 
-#include "main.h"
-#include <component/Button.h>
-#include <resource/CenterPointPos.h>
+#include "../object/ScaleHeader.h"
+#include "Button.h"
+#include "../object/CenterPointPos.h"
 
 class SizeLabel;
 
@@ -24,8 +24,8 @@ public:
 	void SetRectHitTest();
 	SizeLabel* GetLabel()const;
 
-	virtual void Size(bool _scale = true);
-	virtual void PrepareDraw();
+	virtual void Size(bool _scale = true, float _scaleRatio = 1.f);
+	virtual void PrepareDraw(float _scaleRatio = 1.f);
 };
 
 

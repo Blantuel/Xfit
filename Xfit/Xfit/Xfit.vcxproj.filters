@@ -261,9 +261,6 @@
     <ClInclude Include="object\AnimateMultiInstance.h">
       <Filter>Header</Filter>
     </ClInclude>
-    <ClInclude Include="resource\CenterPointPos.h">
-      <Filter>Header</Filter>
-    </ClInclude>
     <ClInclude Include="_system\_DirectX11.h">
       <Filter>Header</Filter>
     </ClInclude>
@@ -292,6 +289,36 @@
       <Filter>Header</Filter>
     </ClInclude>
     <ClInclude Include="object\LineInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\LabelImage.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\FadeLabelButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\LabelButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\LabelListButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\LabelToggleButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="text\SizeLabel.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ScaleHeader.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\CenterPointPos.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ScaleImage.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\Slider.h">
       <Filter>Header</Filter>
     </ClInclude>
   </ItemGroup>
@@ -492,6 +519,33 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="object\LineInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\LabelImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\FadeLabelButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\LabelButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\LabelListButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\LabelToggleButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\SizeLabel.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ScaleHeader.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ScaleImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\Slider.cpp">
       <Filter>Source</Filter>
     </ClCompile>
   </ItemGroup>

@@ -1,11 +1,12 @@
 #pragma once
 
-#include "Slider.h"
-#include "LabelImage.h"
+#include <component/Slider.h>
+#include <object/LabelImage.h>
 
-#include "SizeLabel.h"
+#include <text/SizeLabel.h>
 #include <resource/ShapeVertex.h>
 #include <text/Font.h>
+#include <object/Shape.h>
 
 class LabelButton;
 class LabelToggleButton;
@@ -24,6 +25,7 @@ class Option {
 	LabelImage* textAniImage;
 
 	unsigned optionBaseSize[1];
+	unsigned optionSmallSize[1];
 	unsigned resetBaseSize[1];
 	unsigned uiBaseSize[1];
 
@@ -53,18 +55,22 @@ class Option {
 	PointF rectShapeVertexData[4];
 	Shape rectShape;
 
-	Slider bgVolSlider;
-	Slider effectVolSlider;
-	Slider pxSlider;
+	Slider* bgVolSlider;
+	Slider* effectVolSlider;
+	Slider* pxSlider;
+
+	Frame barFrame;
+	Frame stickFrame;
 
 	bool sized;
 
 	void OnSize();
 public:
-	constexpr static unsigned Width = 350;
-	constexpr static unsigned Height = 450;
-	constexpr static unsigned optionLabelPx = 20;
-	constexpr static unsigned resetLabelPx = 15;
+	constexpr static unsigned Width = 1100;
+	constexpr static unsigned Height = 1400;
+	constexpr static unsigned optionLabelPx = 60;
+	constexpr static unsigned optionSmallLabelPx = 40;
+	constexpr static unsigned resetLabelPx = 45;
 
 	Option();
 	~Option();

@@ -1,5 +1,5 @@
 #include "SizeLabel.h"
-#include <text/Font.h>
+#include "Font.h"
 
 void SizeLabel::CopyBaseSizes() {
 	baseSizes = new unsigned[sizeLen];

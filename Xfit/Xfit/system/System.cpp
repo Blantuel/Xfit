@@ -19,6 +19,7 @@
 #include "../resource/ShapeVertex.h"
 #include "../resource/Sampler.h"
 #include "../resource/Index.h"
+#include "../object/ScaleHeader.h"
 
 
 namespace System {
@@ -46,6 +47,39 @@ namespace System {
 			rectShapeVertex2D->vertices.Free();
 			delete rectShapeVertex2D;
 		}
+		if (ObjectVertex::topRight) {
+			ObjectVertex::topRight->vertices.Free();
+			delete ObjectVertex::topRight;
+		}
+		if (ObjectVertex::topLeft) {
+			ObjectVertex::topLeft->vertices.Free();
+			delete ObjectVertex::topLeft;
+		}
+		if (ObjectVertex::bottomRight) {
+			ObjectVertex::bottomRight->vertices.Free();
+			delete ObjectVertex::bottomRight;
+		}
+		if (ObjectVertex::bottomLeft) {
+			ObjectVertex::bottomLeft->vertices.Free();
+			delete ObjectVertex::bottomLeft;
+		}
+		if (ObjectVertex::right) {
+			ObjectVertex::right->vertices.Free();
+			delete ObjectVertex::right;
+		}
+		if (ObjectVertex::left) {
+			ObjectVertex::left->vertices.Free();
+			delete ObjectVertex::left;
+		}
+		if (ObjectVertex::top) {
+			ObjectVertex::top->vertices.Free();
+			delete ObjectVertex::top;
+		}
+		if (ObjectVertex::bottom) {
+			ObjectVertex::bottom->vertices.Free();
+			delete ObjectVertex::bottom;
+		}
+
 		if (defaultUV) {
 			defaultUV->vertices.Free();
 			delete defaultUV;
@@ -96,6 +130,47 @@ namespace System {
 		rectShapeVertex2D->vertices.InsertLast(PointF(0.5f, -0.5f));
 		rectShapeVertex2D->vertices.InsertLast(PointF(-0.5f, -0.5f));
 		rectShapeVertex2D->Build();
+
+
+		ObjectVertex::topRight = new Vertex;
+		ObjectVertex::topRight->vertices.Alloc(4);
+		ObjectVertex::topRight->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::TopRight);
+		ObjectVertex::topRight->Build();
+
+		ObjectVertex::topLeft = new Vertex;
+		ObjectVertex::topLeft->vertices.Alloc(4);
+		ObjectVertex::topLeft->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::TopLeft);
+		ObjectVertex::topLeft->Build();
+
+		ObjectVertex::bottomRight = new Vertex;
+		ObjectVertex::bottomRight->vertices.Alloc(4);
+		ObjectVertex::bottomRight->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::BottomRight);
+		ObjectVertex::bottomRight->Build();
+
+		ObjectVertex::bottomLeft = new Vertex;
+		ObjectVertex::bottomLeft->vertices.Alloc(4);
+		ObjectVertex::bottomLeft->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::BottomLeft);
+		ObjectVertex::bottomLeft->Build();
+
+		ObjectVertex::right = new Vertex;
+		ObjectVertex::right->vertices.Alloc(4);
+		ObjectVertex::right->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Right);
+		ObjectVertex::right->Build();
+
+		ObjectVertex::left = new Vertex;
+		ObjectVertex::left->vertices.Alloc(4);
+		ObjectVertex::left->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Left);
+		ObjectVertex::left->Build();
+
+		ObjectVertex::top = new Vertex;
+		ObjectVertex::top->vertices.Alloc(4);
+		ObjectVertex::top->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Top);
+		ObjectVertex::top->Build();
+
+		ObjectVertex::bottom = new Vertex;
+		ObjectVertex::bottom->vertices.Alloc(4);
+		ObjectVertex::bottom->MakeImageVertex2D(PointF(1.f, 1.f), CenterPointPos::Bottom);
+		ObjectVertex::bottom->Build();
 
 		defaultUV = new Vertex;
 		defaultUV->vertices.Alloc(4);

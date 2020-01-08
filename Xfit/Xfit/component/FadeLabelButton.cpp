@@ -1,10 +1,10 @@
 #include "FadeLabelButton.h"
-#include <physics/RectHitTest.h>
-#include <text/Label.h>
-#include <resource/Vertex.h>
-#include <text/Font.h>
-#include <system/System.h>
-#include "SizeLabel.h"
+#include "../physics/RectHitTest.h"
+#include "../text/Label.h"
+#include "../resource/Vertex.h"
+#include "../text/Font.h"
+#include "../system/System.h"
+#include "../text/SizeLabel.h"
 
 
 bool FadeLabelButton::Update() {
@@ -22,7 +22,7 @@ bool FadeLabelButton::Update() {
 			const float ratio = (float)fadeFrame / (float)totalFrame;
 			const float mul = ratio * (mag - 1.f) + 1.f;
 			
-			label->SizePrepareDraw(WindowRatio() * textPx * mul);
+			label->SizePrepareDraw(WindowRatio() * mul);
 
 			colorMat.e[15] = 1.f - ratio;
 
@@ -38,9 +38,9 @@ bool FadeLabelButton::Update() {
 	}
 	return result;
 }
-void FadeLabelButton::Size(bool _scale/* = true*/) {
-	if (fading) LabelButton::Size(false);
-	else LabelButton::Size(_scale);
+void FadeLabelButton::Size(bool _scale/* = true*/, float _scaleRatio/* = 1.f*/) {
+	if (fading) LabelButton::Size(false, _scaleRatio);
+	else LabelButton::Size(_scale, _scaleRatio);
 }
 bool FadeLabelButton::ButtonDown(Point _mousePos, void* _data) {
 	if (!fading) {

@@ -1,9 +1,9 @@
 #include "LabelButton.h"
-#include "SizeLabel.h"
-#include <physics/RectHitTest.h>
-#include <resource/Vertex.h>
-#include <text/Font.h>
-#include <system/System.h>
+#include "../text/SizeLabel.h"
+#include "../physics/RectHitTest.h"
+#include "../resource/Vertex.h"
+#include "../text/Font.h"
+#include "../system/System.h"
 
 bool LabelButton::ButtonDown(Point _mousePos, void* _data) {
 	colorMat.e[15] = 0.5f;
@@ -20,7 +20,7 @@ bool LabelButton::ButtonOut(Point _mousePos, void* _data) {
 
 LabelButton::LabelButton(PosType _posType, SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
 	Button(new RectHitTest, _pos, PointF(1.f, 1.f), 0.f, System::defaultBlend, nullptr),centerPointPos(_centerPointPos), basePos(_pos),posType(_posType) {
-	_label->SizePrepareDraw(WindowRatio() * textPx);
+	_label->SizePrepareDraw(WindowRatio());
 
 	pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), _label->GetWidth(), _label->GetHeight(), _centerPointPos);
 
@@ -74,10 +74,9 @@ void LabelButton::SetRectHitTest() {
 	}
 }
 
-void LabelButton::Size(bool _scale /*= true*/) {
-	float s = WindowRatio();
+void LabelButton::Size(bool _scale /*= true*/, float _scaleRatio/* = 1.f*/) {
 	if (_scale) {
-		((SizeLabel*)upFrame.frame)->SizePrepareDraw(WindowRatio() * textPx);
+		((SizeLabel*)upFrame.frame)->SizePrepareDraw(WindowRatio() * _scaleRatio);
 
 		pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(),centerPointPos);
 		scale = PointF(upFrame.frame->GetWidth(), upFrame.frame->GetHeight());
@@ -89,8 +88,8 @@ void LabelButton::Size(bool _scale /*= true*/) {
 	SetRectHitTest();
 }
 
-void LabelButton::PrepareDraw() {
-	((SizeLabel*)upFrame.frame)->SizePrepareDraw(WindowRatio() * textPx);
+void LabelButton::PrepareDraw(float _scaleRatio/* = 1.f*/) {
+	((SizeLabel*)upFrame.frame)->SizePrepareDraw(WindowRatio() * _scaleRatio);
 
 	pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(), centerPointPos);
 	scale = PointF(upFrame.frame->GetWidth(), upFrame.frame->GetHeight());

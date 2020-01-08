@@ -1,8 +1,7 @@
 #pragma once
 
-#include <object/Image.h>
-#include <resource/CenterPointPos.h>
-#include "main.h"
+#include "Image.h"
+#include "ScaleHeader.h"
 
 class SizeLabel;
 
@@ -20,7 +19,7 @@ public:
 
 	SizeLabel* GetLabel()const;
 
-	void Size();
-	virtual void PrepareDraw();
+	void Size(float _scaleRatio = 1.f);
+	virtual void PrepareDraw(float _scaleRatio = 1.f);
 };
 

@@ -2,7 +2,7 @@
 
 #include "../math/Point.h"
 #include "../data/Array.h"
-#include "CenterPointPos.h"
+#include "../object/CenterPointPos.h"
 
 class VertexError : public Error {
 public:

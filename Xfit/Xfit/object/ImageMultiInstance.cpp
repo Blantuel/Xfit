@@ -4,7 +4,7 @@
 #include "../resource/Sampler.h"
 
 #include "../resource/FrameArray.h"
-#include "../resource/Vertex2D.h"
+#include "../resource/Vertex.h"
 
 #include "../_system/_GraphicsBase.h"
 

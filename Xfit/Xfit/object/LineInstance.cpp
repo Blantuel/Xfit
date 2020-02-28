@@ -3,6 +3,8 @@
 
 #include "../_system/_DirectX11.h"
 
+#ifdef _WIN32
+
 using namespace _System::_DirectX11;
 
 void LineInstance::BuildInstance() {
@@ -78,7 +80,7 @@ void LineInstance::Draw() {
 
 	if (context1) {
 		context1->UpdateSubresource1(shapeVertConstantBuffer2D, 0, nullptr, &mat, 0, 0, D3D11_COPY_DISCARD);
-		context1->VSSetConstantBuffers1(0, 1, &shapeVertConstantBuffer2D, nullptr, nullptr);//±âº»°ª nullptr, nullptr
+		context1->VSSetConstantBuffers1(0, 1, &shapeVertConstantBuffer2D, nullptr, nullptr);//ï¿½âº»ï¿½ï¿½ nullptr, nullptr
 
 		context1->UpdateSubresource1(lineInsGeoConstantBuffer2D, 0, nullptr, &lineInsGeo2DContant, 0, 0, D3D11_COPY_DISCARD);
 		context1->GSSetConstantBuffers1(0, 1, &lineInsGeoConstantBuffer2D, nullptr, nullptr);
@@ -112,3 +114,5 @@ LineInstance::LineInstance():num(0), maxNum(0), instanceBuffer(nullptr), vertex(
 LineInstance::~LineInstance() {
 	if (instanceBuffer)instanceBuffer->Release();
 }
+
+#endif

@@ -17,3 +17,7 @@ void Image::Draw() {
 		DrawImage(vertex, uv, index, frame);
 	}
 }
+
+RectF Image::GetRect()const {
+	return RectF(pos.x - scale.x / 2.f, pos.x + scale.x / 2.f, pos.y + scale.y / 2.f, pos.y - scale.y / 2.f);
+}

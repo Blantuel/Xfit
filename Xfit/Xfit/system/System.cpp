@@ -6,6 +6,7 @@
 #include "../_system/_Renderer.h"
 
 #include "../_system/_Windows.h"
+#include "../_system/_Android.h"
 
 #include "../_system/_GraphicsBase.h"
 
@@ -29,7 +30,7 @@ namespace System {
 
 		Time::Init();
 
-		_System::_Windows::Create();//DXGI, DirectX11 Æ÷ÇÔ
+		_System::_Windows::Create();//DXGI, DirectX11 ï¿½ï¿½ï¿½ï¿½
 
 		System::createFunc();
 
@@ -38,7 +39,7 @@ namespace System {
 			_System::_Loop::Loop();
 		}
 		System::destroyFunc();
-		
+
 		if (defaultVertex2D) {
 			defaultVertex2D->vertices.Free();
 			delete defaultVertex2D;
@@ -101,14 +102,12 @@ namespace System {
 
 	}
 #elif __ANDROID__
-	void Create(ANativeActivity* _activity) {
-		_System::_Android::Create(_activity);
-	}
+
 #endif
 
 	void Init(CreateInfo* _info) {
 #ifdef _WIN32
-		_System::_Windows::Init(_info);//DXGI, DirectX11 Æ÷ÇÔ
+		_System::_Windows::Init(_info);//DXGI, DirectX11 ï¿½ï¿½ï¿½ï¿½
 #elif __ANDROID__
 		_System::_Android::Init(_info);
 #endif
@@ -221,15 +220,20 @@ namespace System {
 		return _System::_Renderer::version.name == System::RendererName::OpenGL;
 	}
 	void Clear(bool _clearDepth/* = false*/) {
-		//glClear(_clearDepth ? (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) : GL_COLOR_BUFFER_BIT);
-		_System::_DirectX11::Clear(_clearDepth);
+#ifdef _WIN32
+        _System::_DirectX11::Clear(_clearDepth);
+#elif __ANDROID__
+	    glClear(_clearDepth ? (GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT) : GL_COLOR_BUFFER_BIT);
+#endif
 	}
 	void SetClearColor(float _r, float _g, float _b, float _a) {
 		_System::_Renderer::backColor[0] = _r;
 		_System::_Renderer::backColor[1] = _g;
 		_System::_Renderer::backColor[2] = _b;
 		_System::_Renderer::backColor[3] = _a;
-		//glClearColor(_r, _g, _b, _a);
+#ifdef __ANDROID__
+		glClearColor(_r, _g, _b, _a);
+#endif
 	}
 	void SetWindowShow(WindowShow _windowShow) {
 #ifdef _DEBUG
@@ -267,16 +271,20 @@ namespace System {
 	unsigned GetWindowWidth() {
 		return _System::_Renderer::windowSize.width;
 	}
-	unsigned GetWindowHeight() { 
+	unsigned GetWindowHeight() {
 		return _System::_Renderer::windowSize.height;
 	}
 	PointU GetWindowSize() {
 		return _System::_Renderer::windowSize;
 	}
 	Point GetWindowPos() {
+#ifdef _WIN32
 		RECT rect;
 		GetWindowRect(_System::_Windows::hWnd, &rect);
 		return Point(rect.left, rect.top);
+#elif __ANDROID__
+        return Point(0,0);
+#endif
 	}
 
 	void SetTitle(const Tchar* _title) {
@@ -288,7 +296,7 @@ namespace System {
 
 	bool IsResizeWindow() {
 #ifdef _WIN32
-		return _System::_Windows::resizeWindow; 
+		return _System::_Windows::resizeWindow;
 #elif __ANDROID__
 		return false;
 #endif
@@ -309,7 +317,7 @@ namespace System {
 	}
 	void ResizeWindow(unsigned _width, unsigned _height) {
 #ifdef _WIN32
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		if (!System::IsWindowInited());
 		if (!_System::_Windows::resizeWindow);
 		if ((_width == 0) || (_height == 0));
@@ -321,7 +329,7 @@ namespace System {
 #elif __ANDROID__
 #endif
 	}
-	ScreenMode GetScreenMode() { 
+	ScreenMode GetScreenMode() {
 #ifdef _WIN32
 		return _System::_Windows::screenMode;
 #elif __ANDROID__
@@ -339,7 +347,7 @@ namespace System {
 #elif __ANDROID__
 #endif
 	}
-	bool IsConsoleOpened() { 
+	bool IsConsoleOpened() {
 #ifdef _WIN32
 		return _System::_Windows::consoleOpened;
 #elif __ANDROID__
@@ -354,7 +362,7 @@ namespace System {
 	}
 	void DebugMemoryLeak() {
 #ifdef _WIN32
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 #endif
 #else
@@ -362,23 +370,24 @@ namespace System {
 	}
 	void DebugMemoryLeakBreakPoint(int _value) {
 #ifdef _WIN32
-#ifdef _DEBUG
+		#ifdef _DEBUG
 		_CrtSetBreakAlloc(_value);
 #endif
 #else
 #endif
 	}
-	void Exit() { 
+	void Exit() {
 #ifdef _WIN32
-		DestroyWindow(_System::_Windows::hWnd); 
+		DestroyWindow(_System::_Windows::hWnd);
 #elif __ANDROID__
-		_System::_Android::app.destroyRequested = true;
+		_System::_Android::engine.app->destroyRequested = true;
 #endif
 	}
-	bool IsPause() { 
+	bool IsPause() {
 #ifdef _WIN32
-		return _System::_Windows::pause; 
+		return _System::_Windows::pause;
 #elif __ANDROID__
+		return false;
 #endif
 	}
 	OSversion GetOSVersion() {
@@ -392,7 +401,7 @@ namespace System {
 #endif
 	}
 
-	bool IsWindowInited() { 
+	bool IsWindowInited() {
 #ifdef _WIN32
 		return (bool)_System::_Windows::hWnd;
 #elif __ANDROID__
@@ -406,12 +415,14 @@ namespace System {
 	}
 	float GetMaxFrame() { return _System::_Loop::maxFrame; }
 
+#ifdef _WIN32
 	void MsgBox(const Tchar* _msg, const Tchar* _title) {
 #ifdef _DEBUG
 		if (!System::IsWindowInited());
 #endif
 		MessageBox(_System::_Windows::hWnd, _msg, _title, MB_OK | MB_ICONERROR);
 	}
+#endif
 
 #ifdef _WIN32
 	void Wait(unsigned _milisecond) {
@@ -424,14 +435,19 @@ namespace System {
 #endif
 
 	bool IsActivated() {
+#ifdef _WIN32
 		return _System::_Windows::activated;
+#elif __ANDROID__
+		return true;
+#endif
 	}
 
+#ifdef _WIN32
 	int GetDisplayNum() {
-		return _System::_DXGI::displaysLen;
+		return _System::_DXGI::outputs.Size();
 	}
 	int GetCurrentDisplayIndex() {
-		return _System::_DXGI::currentDisplay;
+		return _System::_DXGI::currentOutput;
 	}
 	int GetCurrentDisplayModeIndex() {
 		return _System::_DXGI::currentDisplayMode;
@@ -439,16 +455,37 @@ namespace System {
 	int GetDisplayFromWindow() {
 		return _System::_DXGI::GetDisplayFromWindow();
 	}
+	int GetDisplayModeNum(unsigned _displayIndex) {
+		return _System::_DXGI::outputs[_displayIndex].num;
+	}
+
 	PointU GetDisplayModeSize(unsigned _displayIndex, unsigned _displayModeIndex) {
-		/*if (_System::_DXGI::outputs[_displayIndex].output1) {
+		if (_System::_DXGI::outputs[_displayIndex].output1) {
 			return PointU(_System::_DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Width,
-				_System::_DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Height);
+						  _System::_DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Height);
 		} else {
 			return PointU(_System::_DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Width,
-				_System::_DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Height);
-		}*/
+						  _System::_DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Height);
+		}
 		return PointU(0, 0);
 	}
+	unsigned GetDisplayModeRefleshRateTop(unsigned _displayIndex, unsigned _displayModeIndex) {
+		if (_System::_DXGI::outputs[_displayIndex].output1) {
+			return _System::_DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].RefreshRate.Numerator;
+		} else {
+			return _System::_DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].RefreshRate.Numerator;
+		}
+		return 0;
+	}
+	unsigned GetDisplayModeRefleshRateBottom(unsigned _displayIndex, unsigned _displayModeIndex) {
+		if (_System::_DXGI::outputs[_displayIndex].output1) {
+			return _System::_DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].RefreshRate.Denominator;
+		} else {
+			return _System::_DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].RefreshRate.Denominator;
+		}
+		return 0;
+	}
+
 	WindowState GetWindowState() {
 		WINDOWPLACEMENT placeMent;
 		placeMent.length = sizeof(WINDOWPLACEMENT);
@@ -459,12 +496,16 @@ namespace System {
 		return WindowState::Restore;
 	}
 	int GetCurrentDisplayModeIndex(unsigned _displayIndex) {
-		return _System::_DXGI::displays[_displayIndex].currentMode;
+		return _System::_DXGI::outputs[_displayIndex].current;
 	}
-
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex) {
 		_System::_DXGI::SetFullScreenMode(_displayIndex, _displayModeIndex);
 		_System::_Windows::SetFullScreenMode(_displayIndex, _displayModeIndex);
+	}
+	void SetBorderlessScreenMode(unsigned _displayIndex) {
+		_System::_DXGI::SetBorderlessScreenMode(_displayIndex);
+		_System::_Windows::SetBorderlessScreenMode(_displayIndex);
+
 	}
 	void SetWindowMode(PointU _size, Point _pos, WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow) {
 		_System::_Windows::SetWindowMode(_pos, _size, _state, _maximized, _minimized, _resizeWindow);
@@ -487,5 +528,25 @@ namespace System {
 		GlobalUnlock(_System::_Windows::clipBoardMem);
 		CloseClipboard();
 	}
+
+	void DragFileOn(bool _on /*= true*/) {
+		DragAcceptFiles(_System::_Windows::hWnd, _on);
+	}
+
+	PointF GetDragFilePoint() {
+		POINT pt;
+		DragQueryPoint(_System::_Windows::hDrop, &pt);
+
+		return PointF(MouseXToX(pt.x), MouseYToY(pt.y));
+	}
+
+	unsigned GetDragFileCount() {
+		return DragQueryFileA(_System::_Windows::hDrop, UINT_MAX, nullptr, 0);
+	}
+
+	void GetDragFile(unsigned _index, char* _outFileName) {
+		DragQueryFileA(_System::_Windows::hDrop, _index, _outFileName, 255);
+	}
+#endif
 }
 

@@ -10,14 +10,14 @@ class Slider {
 	float value;
 
 	PointF barBasePos;
-	ScaleImage bar;
-	ScaleImage stick;
+	ScaleImage* bar;
+	ScaleImage* stick;
 public:
 	PosType posType;
 	void (*controlFinish)(Slider* _target);
 	void (*controlling)(Slider* _target);
 
-	Slider(PosType _posType, Frame* _barFrame, Frame* _stickFrame, PointF _pos, float _value);
+	Slider(PosType _posType, ScaleImage* _bar, ScaleImage* _stick, PointF _pos, float _value);
 
 	float GetValue()const;
 
@@ -31,5 +31,8 @@ public:
 	bool Update();
 	void Draw();
 	void Size();
+
+	ScaleImage* GetBar()const;
+	ScaleImage* GetStick()const;
 };
 

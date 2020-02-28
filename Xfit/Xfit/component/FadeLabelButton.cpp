@@ -38,11 +38,11 @@ bool FadeLabelButton::Update() {
 	}
 	return result;
 }
-void FadeLabelButton::Size(bool _scale/* = true*/, float _scaleRatio/* = 1.f*/) {
-	if (fading) LabelButton::Size(false, _scaleRatio);
-	else LabelButton::Size(_scale, _scaleRatio);
+void FadeLabelButton::Size(bool _scale/* = true*/) {
+	if (fading) LabelButton::Size(false);
+	else LabelButton::Size(_scale);
 }
-bool FadeLabelButton::ButtonDown(Point _mousePos, void* _data) {
+bool FadeLabelButton::ButtonDown(PointF _mousePos, void* _data) {
 	if (!fading) {
 		fading = true;
 		fadeFrame = 0;
@@ -51,5 +51,5 @@ bool FadeLabelButton::ButtonDown(Point _mousePos, void* _data) {
 }
 FadeLabelButton::FadeLabelButton(PosType _posType, SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/,
 	float _mag/* = 2.f*/, float _fadeTime /*= 0.5f*/) :
-	LabelButton(_posType,_label, _pos, _centerPointPos), fadeFrame(0), fading(false), mag(_mag), fadeTime(_fadeTime), faded(nullptr) {
+	LabelButton(_posType,_label, _pos, _centerPointPos), fading(false), mag(_mag), fadeTime(_fadeTime), fadeFrame(0), faded(nullptr) {
 }

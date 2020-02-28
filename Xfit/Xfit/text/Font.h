@@ -4,17 +4,12 @@
 #include "../data/Array.h"
 
 
-enum class FontRenderType {
-	Normal,
-	Mono,
-	LCD
-};
+
 class Font {
 	friend class Label;
 	friend class TextBox;
 
 	struct CharImage {
-		FontRenderType renderType;
 		wchar_t text;
 		int advanceX;
 		int left, top;
@@ -24,9 +19,9 @@ class Font {
 		const Font* font;
 	};
 	static FT_Library library;
-	static Array<CharImage> charImages;
+	static Array<CharImage*> charImages;
 	static size_t charImageBlockLen;
-	static mutex mutex;
+	static std::mutex mutex;
 	thread_local static unsigned* widths;
 	thread_local static unsigned* heights;
 	thread_local static int* paddings;
@@ -67,9 +62,4 @@ struct FontColor {
 struct FontContainer {
 	unsigned len;
 	Font* font;
-};
-
-struct FontRender {
-	unsigned len;
-	FontRenderType type;
 };

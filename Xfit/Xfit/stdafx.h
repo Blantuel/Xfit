@@ -10,6 +10,8 @@
 #include <sstream>
 #include <thread>
 #include <memory>
+#include <cstdlib>
+#include <codecvt>
 
 
 #if defined(_M_AMD64) || defined(_M_IX86) || defined(__amd64__) || defined(__i386__)
@@ -53,6 +55,7 @@
 #ifdef _WIN32
 
 #include <windowsx.h>
+#include <WinSock2.h>
 #include <Ws2tcpip.h>
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
@@ -84,47 +87,50 @@
 
 #elif __linux__
 
-#include <unistd.h>
-#include <sys/resource.h>
+	#include <unistd.h>
+	#include <sys/resource.h>
+	#include <sys/types.h>
+	#include <sys/socket.h>
+	#include <netinet/in.h>
+	#include <arpa/inet.h>
 
-#ifdef __ANDROID__
+	#ifdef __ANDROID__
 
-#include <jni.h>
+		#include <jni.h>
 
-#include <android/sensor.h>
+		#include <android/sensor.h>
 
-#include <android/log.h>
+		#include <android/log.h>
 
-#include <android/configuration.h>
-#include <android/looper.h>
-#include <android/native_activity.h>
-#include <android/asset_manager.h>
-#include <SLES/OpenSLES.h>
+		#include <android/configuration.h>
+		#include <android/looper.h>
+		#include <android/native_activity.h>
+		#include <android/asset_manager.h>
+		#include <android/keycodes.h>
+		#include <SLES/OpenSLES.h>
 
-#ifdef OPENGL
+		#include <EGL/egl.h>
+		#include <EGL/eglext.h>
+		#include <GLES3/gl3.h>
+		#include <GLES3/gl3ext.h>
+		#include <GLES3/gl31.h>
+		#include <GLES3/gl32.h>
 
-#include <EGL/egl.h>
-#include <EGL/eglext.h>
-#include <GLES3/gl3.h>
-#include <GLES3/gl3ext.h>
-#include <GLES3/gl31.h>
-#include <GLES3/gl32.h>
+		#include <android_native_app_glue.h>
 
-#elif VULKAN
-#define VK_USE_PLATFORM_ANDROID_KHR 1
-#endif
+		#define VK_USE_PLATFORM_ANDROID_KHR 1
 
-#ifdef _DEBUG
+		#ifdef _DEBUG
 
-#define PRINTMSG(...) ((void)__android_log_print(ANDROID_LOG_INFO, "XfitMSG", __VA_ARGS__))
+		#define PRINTMSG(...) ((void)__android_log_print(ANDROID_LOG_INFO, "XfitMSG", __VA_ARGS__))
 
-#else
+		#else
 
-#define PRINTMSG(...) ((void)0)
+		#define PRINTMSG(...) ((void)0)
 
-#endif
+		#endif
 
-#endif
+	#endif
 
 #endif
 
@@ -134,18 +140,19 @@
 #include "../../Libjpeg/jpeglib.h"
 #include "../../Libogg/vorbis/vorbisfile.h"
 #include "../../Zlib/zlib.h"
+
+#ifndef __ANDROID__
 #include "webp/decode.h"
 #include "webp/encode.h"
 #include "webp/mux.h"
 #include "webp/demux.h"
-
-using namespace std;
+#endif
 
 #ifdef UNICODE
 using Tchar = wchar_t;
-using Tstring = wstring;
-using Tstringstream = wstringstream;
-using Tostringstream = wostringstream;
+using Tstring = std::wstring;
+using Tstringstream = std::wstringstream;
+using Tostringstream = std::wostringstream;
 
 #ifndef _T
 #define _T(_str) L##_str
@@ -154,9 +161,9 @@ using Tostringstream = wostringstream;
 #else
 
 using Tchar = char;
-using Tstring = string;
-using Tstringstream = stringstream;
-using Tostringstream = ostringstream;
+using Tstring = std::string;
+using Tstringstream = std::stringstream;
+using Tostringstream = std::ostringstream;
 
 #ifndef _T
 #define _T(_str) _str

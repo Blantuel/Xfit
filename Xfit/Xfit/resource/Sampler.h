@@ -70,8 +70,8 @@ public:
 		MirroredRepeat=GL_MIRRORED_REPEAT
 	};*/
 
-	Sampler(Filter _filter = Filter::MinMagMipLinear, TextureAdressMode _textureAdressModeU = TextureAdressMode::Clamp
-		,TextureAdressMode _textureAdressModeV = TextureAdressMode::Clamp, TextureAdressMode _textureAdressModeW = TextureAdressMode::Clamp,
+	Sampler(Filter _filter = Filter::MinMagMipLinear, TextureAdressMode _textureAdressModeU = TextureAdressMode::Warp
+		,TextureAdressMode _textureAdressModeV = TextureAdressMode::Warp, TextureAdressMode _textureAdressModeW = TextureAdressMode::Warp,
 		unsigned _maxAnisotropy = 16);
 
 	//void SetMinFilter(MinFilter _minFilter);
@@ -86,6 +86,9 @@ private:
 		ID3D11SamplerState* sampler;
 	};
 #elif __ANDROID__
+
+	void SetWarpMode(TextureAdressMode _mode, GLenum _name);
+
 	GLuint sampler;
 #endif
 };

@@ -6,6 +6,6 @@ enum class FrameFormat {
 	NONE,
 	RGBA,
 	RGB,
-	BGR,
-	BGRA
+/*	BGR,
+	BGRA*/
 };

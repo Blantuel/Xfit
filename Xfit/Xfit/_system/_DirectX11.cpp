@@ -10,7 +10,7 @@
 
 #define COMPILE 1
 
-#define COMPILE_SHADER_PATH "../Xfit/"
+#define COMPILE_SHADER_PATH "shaders/"
 
 #define SHADER_PATH "../Xfit/_shader/out/"
 
@@ -41,7 +41,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 
 		hr = device1->CreateInputLayout(_inputElement, _elementSize, data, size, _outLayout);
@@ -65,7 +65,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 
 		delete[]data;
@@ -88,7 +88,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 
 		delete[]data;
@@ -123,7 +123,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 
 		hr = device1->CreateInputLayout(_inputElement, _elementSize, compiledData->GetBufferPointer(), compiledData->GetBufferSize(), _outLayout);
@@ -160,7 +160,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 		compiledData->Release();
 
@@ -194,7 +194,7 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 		compiledData->Release();
 
@@ -222,10 +222,10 @@ namespace _System::_DirectX11 {
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
-			MessageBox(nullptr, text, L"¿À·ù", MB_OK);
+			MessageBox(nullptr, text, L"ì˜¤ë¥˜", MB_OK);
 		}
 
-		device->QueryInterface(&device1);//½ÇÆÐ½Ã device1ÀÌ nullptrÀÌµÊ.
+		device->QueryInterface(&device1);//ì‹¤íŒ¨ì‹œ device1ì´ nullptrì´ë¨.
 		if (device1)device->QueryInterface(&device2);
 		if (device2)device->QueryInterface(&device3);
 
@@ -352,7 +352,7 @@ namespace _System::_DirectX11 {
 			rasterizerDesc.MultisampleEnable = false;
 			rasterizerDesc.ScissorEnable = false;
 			rasterizerDesc.SlopeScaledDepthBias = false;
-			rasterizerDesc.ForcedSampleCount = 0;//±âº»°ª : »ç¿ëÇÏÁö ¾ÊÀ½
+			rasterizerDesc.ForcedSampleCount = 0;//ê¸°ë³¸ê°’ : ì‚¬ìš©í•˜ì§€ ì•ŠìŒ
 
 			hr = device1->CreateRasterizerState1(&rasterizerDesc, &rasterizerState1);
 			if (FAILED(hr));
@@ -455,34 +455,23 @@ namespace _System::_DirectX11 {
 
 #ifdef _DEBUG
 		LoadCompileVertexShaderDebug(COMPILE_SHADER_PATH"imgVert2D.hlsl", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadCompilePixelShaderDebug(COMPILE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader, &imgPx2DClassLinkage, &imgPx2DReflection);
+		LoadCompilePixelShaderDebug(COMPILE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader);
 #else
 		LoadCompileVertexShaderDebug(RELEASE_SHADER_PATH"imgVert2D.hlsl", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadCompilePixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader, &imgPx2DClassLinkage, &imgPx2DReflection);
+		LoadCompilePixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader);
 #endif
 
 #else
 
 #ifdef _DEBUG
 		LoadVertexShaderDebug(SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadPixelShaderDebug(SHADER_PATH"imgPx2D.cso", &imgPx2DShader, &imgPx2DClassLinkage, &imgPx2DReflection);
+		LoadPixelShaderDebug(SHADER_PATH"imgPx2D.cso", &imgPx2DShader);
 #else
 		LoadVertexShaderDebug(RELEASE_SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadPixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.cso", &imgPx2DShader, &imgPx2DClassLinkage, &imgPx2DReflection);
+		LoadPixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.cso", &imgPx2DShader);
 #endif
 
 #endif
-		imgPx2DInterfaceNum = imgPx2DReflection->GetNumInterfaceSlots();;
-		imgPx2DClassInstances = new ID3D11ClassInstance * [imgPx2DInterfaceNum];
-		Memory::Set(imgPx2DClassInstances, (ID3D11ClassInstance *)0, imgPx2DInterfaceNum);
-
-		ID3D11ShaderReflectionVariable* imgPx2DisampleVar = imgPx2DReflection->GetVariableByName("isample");
-		imgPx2DisampleOffset = imgPx2DisampleVar->GetInterfaceSlot(0);
-
-		imgPx2DClassLinkage->GetClassInstance("loadSample", 0, &imgPx2DloadSample);
-		imgPx2DClassLinkage->GetClassInstance("samplerSample", 0, &imgPx2DsamplerSample);
-
-
 		D3D11_INPUT_ELEMENT_DESC shapeElement[]{
 			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
@@ -566,7 +555,7 @@ namespace _System::_DirectX11 {
 			{"InsMat", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"InsMat", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"InsMat", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"ImgId", 0, DXGI_FORMAT_R32G32B32A32_UINT, 2, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1}//Ã¹¹øÂ° ¿ä¼Ò(x)¸¸ »ç¿ë
+			{"ImgId", 0, DXGI_FORMAT_R32G32B32A32_UINT, 2, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1}//ì²«ë²ˆì§¸ ìš”ì†Œ(x)ë§Œ ì‚¬ìš©
 		};
 
 #ifdef COMPILE 

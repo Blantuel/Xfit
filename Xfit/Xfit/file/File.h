@@ -1,6 +1,5 @@
 #pragma once
 
-#include "../stdafx.h"
 #include "../system/Error.h"
 
 #ifdef _WIN32
@@ -94,7 +93,7 @@ public:
 		}
 		return red;
 	}
-	template<typename T> unsigned ReadBytes(unsigned size, T* buffer) {
+	template<typename T> unsigned ReadBytes(unsigned size, T* buffer)const {
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 #endif
@@ -147,12 +146,12 @@ public:
 class FileError :public Error {
 public:
 	enum class Code {
-		AccessDenined = ERROR_ACCESS_DENIED,
-		NotFound = ERROR_FILE_NOT_FOUND,
-		SharingViolation = ERROR_SHARING_VIOLATION,
-		AlreadyExists = ERROR_ALREADY_EXISTS,
-		NotEnoughMemory = ERROR_NOT_ENOUGH_MEMORY,
-		InvalidBuffer = ERROR_INVALID_USER_BUFFER,
+		AccessDenined = EACCES,
+		NotFound = EDQUOT,
+		//SharingViolation = ERROR_SHARING_VIOLATION,
+		AlreadyExists = EEXIST,
+		NotEnoughMemory = ENOMEM,
+		//InvalidBuffer = ERROR_INVALID_USER_BUFFER,
 		CopyFailed,
 		CopyCreateFailed,
 		NotOpened,
@@ -219,7 +218,7 @@ public:
 		if (!write) throw FileError((FileError::Code)errno);
 		return  write;
 	}
-	template<typename T> unsigned ReadBytes(unsigned _size, T* _buffer) {
+	template<typename T> unsigned ReadBytes(unsigned _size, T* _buffer)const {
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 #endif
@@ -265,8 +264,8 @@ public:
 #endif
 		return (unsigned)ftell(hFile);
 	}
-	template<typename T> unsigned Read(T* _data)const {return ReadBytes(sizeof(T) , _data);}
-	template <typename T> unsigned Write(const T& _data) { return WriteBytes(sizeof(T), &_data); }
+	template<typename T> unsigned Read(T* _data)const {return fread(&_data, sizeof(T), 1, hFile);}
+	template <typename T> unsigned Write(const T& _data) { return fwrite(&_data, sizeof(T), 1, hFile); }
 	~File() { if (IsOpen())Close(); }
 };
 #endif

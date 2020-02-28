@@ -1,12 +1,12 @@
 #include "RTAnimateObjectBase.h"
 #include "../resource/Sampler.h"
-#include "../resource/Vertex2D.h"
+#include "../resource/Vertex.h"
 #include "../_system/_OpenGL.h"
 #include "../system/System.h"
 
 using namespace _System::_OpenGL;
 
-void RTAnimateObjectBase::DrawImage(const Vertex2D* _vertex,const Vertex2D* _uv) {
+void RTAnimateObjectBase::DrawImage(const Vertex* _vertex,const Vertex* _uv) {
 #ifdef _DEBUG
 	if(!_vertex)throw RTAnimateObjectBaseError(RTAnimateObjectBaseError::Code::NullVertex);
 	if(!_uv)throw RTAnimateObjectBaseError(RTAnimateObjectBaseError::Code::NullUV);

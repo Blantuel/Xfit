@@ -11,7 +11,8 @@ public:
 
 	CenterPointPos centerPointPos;
 
-	ScaleImage(PosType _posType, Frame* _frame, PointF _pos = PointF(0.f, 0.f), PointF _scale = PointF(1.f, 1.f), CenterPointPos _centerPointPos = CenterPointPos::Center,  float _rotation = 0.f, bool _isVertical = false);
+	ScaleImage(PosType _posType, PointF _pos, PointF _scale, float _rotation, CenterPointPos _centerPointPos, bool _isVertical,
+		Blend* _blend, Sampler* _sampler, Frame* _frame, Vertex* _uv, Index* _index);
 
 	PointF basePos;
 	PointF baseScale;

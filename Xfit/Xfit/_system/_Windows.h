@@ -24,6 +24,8 @@ namespace _System::_Windows {
 
 	inline HANDLE clipBoardMem = 0;
 
+	inline HDROP hDrop;
+
 	inline HDC hdc;
 
 	inline bool resizeWindow;
@@ -36,11 +38,11 @@ namespace _System::_Windows {
 	inline bool pause=false, activated=false;
 
 	inline unsigned char click=0, click2=0, click3=0;
-	inline wstring chars;
+	inline std::wstring chars;
 	inline EnterCharState enterCharState;
 	inline unsigned char keyState[256] = {};
 	inline unsigned char keyDownUpState[256] = {};
-	inline short zScroll=0;
+	inline int zScroll=0;
 	inline bool mouseOut;
 	inline unsigned prevCharsLen = 0;
 
@@ -48,6 +50,7 @@ namespace _System::_Windows {
 	void Release();
 
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex);
+	void SetBorderlessScreenMode(unsigned _displayIndex);
 	void SetWindowMode(Point _pos, PointU _size, System::WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow);
 }
 #endif

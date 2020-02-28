@@ -6,7 +6,6 @@ class Font;
 struct FontSize;
 struct FontColor;
 struct FontContainer;
-struct FontRender;
 
 class Label : public Frame {
 protected:
@@ -16,7 +15,6 @@ public:
 	FontContainer* fonts;
 	FontColor* colors;
 	FontSize* sizes;
-	FontRender* renders;
 	unsigned textWidth;
 	unsigned scrollTextCount;
 	int* charWidths;

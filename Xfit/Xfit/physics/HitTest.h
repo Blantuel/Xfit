@@ -3,5 +3,6 @@
 
 class HitTest {
 public:
-	virtual bool Test(Point _point) = 0;
+	virtual bool Test(PointF _point) = 0;
+	virtual void Size() {}
 };

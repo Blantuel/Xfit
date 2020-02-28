@@ -12,16 +12,24 @@
 namespace _System::_Windows {
 	void Release() {}
 
-	bool activateInited = false;//WM_ACTIVATE°¡ Ã³À½ À©µµ¿ì°¡ º¸¿©Á³À» ¶§ È£ÃâµÇ´Â °ÍÀ» ¹æÁö
+	bool activateInited = false;//WM_ACTIVATEê°€ ì²˜ìŒ ìœˆë„ìš°ê°€ ë³´ì—¬ì¡Œì„ ë•Œ í˜¸ì¶œë˜ëŠ” ê²ƒì„ ë°©ì§€
 
 	LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
 		switch (_message) {
 		case WM_ACTIVATE:
 			if (activateInited) {
-				_Windows::pause = HIWORD(_wParam);//À©µµ¿ì°¡ ÃÖ¼ÒÈ­ ‰ç´ÂÁö È®ÀÎ
+				_Windows::pause = HIWORD(_wParam);//ìœˆë„ìš°ê°€ ìµœì†Œí™” í™•ì¸
 				_Windows::activated = (LOWORD(_wParam) != WA_INACTIVE);
 
-				System::activateFunc(System::activateData);
+				if (screenMode == System::ScreenMode::Fullscreen) {
+					if (!_Windows::activated) {
+						CloseWindow(_hWnd);
+						_Windows::pause = true;
+					}
+
+				}
+
+				System::activateFunc();
 			}
 			activateInited = true;
 			return 0;
@@ -30,7 +38,7 @@ namespace _System::_Windows {
 			_Renderer::windowSize.height = HIWORD(_lParam);
 
 			if (_System::_DXGI::swapChain)_System::_DirectX11::Resize();
-			if (_wParam != SIZE_MINIMIZED && System::sizeFunc)System::sizeFunc(System::sizeData);
+			if (_wParam != SIZE_MINIMIZED && System::sizeFunc)System::sizeFunc();
 			return 0;
 		case WM_GETMINMAXINFO:
 			((MINMAXINFO*)_lParam)->ptMinTrackSize.x = 320;
@@ -114,15 +122,24 @@ namespace _System::_Windows {
 		case WM_MOUSEMOVE:
 			TRACKMOUSEEVENT mouseEvent;
 			mouseEvent.cbSize = sizeof(mouseEvent);
-			mouseEvent.dwFlags = TME_LEAVE;
+			mouseEvent.dwFlags = TME_LEAVE | TME_HOVER;
 			mouseEvent.hwndTrack = _hWnd;
+			mouseEvent.dwHoverTime = 10;
 			TrackMouseEvent(&mouseEvent);
 			return 0;
-		case WM_MOUSELEAVE://MOUSEMOVE ¸Ş½ÃÁö¿¡¼­ TrackMouseEvent¸¦ È£ÃâÇÏ¸é È£ÃâµÇ´Â ¸Ş½ÃÁö
+		case WM_MOUSELEAVE://MOUSEMOVE ë©”ì‹œì§€ì—ì„œ TrackMouseEventë¥¼ í˜¸ì¶œí•˜ë©´ í˜¸ì¶œë˜ëŠ” ë©”ì‹œì§€
 			mouseOut = true;
 			return 0;
+		case WM_MOUSEHOVER:
+			mouseOut = false;
+			return 0;
 		case WM_MOUSEWHEEL:
-			zScroll = GET_WHEEL_DELTA_WPARAM(_wParam);
+			zScroll = (int)GET_WHEEL_DELTA_WPARAM(_wParam);
+			return 0;
+		case WM_DROPFILES:
+			hDrop = (HDROP)_wParam;
+			if (System::dragDropFuncs)System::dragDropFuncs();
+			DragFinish(hDrop);
 			return 0;
 		case WM_DESTROY:
 			PostQuitMessage(0);
@@ -131,18 +148,18 @@ namespace _System::_Windows {
 		return DefWindowProc(_hWnd, _message, _wParam, _lParam);
 	}
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex) {
-		SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
-		SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
+		//SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
+		//SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
 		/*
-		WS_EX_APPWINDOW : Ã¢ÀÌ Ç¥½ÃµÇ¸é ÃÖ»óÀ§ Ã¢À» ÀÛ¾÷ Ç¥½Ã ÁÙ¿¡ °­Á¦·Î Ç¥½ÃÇÕ´Ï´Ù.
-		À©µµ¿ì°¡ ÀÛ¾÷ Ç¥½Ã ÁÙ¿¡ µé¾î°¡´Â ¸î °¡Áö ±âº» ±ÔÄ¢ÀÌ ÀÖ½À´Ï´Ù. ÇÑ¸¶µğ·Î :
+		WS_EX_APPWINDOW : ì°½ì´ í‘œì‹œë˜ë©´ ìµœìƒìœ„ ì°½ì„ ì‘ì—… í‘œì‹œ ì¤„ì— ê°•ì œë¡œ í‘œì‹œí•©ë‹ˆë‹¤.
+		ìœˆë„ìš°ê°€ ì‘ì—… í‘œì‹œ ì¤„ì— ë“¤ì–´ê°€ëŠ” ëª‡ ê°€ì§€ ê¸°ë³¸ ê·œì¹™ì´ ìˆìŠµë‹ˆë‹¤. í•œë§ˆë””ë¡œ :
 
-		WS_EX_APPWINDOW È®Àå ½ºÅ¸ÀÏÀÌ ¼³Á¤µÇ¸é (Ç¥½Ã µÉ ¶§) Ç¥½ÃµË´Ï´Ù.
-		À©µµ¿ì°¡ ÃÖ»óÀ§ ·¹º§ÀÇ ¼ÒÀ¯µÇÁö ¾ÊÀº À©µµ¿ì ÀÎ °æ¿ì (Ç¥½Ã µÉ ¶§)°¡ Ç¥½ÃµË´Ï´Ù.
-		±×·¸Áö ¾ÊÀ¸¸é Ç¥½ÃµÇÁö ¾Ê½À´Ï´Ù.
+		WS_EX_APPWINDOW í™•ì¥ ìŠ¤íƒ€ì¼ì´ ì„¤ì •ë˜ë©´ (í‘œì‹œ ë  ë•Œ) í‘œì‹œë©ë‹ˆë‹¤.
+		ìœˆë„ìš°ê°€ ìµœìƒìœ„ ë ˆë²¨ì˜ ì†Œìœ ë˜ì§€ ì•Šì€ ìœˆë„ìš° ì¸ ê²½ìš° (í‘œì‹œ ë  ë•Œ)ê°€ í‘œì‹œë©ë‹ˆë‹¤.
+		ê·¸ë ‡ì§€ ì•Šìœ¼ë©´ í‘œì‹œë˜ì§€ ì•ŠìŠµë‹ˆë‹¤.
 		*/
-		//HWND_TOPMOST : À©µµ¿ì¸¦ ÃÖ»óÀ§ À©µµ¿ì·Î Ç¥½ÃÇÕ´Ï´Ù.
-		SetWindowPos(hWnd, HWND_TOPMOST, _DXGI::displays[_displayIndex].displayPos.x, _DXGI::displays[_displayIndex].displayPos.y,
+		//HWND_TOPMOST : ìœˆë„ìš°ë¥¼ ìµœìƒìœ„ ìœˆë„ìš°ë¡œ í‘œì‹œí•©ë‹ˆë‹¤.
+		/*SetWindowPos(hWnd, HWND_TOPMOST, _DXGI::displays[_displayIndex].displayPos.x, _DXGI::displays[_displayIndex].displayPos.y,
 			_DXGI::displays[_displayIndex].modes[_displayModeIndex].width, _DXGI::displays[_displayIndex].modes[_displayModeIndex].height, 0);
 		ShowWindow(hWnd, SW_SHOWNORMAL);
 
@@ -157,7 +174,38 @@ namespace _System::_Windows {
 		displayDevice.cb = sizeof(displayDevice);
 		EnumDisplayDevices(NULL, _displayIndex, &displayDevice, 0);
 	
-		ChangeDisplaySettingsEx(displayDevice.DeviceName, &mode, nullptr, CDS_FULLSCREEN | CDS_RESET, nullptr);
+		ChangeDisplaySettingsEx(displayDevice.DeviceName, &mode, nullptr, CDS_FULLSCREEN | CDS_RESET, nullptr);*/
+
+		DXGI_MODE_DESC mode;
+		if (_DXGI::outputs[_displayIndex].output1) {
+			mode.Width = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Width;
+			mode.Height = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Height;
+			mode.RefreshRate.Numerator = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].RefreshRate.Numerator;
+			mode.RefreshRate.Denominator = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].RefreshRate.Denominator;
+			mode.Format = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Format;
+			mode.Scaling = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].Scaling;
+			mode.ScanlineOrdering = _DXGI::outputs[_displayIndex].displayModes1[_displayModeIndex].ScanlineOrdering;
+		} else {
+			mode.Width = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Width;
+			mode.Height = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Height;
+			mode.RefreshRate.Numerator = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].RefreshRate.Numerator;
+			mode.RefreshRate.Denominator = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].RefreshRate.Denominator;
+			mode.Format = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Format;
+			mode.Scaling = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].Scaling;
+			mode.ScanlineOrdering = _DXGI::outputs[_displayIndex].displayModes[_displayModeIndex].ScanlineOrdering;
+		}
+		_Renderer::windowSize.width = mode.Width;
+		_Renderer::windowSize.height = mode.Height;
+		_Renderer::refleshRateTop = mode.RefreshRate.Numerator;
+		_Renderer::refleshRateBottom = mode.RefreshRate.Denominator;
+
+		_DXGI::swapChain->ResizeTarget(&mode);
+
+		if (_DXGI::outputs[_displayIndex].output1) {
+			_DXGI::swapChain->SetFullscreenState(TRUE, _DXGI::outputs[_displayIndex].output1);
+		} else {
+			_DXGI::swapChain->SetFullscreenState(TRUE, _DXGI::outputs[_displayIndex].output);
+		}
 
 		screenMode = System::ScreenMode::Fullscreen;
 	}
@@ -219,7 +267,6 @@ namespace _System::_Windows {
 	}
 	
 	bool Loop() {
-		mouseOut = false;
 		if (click == 1)click = 2;
 		else if (click == 3)click = 0;
 		if (click2 == 1)click2 = 2;
@@ -246,21 +293,40 @@ namespace _System::_Windows {
 		}
 		return true;
 	}
+	void SetBorderlessScreenMode(unsigned _displayIndex) {
+		_DXGI::swapChain->SetFullscreenState(FALSE, nullptr);
+
+		const int left = _DXGI::outputs[_displayIndex].rect.left;
+		const int right = _DXGI::outputs[_displayIndex].rect.right;
+		const int top = _DXGI::outputs[_displayIndex].rect.top;
+		const int bottom = _DXGI::outputs[_displayIndex].rect.bottom;
+
+		SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
+		SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW);
+
+		SetWindowPos(hWnd, 0, left, top, right - left, bottom - top, SWP_DRAWFRAME);
+
+		ShowWindow(hWnd, SW_MAXIMIZE);
+
+		screenMode = System::ScreenMode::BorderlessScreen;
+	}
 	void SetWindowMode(Point _pos, PointU _size, System::WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow) {
 		resizeWindow = _resizeWindow;
 		maximized = _maximized;
 		minimized = _minimized;
 
-		DISPLAY_DEVICE displayDevice;
+		/*DISPLAY_DEVICE displayDevice;
 		displayDevice.cb = sizeof(displayDevice);
 		EnumDisplayDevices(NULL, _DXGI::currentDisplay, &displayDevice, 0);
 
-		ChangeDisplaySettingsEx(displayDevice.DeviceName, nullptr, nullptr, CDS_RESET, nullptr);
+		ChangeDisplaySettingsEx(displayDevice.DeviceName, nullptr, nullptr, CDS_RESET, nullptr);*/
+
+		_DXGI::swapChain->SetFullscreenState(FALSE, nullptr);
 
 		DWORD style = WS_CAPTION | WS_SYSMENU | (resizeWindow ? WS_THICKFRAME : 0) | (maximized ? WS_MAXIMIZEBOX : 0)
 			| (minimized ? WS_MINIMIZEBOX : 0);
 
-		//SWP_DRAWFRAME : À©µµ¿ì ÇÁ·¹ÀÓ(Ç¥½ÃÁÙ µî)À» ±×¸°´Ù.
+		//SWP_DRAWFRAME : ìœˆë„ìš° í”„ë ˆì„(í‘œì‹œì¤„ ë“±)ì„ ê·¸ë¦°ë‹¤.
 
 		RECT rect = {0, 0, _size.x, _size.y};
 		AdjustWindowRect(&rect, style, FALSE);

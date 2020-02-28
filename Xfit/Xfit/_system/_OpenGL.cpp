@@ -7,12 +7,13 @@
 
 #include "../file/AssetFile.h"
 
+using namespace std;
 
 namespace _System::_OpenGL {
 
 	static void GL_APIENTRY OpenglDebugCallback(GLenum _source, GLenum _type, GLuint _id, GLenum _severity, GLsizei _length, const GLchar* _message, const void* _userParam) {
 		string str = "!!XFit OpenGL DebugLog ";
-
+        
 		switch (_source) {
 		case GL_DEBUG_SOURCE_API:
 			str += "source=API ";
@@ -80,8 +81,9 @@ namespace _System::_OpenGL {
 		str += _message;
 		str += "\n";
 		
-		PRINTMSG(str.c_str());
+		PRINTMSG("%s", str.c_str());
 	}
+	//프로그램 병합 Shader
 	static GLuint LoadAndCompileShader2(const char* _vertPath, const char* _fragPath) {
 		const GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 		const GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
@@ -108,10 +110,8 @@ namespace _System::_OpenGL {
 			glGetShaderiv(vertShader, GL_INFO_LOG_LENGTH, &compileLogLen);
 			char* compileLogCharAr = new char[compileLogLen];
 			glGetShaderInfoLog(vertShader, compileLogLen, nullptr, compileLogCharAr);
-			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
-			compileLogDebugStr += compileLogCharAr;
-			compileLogDebugStr += "\n";
-			PRINTMSG(compileLogDebugStr.data());
+
+			PRINTMSG("!!XFit OpenGL Shader Compile Error : %s\n", compileLogCharAr);
 			delete[]compileLogCharAr;
 		}
 
@@ -135,10 +135,8 @@ namespace _System::_OpenGL {
 			glGetShaderiv(fragShader, GL_INFO_LOG_LENGTH, &compileLogLen);
 			char* compileLogCharAr = new char[compileLogLen];
 			glGetShaderInfoLog(fragShader, compileLogLen, nullptr, compileLogCharAr);
-			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
-			compileLogDebugStr += compileLogCharAr;
-			compileLogDebugStr += "\n";
-			PRINTMSG(compileLogDebugStr.data());
+
+			PRINTMSG("!!XFit OpenGL Shader Compile Error : %s\n", compileLogCharAr);
 			delete[]compileLogCharAr;
 		}
 
@@ -156,10 +154,8 @@ namespace _System::_OpenGL {
 			glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &linkLogLen);
 			char* linkLogCharAr = new char[linkLogLen];
 			glGetProgramInfoLog(prog, linkLogLen, nullptr, linkLogCharAr);
-			string linkLogDebugStr = "!!XFit OpenGL Shader Link Error : ";
-			linkLogDebugStr += linkLogCharAr;
-			linkLogDebugStr += "\n";
-			PRINTMSG(linkLogDebugStr.data());
+
+			PRINTMSG("!!XFit OpenGL Shader Link Error : %s\n", linkLogCharAr);
 			delete[]linkLogCharAr;
 		}
 
@@ -171,6 +167,7 @@ namespace _System::_OpenGL {
 
 		return prog;
 	}
+	//프로그램 분리 Shader
 	static GLuint LoadAndCompileShader(const char* _path,GLenum _type) {
 		const GLuint shader = glCreateShader(_type);
 
@@ -197,10 +194,8 @@ namespace _System::_OpenGL {
 			glGetShaderiv(shader, GL_INFO_LOG_LENGTH, &compileLogLen);
 			char* compileLogCharAr = new char[compileLogLen];
 			glGetShaderInfoLog(shader, compileLogLen, nullptr, compileLogCharAr);
-			string compileLogDebugStr = "!!XFit OpenGL Shader Compile Error : ";
-			compileLogDebugStr += compileLogCharAr;
-			compileLogDebugStr += "\n";
-			PRINTMSG(compileLogDebugStr.data());
+
+			PRINTMSG("!!XFit OpenGL Shader Compile Error : %s\n", compileLogCharAr);
 			delete[]compileLogCharAr;
 		}
 		const GLuint prog = glCreateProgram();
@@ -217,10 +212,8 @@ namespace _System::_OpenGL {
 			glGetProgramiv(prog, GL_INFO_LOG_LENGTH, &linkLogLen);
 			char* linkLogCharAr = new char[linkLogLen];
 			glGetProgramInfoLog(prog, linkLogLen, nullptr, linkLogCharAr);
-			string linkLogDebugStr = "!!XFit OpenGL Shader Link Error : ";
-			linkLogDebugStr += linkLogCharAr;
-			linkLogDebugStr += "\n";
-			PRINTMSG(linkLogDebugStr.data());
+
+			PRINTMSG("!!XFit OpenGL Shader Link Error : %s\n", linkLogCharAr);
 			delete[]linkLogCharAr;
 		}
 		glDetachShader(prog, shader);
@@ -228,14 +221,15 @@ namespace _System::_OpenGL {
 
 		return prog;
 	}
-	void Init(System::RendererInfo* _info) {
+	void Init(System::CreateInfo* _info) {
 		int major, minor;
 		glGetIntegerv(GL_MINOR_VERSION, &minor);
 		glGetIntegerv(GL_MAJOR_VERSION, &major);
-		version.minorVersion = (unsigned)minor;
-		version.majorVersion = (unsigned)major;
+		_System::_Renderer::version.minorVersion = (unsigned)minor;
+		_System::_Renderer::version.majorVersion = (unsigned)major;
 
-		
+		_System::_Renderer::versionNumber = _System::_Renderer::version.majorVersion * 100 + _System::_Renderer::version.minorVersion;
+
 #ifdef _DEBUG
 		glEnable(GL_DEBUG_OUTPUT);
 
@@ -243,7 +237,6 @@ namespace _System::_OpenGL {
 		PFNGLDEBUGMESSAGECALLBACKPROC glDebugMessageCallback2 = (PFNGLDEBUGMESSAGECALLBACKPROC)eglGetProcAddress("glDebugMessageCallback");
 
 		if(glDebugMessageCallback2)glDebugMessageCallback2(OpenglDebugCallback, nullptr);
-
 #endif
 		glGenVertexArrays(1, &vao);
 
@@ -251,61 +244,64 @@ namespace _System::_OpenGL {
 
 		glEnableVertexAttribArray(0);
 
-		if(versionNumber>=301) {
-			imgVertProg = LoadAndCompileShader("shaders/imgVert.glsl", GL_VERTEX_SHADER);
-			imgInsVertProg = LoadAndCompileShader("shaders/imgInsVert.glsl", GL_VERTEX_SHADER);
-			shapeVertProg = LoadAndCompileShader("shaders/shapeVert.glsl", GL_VERTEX_SHADER);
-			imgMultiInsVertProg = LoadAndCompileShader("shaders/imgMultiInsVert.glsl", GL_VERTEX_SHADER);
+		/*if(_System::_Renderer::versionNumber >= 301) {
+			imgVertProg = LoadAndCompileShader("shaders/imgVert2D.glsl", GL_VERTEX_SHADER);
+			//imgInsVertProg = LoadAndCompileShader("shaders/imgInsVert.glsl", GL_VERTEX_SHADER);
+			//shapeVertProg = LoadAndCompileShader("shaders/shapeVert.glsl", GL_VERTEX_SHADER);
+			//imgMultiInsVertProg = LoadAndCompileShader("shaders/imgMultiInsVert.glsl", GL_VERTEX_SHADER);
 
-			imgFragProg = LoadAndCompileShader("shaders/imgFrag.glsl", GL_FRAGMENT_SHADER);
-			shapeFragProg = LoadAndCompileShader("shaders/shapeFrag.glsl", GL_FRAGMENT_SHADER);
-			imgMultiInsFragProg = LoadAndCompileShader("shaders/imgMultiInsFrag.glsl", GL_FRAGMENT_SHADER);
+			imgFragProg = LoadAndCompileShader("shaders/imgFrag2D.glsl", GL_FRAGMENT_SHADER);
+			//shapeFragProg = LoadAndCompileShader("shaders/shapeFrag.glsl", GL_FRAGMENT_SHADER);
+			//imgMultiInsFragProg = LoadAndCompileShader("shaders/imgMultiInsFrag.glsl", GL_FRAGMENT_SHADER);
 
 			glGenProgramPipelines(1, &progPipeline);
 			glBindProgramPipeline(progPipeline);
 
 			imgVert::matUniform = glGetUniformLocation(imgVertProg, "matUniform");
-			shapeVert::matUniform = glGetUniformLocation(shapeVertProg, "matUniform");
+            imgVert::viewMatUniform = glGetUniformLocation(imgVertProg, "viewMatUniform");
+			//shapeVert::matUniform = glGetUniformLocation(shapeVertProg, "matUniform");
 
 			imgFrag::colorMatUniform = glGetUniformLocation(imgFragProg, "colorMatUniform");
-			shapeFrag::colorUniform = glGetUniformLocation(shapeFragProg, "colorUniform");
-			imgMultiInsFrag::colorMatUniform = glGetUniformLocation(imgMultiInsFragProg, "colorMatUniform");
+			//shapeFrag::colorUniform = glGetUniformLocation(shapeFragProg, "colorUniform");
+			//imgMultiInsFrag::colorMatUniform = glGetUniformLocation(imgMultiInsFragProg, "colorMatUniform");
 
 			imgFrag::samplerUniform = glGetUniformLocation(imgFragProg, "samplerUniform");
-			imgMultiInsFrag::samplerUniform = glGetUniformLocation(imgMultiInsFragProg, "samplerUniform");
+			//imgMultiInsFrag::samplerUniform = glGetUniformLocation(imgMultiInsFragProg, "samplerUniform");
 
 			glProgramUniform1i(imgFragProg, imgFrag::samplerUniform, 0);
-			glProgramUniform1i(imgMultiInsFragProg, imgMultiInsFrag::samplerUniform, 0);
-		} else {
-			imgProg = LoadAndCompileShader2("shaders/imgVert.glsl", "shaders/imgFrag.glsl");
-			shapeProg = LoadAndCompileShader2("shaders/shapeVert.glsl", "shaders/shapeFrag.glsl");
-			imgInsProg = LoadAndCompileShader2("shaders/imgInsVert.glsl", "shaders/imgFrag.glsl");
-			imgMultiInsProg = LoadAndCompileShader2("shaders/imgMultiInsVert.glsl", "shaders/imgMultiInsFrag.glsl");
+			//glProgramUniform1i(imgMultiInsFragProg, imgMultiInsFrag::samplerUniform, 0);
+		} else {*/
+			imgProg = LoadAndCompileShader2("shaders/imgVert2D.glsl", "shaders/imgFrag2D.glsl");
+			//shapeProg = LoadAndCompileShader2("shaders/shapeVert.glsl", "shaders/shapeFrag.glsl");
+			//imgInsProg = LoadAndCompileShader2("shaders/imgInsVert.glsl", "shaders/imgFrag.glsl");
+			//imgMultiInsProg = LoadAndCompileShader2("shaders/imgMultiInsVert.glsl", "shaders/imgMultiInsFrag.glsl");
 
 			img::matUniform = glGetUniformLocation(imgProg, "matUniform");
-			shape::matUniform = glGetUniformLocation(shapeProg, "matUniform");
+            img::viewMatUniform = glGetUniformLocation(imgProg, "viewMatUniform");
+			//shape::matUniform = glGetUniformLocation(shapeProg, "matUniform");
 
 			img::colorMatUniform = glGetUniformLocation(imgProg, "colorMatUniform");
-			shape::colorUniform = glGetUniformLocation(shapeProg, "colorUniform");
-			imgIns::colorMatUniform = glGetUniformLocation(imgInsProg, "colorMatUniform");
-			imgMultiIns::colorMatUniform = glGetUniformLocation(imgMultiInsProg, "colorMatUniform");
+			//shape::colorUniform = glGetUniformLocation(shapeProg, "colorUniform");
+			//imgIns::colorMatUniform = glGetUniformLocation(imgInsProg, "colorMatUniform");
+			//imgMultiIns::colorMatUniform = glGetUniformLocation(imgMultiInsProg, "colorMatUniform");
 
 			img::samplerUniform = glGetUniformLocation(imgProg, "samplerUniform");
-			imgIns::samplerUniform = glGetUniformLocation(imgInsProg, "samplerUniform");
-			imgMultiIns::samplerUniform = glGetUniformLocation(imgMultiInsProg, "samplerUniform");
+			//imgIns::samplerUniform = glGetUniformLocation(imgInsProg, "samplerUniform");
+			//imgMultiIns::samplerUniform = glGetUniformLocation(imgMultiInsProg, "samplerUniform");
 
 			glUniform1i(img::samplerUniform, 0);
-			glUniform1i(imgIns::samplerUniform, 0);
-			glUniform1i(imgMultiIns::samplerUniform, 0);
-		}
-		vSync = _info->vSync;
-		msaaCount = _info->msaaCount;
+			//glUniform1i(imgIns::samplerUniform, 0);
+			//glUniform1i(imgMultiIns::samplerUniform, 0);
+		//}
+		_System::_Renderer::vSync = _info->vSync;
+		_System::_Renderer::msaaCount = _info->msaaCount;
 
-		version.name = System::RendererName::OpenGL;
+		_System::_Renderer::version.name = System::RendererName::OpenGL;
 
 		glViewport(0, 0, (int)System::GetWindowWidth(), (int)System::GetWindowHeight());
 	}
 	void Release() {
+
 	}
 
 	void Resize() {

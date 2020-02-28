@@ -19,29 +19,46 @@ namespace _System::_DXGI {
 	//inline IDXGIFactory5* factory5=nullptr;
 	//inline IDXGIFactory6* factory6=nullptr;
 
-	inline int currentDisplay = -1;
+	inline IDXGIDevice* device = nullptr;
+	//inline IDXGIDevice1* device1 = nullptr;
+	//inline IDXGIDevice2* device2 = nullptr;
+	//inline IDXGIDevice3* device3 = nullptr;
+	//inline IDXGIDevice4* device4 = nullptr;
+
+
+	inline IDXGIAdapter* adapter = nullptr;
+	//inline IDXGIAdapter1* adapter1 = nullptr;
+	//inline IDXGIAdapter2* adapter2 = nullptr;
+	//inline IDXGIAdapter3* adapter3 = nullptr;
+
+
+	//inline IDXGIOutput2* output2 = nullptr;
+	//inline IDXGIOutput3* output3 = nullptr;
+	//inline IDXGIOutput4* output4 = nullptr;
+	//inline IDXGIOutput5* output5 = nullptr;
+
+	inline int currentOutput = -1;
 	inline int currentDisplayMode = -1;
 
-	struct DisplayMode {
-		unsigned width;
-		unsigned height;
-		unsigned refleshRate;
+	struct Output {
+		unsigned num;
+		unsigned current;
+		IDXGIOutput* output;
+		IDXGIOutput1* output1;
+		union {
+			DXGI_MODE_DESC* displayModes;
+			DXGI_MODE_DESC1* displayModes1;
+		};
+		RECT rect;
 	};
-	struct Display {
-		unsigned modesLen;
-		unsigned currentMode;
-		HMONITOR hMonitor;
-		DisplayMode* modes;
-		Point displayPos;
-	};
-	inline Display* displays;
-	inline unsigned displaysLen;
+	inline Array<Output> outputs(10);
 
 	void Create();
 	void Init(System::CreateInfo* _info);
 	void Render();
 
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex);
+	void SetBorderlessScreenMode(unsigned _displayIndex);
 	int GetDisplayFromWindow();
 	void SetWindowMode();
 }

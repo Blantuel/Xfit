@@ -35,19 +35,12 @@ void ImageBase::DrawImage(const Vertex* _vertex,const Vertex* _uv, const Index* 
 #ifdef _WIN32
 	_System::_DirectX11::context->OMSetDepthStencilState(depthStencilState2D, 0xffffffff);
 
-	_System::_DirectX11::context->VSSetShader(imgVert2DShader, nullptr, 0);//±âº»°ª nullptr, nullptr, 0
-	_System::_DirectX11::context->GSSetShader(nullptr, nullptr, 0);//»ç¿ëÇÏÁö ¾Ê´Â ¼ÎÀÌ´õ´Â ºñÈ°¼ºÈ­ ÇØ¾ß µË´Ï´Ù.
+	_System::_DirectX11::context->VSSetShader(imgVert2DShader, nullptr, 0);//ê¸°ë³¸ê°’ nullptr, nullptr, 0
+	_System::_DirectX11::context->GSSetShader(nullptr, nullptr, 0);//ì‚¬ìš©í•˜ì§€ ì•ŠëŠ” ì…°ì´ë”ëŠ” ë¹„í™œì„±í™” í•´ì•¼ ë©ë‹ˆë‹¤.
 
 
-	if (sampler) {
-		imgPx2DClassInstances[imgPx2DisampleOffset] = imgPx2DsamplerSample;
-		_System::_DirectX11::context->PSSetShader(imgPx2DShader, imgPx2DClassInstances, imgPx2DInterfaceNum);
-		_System::_DirectX11::context->PSSetSamplers(0, 1, &sampler->sampler);
-	} else {
-		imgPx2DClassInstances[imgPx2DisampleOffset] = imgPx2DloadSample;
-		_System::_DirectX11::context->PSSetShader(imgPx2DShader, imgPx2DClassInstances, imgPx2DInterfaceNum);
-		_System::_DirectX11::context->PSSetSamplers(0, 1, &System::defaultSampler->sampler);
-	}
+	_System::_DirectX11::context->PSSetShader(imgPx2DShader, nullptr, 0);
+	_System::_DirectX11::context->PSSetSamplers(0, 1, &sampler->sampler);
 	
 
 
@@ -56,7 +49,7 @@ void ImageBase::DrawImage(const Vertex* _vertex,const Vertex* _uv, const Index* 
 
 	if (context1) {
 		context1->UpdateSubresource1(imgVertConstantBuffer2D, 0, nullptr, &vsMat, 0, 0, D3D11_COPY_DISCARD);
-		context1->VSSetConstantBuffers1(0, 1, &imgVertConstantBuffer2D,nullptr,nullptr);//±âº»°ª nullptr, nullptr
+		context1->VSSetConstantBuffers1(0, 1, &imgVertConstantBuffer2D,nullptr,nullptr);//ê¸°ë³¸ê°’ nullptr, nullptr
 
 		context1->UpdateSubresource1(imgPxConstantBuffer2D, 0, nullptr, &px, 0, 0, D3D11_COPY_DISCARD);
 		context1->PSSetConstantBuffers1(0, 1, &imgPxConstantBuffer2D,nullptr,nullptr);
@@ -87,35 +80,41 @@ void ImageBase::DrawImage(const Vertex* _vertex,const Vertex* _uv, const Index* 
 
 	_System::_DirectX11::context->DrawIndexed(_index->GetNum(),0,0);
 #elif __ANDROID__
-	if(glUseProgramStages) {
+	/*if(glUseProgramStages) {
 		glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, imgVertProg);
 
 		glProgramUniformMatrix4fv(imgVertProg, imgVert::matUniform, 1, GL_FALSE, mat.e);
+		glProgramUniformMatrix4fv(imgVertProg, imgVert::viewMatUniform, 1, GL_FALSE, Matrix::GetScale(2.f / (float)System::GetWindowWidth(), 2.f / (float)System::GetWindowHeight()).e);
 
 		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, imgFragProg);
 
 		glProgramUniformMatrix4fv(imgFragProg, imgFrag::colorMatUniform, 1,GL_FALSE,colorMat.e);
-	} else {
+	} else {*/
 		glUseProgram(imgProg);
-		glUniformMatrix4fv(img::matUniform, 1, GL_FALSE, mat.e);
-		glUniformMatrix4fv(img::colorMatUniform, 1,GL_FALSE,colorMat.e);
-	}
+		glUniformMatrix4fv(img::matUniform, 1, GL_TRUE, mat.e);
+		glUniformMatrix4fv(img::viewMatUniform, 1, GL_TRUE, Matrix::GetScale(2.f / (float)System::GetWindowWidth(), 2.f / (float)System::GetWindowHeight()).e);
+		glUniformMatrix4fv(img::colorMatUniform, 1,GL_TRUE, colorMat.e);
+		glUniform1i(img::samplerUniform, 0);
+	//}
 	glEnableVertexAttribArray(1);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _vertex->vertex);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(PointF), 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, _uv->vertex);
 
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(PointF), 0);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, _index->index);
+
+
+    glBindSampler(0, sampler->sampler);
 
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, _frame->texture);
 
-	glBindSampler(0, sampler->sampler);
-
-	glDrawArrays(GL_TRIANGLE_FAN, 0, 4);
+	glDrawElements(GL_TRIANGLES, _index->GetNum(), GL_UNSIGNED_INT, nullptr);
 
 	glDisableVertexAttribArray(1);
 #endif

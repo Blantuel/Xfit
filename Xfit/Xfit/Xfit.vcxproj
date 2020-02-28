@@ -67,7 +67,7 @@
       </IgnoreSpecificDefaultLibraries>
       <IgnoreAllDefaultLibraries>
       </IgnoreAllDefaultLibraries>
-      <AdditionalDependencies>ws2_32.lib;Imm32.lib;OpenCL.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Imm32.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib;../WebP/lib;$(CUDA_PATH)/lib/x64</AdditionalLibraryDirectories>
     </Lib>
     <FxCompile>
@@ -84,7 +84,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <LanguageStandard>stdcpp17</LanguageStandard>
-      <OmitFramePointers>true</OmitFramePointers>
+      <OmitFramePointers>false</OmitFramePointers>
       <ConformanceMode>true</ConformanceMode>
       <PreprocessorDefinitions>COMPILE_XFIT;WIN_DESKTOP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <CompileAs>CompileAsCpp</CompileAs>
@@ -92,6 +92,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <WarningLevel>Level4</WarningLevel>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WholeProgramOptimization>true</WholeProgramOptimization>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -107,15 +108,19 @@
       </VariableName>
     </FxCompile>
     <Lib>
-      <AdditionalDependencies>ws2_32.lib;Imm32.lib;OpenCL.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
+      <AdditionalDependencies>ws2_32.lib;Imm32.lib;libwebp.lib;libwebpdemux.lib;libwebpmux.lib;d3d11.lib;dxgi.lib;dxguid.lib;d3dcompiler.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>$(VULKAN_SDK)/lib;../WebP/lib;$(CUDA_PATH)/lib/x64</AdditionalLibraryDirectories>
     </Lib>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="component\EditBox.h" />
     <ClInclude Include="component\FadeLabelButton.h" />
     <ClInclude Include="component\LabelButton.h" />
     <ClInclude Include="component\LabelListButton.h" />
+    <ClInclude Include="component\LabelOptionButton.h" />
     <ClInclude Include="component\LabelToggleButton.h" />
+    <ClInclude Include="component\Scrollbar.h" />
+    <ClInclude Include="component\SizeButton.h" />
     <ClInclude Include="component\Slider.h" />
     <ClInclude Include="data\Array.h" />
     <ClInclude Include="data\ImageType.h" />
@@ -145,6 +150,7 @@
     <ClInclude Include="file\File.h" />
     <ClInclude Include="file\Register.h" />
     <ClInclude Include="file\ResourceManager.h" />
+    <ClInclude Include="network\IP.h" />
     <ClInclude Include="object\LabelImage.h" />
     <ClInclude Include="object\Line.h" />
     <ClInclude Include="math\Hexagon.h" />
@@ -170,10 +176,12 @@
     <ClInclude Include="component\RadioButton.h" />
     <ClInclude Include="object\ScaleImage.h" />
     <ClInclude Include="object\Shape.h" />
+    <ClInclude Include="object\TextBoxImage.h" />
     <ClInclude Include="physics\Collision.h" />
     <ClInclude Include="physics\HitTest.h" />
     <ClInclude Include="physics\RectHitTest.h" />
     <ClInclude Include="object\ScaleHeader.h" />
+    <ClInclude Include="physics\SizeRectHitTest.h" />
     <ClInclude Include="resource\AnimateBase.h" />
     <ClInclude Include="resource\AnimateFrame.h" />
     <ClInclude Include="object\CenterPointPos.h" />
@@ -187,6 +195,7 @@
     <ClInclude Include="resource\ShapeVertex.h" />
     <ClInclude Include="resource\Vertex.h" />
     <ClInclude Include="object\ShapeInstance.h" />
+    <ClInclude Include="network\Socket.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="system\Context.h" />
     <ClInclude Include="system\Error.h" />
@@ -197,9 +206,11 @@
     <ClInclude Include="system\Screen.h" />
     <ClInclude Include="system\System.h" />
     <ClInclude Include="system\WriteFlag.h" />
+    <ClInclude Include="text\SizeAnimateTextBox.h" />
     <ClInclude Include="text\Font.h" />
     <ClInclude Include="text\Label.h" />
     <ClInclude Include="text\SizeLabel.h" />
+    <ClInclude Include="text\SizeTextBox.h" />
     <ClInclude Include="text\Text.h" />
     <ClInclude Include="text\TextBox.h" />
     <ClInclude Include="time\Time.h" />
@@ -216,10 +227,14 @@
     <ClInclude Include="_system\_Windows.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="component\EditBox.cpp" />
     <ClCompile Include="component\FadeLabelButton.cpp" />
     <ClCompile Include="component\LabelButton.cpp" />
     <ClCompile Include="component\LabelListButton.cpp" />
+    <ClCompile Include="component\LabelOptionButton.cpp" />
     <ClCompile Include="component\LabelToggleButton.cpp" />
+    <ClCompile Include="component\Scrollbar.cpp" />
+    <ClCompile Include="component\SizeButton.cpp" />
     <ClCompile Include="component\Slider.cpp" />
     <ClCompile Include="data\Compress.cpp" />
     <ClCompile Include="data\ImageUtil.cpp" />
@@ -238,6 +253,7 @@
     <ClCompile Include="encoder\ImageEncoder.cpp" />
     <ClCompile Include="encoder\WebPAnimateLosslessEncoder.cpp" />
     <ClCompile Include="encoder\WebPLosslessEncoder.cpp" />
+    <ClCompile Include="network\IP.cpp" />
     <ClCompile Include="object\LabelImage.cpp" />
     <ClCompile Include="object\Line.cpp" />
     <ClCompile Include="math\Hexagon.cpp" />
@@ -260,8 +276,10 @@
     <ClCompile Include="object\ScaleHeader.cpp" />
     <ClCompile Include="object\ScaleImage.cpp" />
     <ClCompile Include="object\Shape.cpp" />
+    <ClCompile Include="object\TextBoxImage.cpp" />
     <ClCompile Include="physics\Collision.cpp" />
     <ClCompile Include="physics\RectHitTest.cpp" />
+    <ClCompile Include="physics\SizeRectHitTest.cpp" />
     <ClCompile Include="resource\AnimateBase.cpp" />
     <ClCompile Include="resource\AnimateFrame.cpp" />
     <ClCompile Include="resource\Frame.cpp" />
@@ -271,15 +289,18 @@
     <ClCompile Include="resource\ShapeVertex.cpp" />
     <ClCompile Include="resource\Vertex.cpp" />
     <ClCompile Include="object\ShapeInstance.cpp" />
+    <ClCompile Include="network\Socket.cpp" />
     <ClCompile Include="sound\Sound.cpp" />
     <ClCompile Include="resource\Sampler.cpp" />
     <ClCompile Include="system\Context.cpp" />
     <ClCompile Include="system\Input.cpp" />
     <ClCompile Include="system\Screen.cpp" />
     <ClCompile Include="system\System.cpp" />
+    <ClCompile Include="text\SizeAnimateTextBox.cpp" />
     <ClCompile Include="text\Font.cpp" />
     <ClCompile Include="text\Label.cpp" />
     <ClCompile Include="text\SizeLabel.cpp" />
+    <ClCompile Include="text\SizeTextBox.cpp" />
     <ClCompile Include="text\Text.cpp" />
     <ClCompile Include="text\Textbox.cpp" />
     <ClCompile Include="time\Time.cpp" />
@@ -370,6 +391,9 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

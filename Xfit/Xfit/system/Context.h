@@ -5,7 +5,7 @@
 
 
 class Context {
-	HGLRC context;
+	//HGLRC context;
 public:
 	Context();
 	~Context();

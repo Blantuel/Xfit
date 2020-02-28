@@ -1,14 +1,14 @@
 #include "LabelToggleButton.h"
 
-bool LabelToggleButton::ButtonDown(Point _mousePos, void* _data) {
+bool LabelToggleButton::ButtonDown(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 0.5f;
 	return true;
 }
-bool LabelToggleButton::ButtonUp(Point _mousePos, void* _data) {
+bool LabelToggleButton::ButtonUp(PointF _mousePos, void* _data) {
 	SetToogle(!toggle);
 	return true;
 }
-bool LabelToggleButton::ButtonOut(Point _mousePos, void* _data) {
+bool LabelToggleButton::ButtonOut(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 1.f;
 	return true;
 }

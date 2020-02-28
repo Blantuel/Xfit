@@ -62,14 +62,14 @@ void FrameArray::Build(const void* _data,unsigned _len, unsigned _width, unsigne
 	case FrameFormat::RGB:
 		fmt = GL_RGB;
 		break;
-	case FrameFormat::BGRA:
+	/*case FrameFormat::BGRA:
 		fmt = GL_BGRA;
 		_format = FrameFormat::RGBA;
 		break;
 	case FrameFormat::BGR:
 		fmt = GL_BGR;
 		_format = FrameFormat::RGB;
-		break;
+		break;*/
 	default:
 		break;
 	}

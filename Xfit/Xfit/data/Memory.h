@@ -293,7 +293,11 @@ public:
 		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
 		if(_destCount==0)throw MemoryError(MemoryError::Code::ZeroDestSize);
 #endif
+#ifdef _WIN32
 		memcpy_s(_dest, _destCount * sizeof(T),_src, _count*sizeof(T));
+#else
+		memcpy(_dest, _src, _count*sizeof(T));
+#endif
 		return _dest;
 	}
 	template <typename T> static T* CopyInThis(T* _dest, size_t _destCount, const T* _src, size_t _count) {
@@ -303,7 +307,11 @@ public:
 		if(_count==0)throw MemoryError(MemoryError::Code::ZeroSize);
 		if(_destCount==0)throw MemoryError(MemoryError::Code::ZeroDestSize);
 #endif
+#ifdef _WIN32
 		memmove_s(_dest, _destCount * sizeof(T), _src, _count * sizeof(T));
+#else
+		memmove(_dest, _src, _count * sizeof(T));
+#endif
 		return _dest;
 	}
 };

@@ -6,6 +6,9 @@
 #include "../_system/_DirectX11.h"
 
 //using namespace _System::_OpenGL;
+
+#ifdef _WIN32
+
 using namespace _System::_DirectX11;
 
 
@@ -35,7 +38,7 @@ void Line::Draw() {
 
 	if (context1) {
 		context1->UpdateSubresource1(shapeVertConstantBuffer2D, 0, nullptr, &mat, 0, 0, D3D11_COPY_DISCARD);
-		context1->VSSetConstantBuffers1(0, 1, &shapeVertConstantBuffer2D, nullptr, nullptr);//±âº»°ª nullptr, nullptr
+		context1->VSSetConstantBuffers1(0, 1, &shapeVertConstantBuffer2D, nullptr, nullptr);//ê¸°ë³¸ê°’ nullptr, nullptr
 
 		context1->UpdateSubresource1(lineGeoConstantBuffer2D, 0, nullptr, &lineGeoContant, 0, 0, D3D11_COPY_DISCARD);
 		context1->GSSetConstantBuffers1(0, 1, &lineGeoConstantBuffer2D, nullptr, nullptr);
@@ -86,3 +89,5 @@ void Line::Draw() {
 
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);*/
 }
+
+#endif

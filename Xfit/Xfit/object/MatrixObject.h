@@ -2,6 +2,7 @@
 
 #include "Object.h"
 #include "../math/Point.h"
+#include "../math/Rect.h"
 
 class MatrixObject : public Object {
 public:
@@ -20,4 +21,7 @@ public:
 	virtual void SetScaleY(float _scaleY);
 	virtual void SetRotation(float _rotation);
 	virtual void SetTransform(PointF _pos, PointF _scale, float _rotation);
+
+
+	virtual RectF GetRect()const { return RectF(0, 0, 0, 0); }
 };

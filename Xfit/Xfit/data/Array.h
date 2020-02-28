@@ -48,20 +48,20 @@ public:
 #ifdef _DEBUG
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
-		return data[_index]; 
+		return data[_index];
 	}
 
 	const T* begin()const {
 #ifdef _DEBUG
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
-		return data; 
+		return data;
 	}
 	T* begin() {
 #ifdef _DEBUG
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
-		return data; 
+		return data;
 	}
 	const T* end()const {
 #ifdef _DEBUG
@@ -73,7 +73,7 @@ public:
 #ifdef _DEBUG
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
-		return data + len; 
+		return data + len;
 	}
 
 	size_t Size()const {
@@ -158,7 +158,11 @@ public:
 	Array(const Array<T> &_other):len(_other.len),maxLen(_other.maxLen) {
 		if(_other.data) {
 			data = new T[maxLen];
+#ifdef _WIN32
 			memcpy_s(data, sizeof(T)*len,_other.data, sizeof(T)*len);
+#else
+			memcpy(data, _other.data, sizeof(T)*len);
+#endif
 			isAlloc=true;
 		} else {
 			data=nullptr;
@@ -173,7 +177,11 @@ public:
 			if(data) {
 #endif
 				Resize(_other.len);
+#ifdef _WIN32
 				memcpy_s(data, sizeof(T)*len,_other.data, sizeof(T)*len);
+#else
+				memcpy(data, _other.data, sizeof(T)*len);
+#endif
 #ifdef _DEBUG
 			} else throw ArrayError(ArrayError::Code::NullData);
 #endif
@@ -182,7 +190,7 @@ public:
 				delete[]data;
 				isAlloc=false;
 			}
-			data=nullptr;	
+			data=nullptr;
 		}
 		return *this;
 	}
@@ -208,7 +216,7 @@ public:
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
 		Resize(len+1);
-		return data[len - 1] = move(_value);
+		return data[len - 1] = std::move(_value);
 	}
 	template<class... _Valty>
 	T& EmplaceLast(_Valty&&... _Val) {
@@ -216,7 +224,7 @@ public:
 		if (!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
 		Resize(len + 1);
-		return data[len - 1] = T(forward<_Valty>(_Val)...);
+		return data[len - 1] = T(std::forward<_Valty>(_Val)...);
 	}
 	template<class... _Valty>
 	T& EmplaceFirst(_Valty&&... _Val) {
@@ -224,9 +232,13 @@ public:
 		if (!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
 		Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + 1, (len - 1) * sizeof(T), data, (len - 1) * sizeof(T));
+#else
+		memmove(data + 1, data, (len - 1) * sizeof(T));
+#endif
 
-		return data[0] = T(forward<_Valty>(_Val)...);
+		return data[0] = T(std::forward<_Valty>(_Val)...);
 	}
 	Array<T>& InsertArLast(const T* _ar, size_t _len) {
 #ifdef _DEBUG
@@ -235,7 +247,11 @@ public:
 		if(_len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 #endif
 		Resize(len + _len);
+#ifdef _WIN32
 		memmove_s(data + len - _len, _len * sizeof(T), _ar, _len * sizeof(T));
+#else
+		memmove(data + len - _len, _ar, _len * sizeof(T));
+#endif
 
 		return *this;
 	}
@@ -249,8 +265,14 @@ public:
 #endif
 		Resize(len+ _len);
 		const size_t lenT = len - _index - _len;
-		if(lenT>0)memmove_s(data + _index + _len, lenT * sizeof(T), data + _index,lenT*sizeof(T));
+
+#ifdef _WIN32
+		if(lenT > 0)memmove_s(data + _index + _len, lenT * sizeof(T), data + _index,lenT*sizeof(T));
 		memmove_s(data + _index, (len - _index) * sizeof(T), _ar, _len*sizeof(T));
+#else
+		if(lenT > 0)memmove(data + _index + _len, data + _index,lenT*sizeof(T));
+		memmove(data + _index, _ar, _len*sizeof(T));
+#endif
 
 		return *this;
 	}
@@ -262,8 +284,14 @@ public:
 		if(_len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 #endif
 		Resize(len + _len);
+
+#ifdef _WIN32
 		memmove_s(data + _len, (len - _len) * sizeof(T), data, (len - _len)*sizeof(T));
 		memmove_s(data, len * sizeof(T), _ar, _len*sizeof(T));
+#else
+		memmove(data + _len, data, (len - _len)*sizeof(T));
+		memmove(data, _ar, _len*sizeof(T));
+#endif
 
 		return *this;
 	}
@@ -276,8 +304,12 @@ public:
 		if(_index>len)throw ArrayError(ArrayError::Code::OutIndex);
 #endif
 		if (_index + _len>len) Resize(_index + _len);
-		memmove_s(data + _index, (len-_index) * sizeof(T),_ar, _len*sizeof(T));
 
+#ifdef _WIN32
+		memmove_s(data + _index, (len - _index) * sizeof(T), _ar, _len * sizeof(T));
+#else
+		memmove(data + _index, _ar, _len * sizeof(T));
+#endif
 		return *this;
 	}
 	T& InsertFirst(const T& _value) {
@@ -285,7 +317,12 @@ public:
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
 		Resize(len + 1);
+
+#ifdef _WIN32
 		memmove_s(data + 1, (len - 1) * sizeof(T), data, (len - 1) * sizeof(T));
+#else
+		memmove(data + 1, data, (len - 1) * sizeof(T));
+#endif
 
 		return data[0] = _value;
 	}
@@ -294,9 +331,14 @@ public:
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 #endif
 		Resize(len + 1);
-		memmove_s(data + 1, (len-1) * sizeof(T),data, (len-1)*sizeof(T));
 
-		return data[0] = move(_value);
+#ifdef _WIN32
+		memmove_s(data + 1, (len-1) * sizeof(T),data, (len-1)*sizeof(T));
+#else
+		memmove(data + 1, data, (len-1)*sizeof(T));
+#endif
+
+		return data[0] = std::move(_value);
 	}
 	Array<T>& Insert(T&& _value, size_t _index) {
 #ifdef _DEBUG
@@ -305,9 +347,14 @@ public:
 #endif
 		if (_index >= len)Resize(_index + 1);
 		else Resize(len + 1);
-		memmove_s(data + _index + 1, (len - _index-1) * sizeof(T), data + _index, (len - _index-1)*sizeof(T));
 
-		data[_index] = move(_value);
+#ifdef _WIN32
+		memmove_s(data + _index + 1, (len - _index-1) * sizeof(T), data + _index, (len - _index-1)*sizeof(T));
+#else
+		memmove(data + _index + 1, data + _index, (len - _index-1)*sizeof(T));
+#endif
+
+		data[_index] = std::move(_value);
 		return *this;
 	}
 	Array<T>& Insert(const T& _value, size_t _index) {
@@ -317,12 +364,15 @@ public:
 #endif
 		if (_index >= len)Resize(_index + 1);
 		else Resize(len + 1);
+#ifdef _WIN32
 		memmove_s(data + _index + 1, (len - _index-1) * sizeof(T),data + _index, (len - _index-1)*sizeof(T));
-
+#else
+		memmove(data + _index + 1, data + _index, (len - _index-1)*sizeof(T));
+#endif
 		data[_index] = _value;
 		return *this;
 	}
-	Array<T>& InsertInitializerLast(const initializer_list<T> _init) {
+	Array<T>& InsertInitializerLast(const std::initializer_list<T> _init) {
 		Resize(len + _init.size());
 #ifdef _WIN32
 		memmove_s(data + len - _init.size(), _init.size() * sizeof(T), _init.begin(), _init.size() * sizeof(T));
@@ -332,7 +382,7 @@ public:
 		return *this;
 	}
 
-	Array<T>& InsertInitializer(const initializer_list<T> _init, size_t _index) {
+	Array<T>& InsertInitializer(const std::initializer_list<T> _init, size_t _index) {
 		Resize(len + _init.size());
 #ifdef _WIN32
 		memmove_s(data + _index + _init.size(), (len - _index - _init.size()) * sizeof(T), data + _index, (len - _index - _init.size()) * sizeof(T));
@@ -343,7 +393,7 @@ public:
 #endif
 		return *this;
 	}
-	Array<T>& InsertInitializerFirst(const initializer_list<T> _init) {
+	Array<T>& InsertInitializerFirst(const std::initializer_list<T> _init) {
 		Resize(len + _init.size());
 #ifdef _WIN32
 		memmove_s(data + _init.size(), (len - _init.size()) * sizeof(T), data, (len - _init.size()) * sizeof(T));
@@ -363,7 +413,11 @@ public:
 		if(!data)throw ArrayError(ArrayError::Code::NullData);
 		if(len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 #endif
+#ifdef _WIN32
 		memmove_s(data, len * sizeof(T), data + 1, (len - 1) * sizeof(T));
+#else
+		memmove(data, data + 1, (len - 1) * sizeof(T));
+#endif
 		len--;
 		return *this;
 	}
@@ -373,7 +427,7 @@ public:
 		if(len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 #endif
 		len -= 1; 
-		return data[len]; 
+		return data[len];
 	}
 	Array<T>& EraseIndex(size_t _index) {
 #ifdef _DEBUG
@@ -381,7 +435,11 @@ public:
 		if(len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 		if(_index>(len-1))throw ArrayError(ArrayError::Code::OutIndex);
 #endif
+#ifdef _WIN32
 		memmove_s(data + _index, (len - _index) * sizeof(T),data + _index + 1, (len - _index - 1) * sizeof(T));
+#else
+		memmove(data + _index, data + _index + 1, (len - _index - 1) * sizeof(T));
+#endif
 
 		len--;
 		return *this;
@@ -392,8 +450,11 @@ public:
 		if(len==0 || _len==0)throw ArrayError(ArrayError::Code::ZeroSize);
 		if((_index+_len)>len)throw ArrayError(ArrayError::Code::OutIndex);
 #endif
+#ifdef _WIN32
 		memmove_s(data + _index, (len - _index) * sizeof(T),data + _index + _len, (len - _index - _len) * sizeof(T));
-
+#else
+		memmove(data + _index, data + _index + _len, (len - _index - _len) * sizeof(T));
+#endif
 		len -= _len;
 		return *this;
 	}

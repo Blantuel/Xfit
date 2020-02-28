@@ -22,7 +22,11 @@ public:
 		InvalidBuffer,
 		Other
 	};
-	AssetFileError(AssetFileError::Code _code) :Error((int)_code) {}
+protected:
+	Code code;
+public:
+	Code GetCode()const { return code; }
+	AssetFileError(Code _code):code(_code) {}
 };
 class AssetFile {
 	AAsset* hFile;
@@ -47,7 +51,7 @@ public:
 		if (IsOpen());
 #endif
 		switch (_openMode) {
-		case OpenMode::Read:hFile = AAssetManager_open(_System::_Android::app.activity->assetManager,_path,AASSET_MODE_STREAMING); break;
+		case OpenMode::Read:hFile = AAssetManager_open(_System::_Android::engine.app->activity->assetManager,_path,AASSET_MODE_STREAMING); break;
 #ifdef _DEBUG
 		default:break;
 #endif
@@ -63,7 +67,7 @@ public:
 		_other.hFile = nullptr;
 		return *this;
 	}
-	template<typename T> unsigned ReadBytes(unsigned _size, T * _buffer) {
+	template<typename T> unsigned ReadBytes(unsigned _size, T * _buffer)const {
 #ifdef _DEBUG
 		if (!IsOpen()) throw AssetFileError(AssetFileError::Code::NotOpened);
 #endif
@@ -106,7 +110,7 @@ public:
 		return (unsigned)(AAsset_getLength(hFile)-AAsset_getRemainingLength(hFile));
 	}
 	template<typename T> unsigned Read(T * _data)const { return ReadBytes(sizeof(T), _data); }
-	template <typename T> unsigned Write(const T & _data) { return WriteBytes(sizeof(T), &_data); }
+	//template <typename T> unsigned Write(const T & _data) { return WriteBytes(sizeof(T), &_data); }
 	~AssetFile() { if (IsOpen())Close(); }
 };
 #endif

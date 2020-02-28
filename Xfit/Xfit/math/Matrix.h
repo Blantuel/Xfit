@@ -23,7 +23,7 @@ public:
 		float e[16];
 	};
 	Matrix();
-	Matrix(initializer_list<float> _initializer_list);
+	Matrix(std::initializer_list<float> _initializer_list);
 	Matrix& Transpose();
 	void Identity();
 

@@ -4,7 +4,7 @@
 #include "../resource/Sampler.h"
 
 #include "../resource/Frame.h"
-#include "../resource/Vertex2D.h"
+#include "../resource/Vertex.h"
 
 #include "../_system/_GraphicsBase.h"
 
@@ -100,17 +100,11 @@ void ImageInstance::BuildInstance() {
 	insLen = nodes->Size();
 	insMaxLen = nodes->MaxSize();
 	if (insLen == insMaxLen) {
-		if (glBufferStorage) {
-			glBufferStorage(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nodes->GetData(), GL_DYNAMIC_STORAGE_BIT);
-		} else {
-			glBufferData(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nodes->GetData(), GL_DYNAMIC_DRAW);
-		}
+		//glBufferStorage(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nodes->GetData(), GL_DYNAMIC_STORAGE_BIT);
+		glBufferData(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nodes->GetData(), GL_DYNAMIC_DRAW);
 	} else {
-		if (glBufferStorage) {
-			glBufferStorage(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nullptr, GL_DYNAMIC_STORAGE_BIT);
-		} else {
-			glBufferData(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nullptr, GL_DYNAMIC_DRAW);
-		}
+		//glBufferStorage(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nullptr, GL_DYNAMIC_STORAGE_BIT);
+		glBufferData(GL_ARRAY_BUFFER, insMaxLen * sizeof(Matrix), nullptr, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_ARRAY_BUFFER, 0, insLen * sizeof(Matrix), nodes->GetData());
 	}
 }

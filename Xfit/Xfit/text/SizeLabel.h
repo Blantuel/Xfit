@@ -6,11 +6,12 @@ class SizeLabel : public Label {
 public:
 	unsigned* baseSizes;
 	unsigned sizeLen;
-	//¸Ş¸ğ¸® ÇÒ´çÇÑ ÈÄ º¹»ç
+	//ë©”ëª¨ë¦¬ í• ë‹¹í•œ í›„ ë³µì‚¬
 	void CopyBaseSizes();
-	//ÀÌ¹Ì ÀÖ´Â ¸Ş¸ğ¸®¿¡ º¹»ç
+	//ì´ë¯¸ ìˆëŠ” ë©”ëª¨ë¦¬ì— ë³µì‚¬
 	void WriteBaseSizes();
 
+	bool IsChangeSize(float _ratio)const;
 	void SizePrepareDraw(float _ratio);
 };
 

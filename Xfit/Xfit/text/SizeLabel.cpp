@@ -10,10 +10,13 @@ void SizeLabel::WriteBaseSizes() {
 		baseSizes[i] = sizes[i].pixelSize;
 	}
 }
+bool SizeLabel::IsChangeSize(float _ratio)const {
+	return sizes[0].pixelSize != (unsigned)((float)baseSizes[0] * _ratio);
+}
 void SizeLabel::SizePrepareDraw(float _ratio) {
 	for (unsigned i = 0; i < sizeLen; i++) sizes[i].pixelSize = (unsigned)((float)baseSizes[i] * _ratio);
 
 	PrepareDraw();
 
-	for (unsigned i = 0; i < sizeLen; i++) sizes[i].pixelSize =baseSizes[i];
+	for (unsigned i = 0; i < sizeLen; i++) sizes[i].pixelSize = baseSizes[i];
 }

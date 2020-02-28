@@ -15,7 +15,9 @@ struct LineInstanceNode {
 #pragma pack(pop)
 
 class LineInstance :public MatrixObject {
+#ifdef _WIN32
 	ID3D11Buffer* instanceBuffer;
+#endif
 
 	unsigned num;
 	unsigned maxNum;

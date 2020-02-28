@@ -8,7 +8,7 @@
 
 namespace _System::_OpenGL {
 	void Release();
-	void Init(System::RendererInfo* _info);
+	void Init(System::CreateInfo* _info);
 	void Resize();
 
 
@@ -30,6 +30,7 @@ namespace _System::_OpenGL {
 
 	namespace img {
 		inline GLint matUniform;
+        inline GLint viewMatUniform;
 		inline GLint colorMatUniform;
 		inline GLint samplerUniform;
 	}
@@ -38,6 +39,8 @@ namespace _System::_OpenGL {
 		inline GLint colorUniform;
 	}
 	namespace imgIns {
+        inline GLint matUniform;
+        inline GLint viewMatUniform;
 		inline GLint colorMatUniform;
 		inline GLint samplerUniform;
 	}
@@ -48,6 +51,7 @@ namespace _System::_OpenGL {
 
 	namespace imgVert {
 		inline GLint matUniform;
+        inline GLint viewMatUniform;
 	}
 	namespace imgFrag {
 		inline GLint colorMatUniform;

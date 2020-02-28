@@ -1,13 +1,10 @@
 #include "Time.h"
 
-LARGE_INTEGER Time::frequency;
-LARGE_INTEGER Time::time;
 
 void Time::Init() {
-	QueryPerformanceFrequency(&frequency);
 }
 double Time::GetTime() {
-	QueryPerformanceCounter(&time);
+	std::chrono::high_resolution_clock::time_point time = std::chrono::high_resolution_clock::now();
 
-	return (double)time.QuadPart / (double)frequency.QuadPart;
+	return std::chrono::duration_cast<std::chrono::duration<double>>(time.time_since_epoch()).count();
 }

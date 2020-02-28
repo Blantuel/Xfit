@@ -4,6 +4,7 @@
 
 class RectHitTest : public HitTest {
 public:
-	Rect rect;
-	bool Test(Point _point);
+	RectF rect;
+
+	bool Test(PointF _point);
 };

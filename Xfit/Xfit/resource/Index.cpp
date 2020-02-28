@@ -14,15 +14,15 @@ Index::Index() {
 	index = nullptr;
 }
 #elif __ANDROID__
-Vertex::Vertex() {
-	vertex = 0;
+Index::Index() {
+	index = 0;
 }
 #endif
 Index::~Index() {
 #ifdef _WIN32
 	if (index)index->Release();
 #elif __ANDROID__
-	if (vertex)glDeleteBuffers(1, &vertex);
+	if (index)glDeleteBuffers(1, &index);
 #endif
 }
 void Index::Build(bool _editable/*=false*/) {
@@ -36,29 +36,24 @@ void Index::Build(bool _editable/*=false*/) {
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.BindFlags = D3D11_BIND_INDEX_BUFFER;
 	bufferDesc.ByteWidth = num * sizeof(unsigned);
-	bufferDesc.StructureByteStride = 0;//Structured Buffer¸¸ ÇØ´ç
+	bufferDesc.StructureByteStride = 0;//Structured Bufferë§Œ í•´ë‹¹
 	bufferDesc.Usage = _editable ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE;
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subSourceData;
 	subSourceData.pSysMem = indices.GetData();
-	subSourceData.SysMemPitch = 0;//2D, 3D ÅØ½ºÃÄ¸¸ ÇØ´ç
-	subSourceData.SysMemSlicePitch = 0;//3D ÅØ½ºÃÄ¸¸ ÇØ´ç
+	subSourceData.SysMemPitch = 0;//2D, 3D í…ìŠ¤ì³ë§Œ í•´ë‹¹
+	subSourceData.SysMemSlicePitch = 0;//3D í…ìŠ¤ì³ë§Œ í•´ë‹¹
 	device->CreateBuffer(&bufferDesc, &subSourceData, &index);
 
 
 #elif __ANDROID__
-	glGenBuffers(1, &vertex);
-	glBindBuffer(GL_ARRAY_BUFFER, vertex);
+	glGenBuffers(1, &index);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
 
-	if (glBufferStorage) {
-		glBufferStorage(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(),
-			_editable ? GL_DYNAMIC_STORAGE_BIT : 0);
-	} else {
-		glBufferData(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(),
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, num * sizeof(unsigned), indices.GetData(),
 			_editable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
-	}
 #endif
 }
 bool Index::IsBuild()const { return (bool)index; }
@@ -80,8 +75,8 @@ void Index::Edit() {
 		context->UpdateSubresource(index, 0, nullptr, indices.GetData(), 0, 0);
 	}
 #elif __ANDROID__
-	glBindBuffer(GL_ARRAY_BUFFER, vertex);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, num * sizeof(PointF), vertices.GetData());
+	glBindBuffer(GL_ARRAY_BUFFER, index);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, num * sizeof(unsigned), indices.GetData());
 #endif
 }
 void Index::Delete() {
@@ -92,7 +87,7 @@ void Index::Delete() {
 	index->Release();
 	index = nullptr;
 #elif __ANDROID__
-	glDeleteBuffers(1, &vertex);
-	vertex = 0;
+	glDeleteBuffers(1, &index);
+	index = 0;
 #endif
 }

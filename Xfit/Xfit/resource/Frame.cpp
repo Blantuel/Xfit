@@ -80,7 +80,7 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 		} else {
 			D3D11_SUBRESOURCE_DATA subSourceData;
 			subSourceData.pSysMem = _data;
-			subSourceData.SysMemPitch = _width * 4;//byte´ÜÀ§
+			subSourceData.SysMemPitch = _width * 4;//byteë‹¨ìœ„
 			subSourceData.SysMemSlicePitch = 0;
 
 			_System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, &subSourceData, &texture1);
@@ -114,7 +114,7 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 		} else {
 			D3D11_SUBRESOURCE_DATA subSourceData;
 			subSourceData.pSysMem = _data;
-			subSourceData.SysMemPitch = _width * 4;//byte´ÜÀ§
+			subSourceData.SysMemPitch = _width * 4;//byteë‹¨ìœ„
 			subSourceData.SysMemSlicePitch = 0;
 			
 			_System::_DirectX11::device->CreateTexture2D(&texture2DDesc, &subSourceData, &texture);
@@ -139,25 +139,26 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 	case FrameFormat::RGB:
 		fmt = GL_RGB;
 		break;
-	case FrameFormat::BGRA:
+	/*case FrameFormat::BGRA:
 		fmt = GL_BGRA;
 		_format = FrameFormat::RGBA;
 		break;
 	case FrameFormat::BGR:
 		fmt = GL_BGR;
 		_format = FrameFormat::RGB;
-		break;
+		break;*/
 	default:
 		break;
 	}
 
 	glBindTexture(GL_TEXTURE_2D, texture);
-	if (glTexStorage2D) {
-		glTexStorage2D(GL_TEXTURE_2D, 1, (GLenum)_format, width, height);
-		if (_data)glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, fmt, GL_UNSIGNED_BYTE, _data);
-	} else {
-		glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)_format, width, height, 0, fmt, GL_UNSIGNED_BYTE, _data);
-	}
+	//if (glTexStorage2D) {
+		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+
+		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, _data);
+
+		//glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)_format, width, height, 0, fmt, GL_UNSIGNED_BYTE, _data);
+
 #endif
 }
 void Frame::BuildCompress(const void* _data, unsigned _size, unsigned _width, unsigned _height, FrameCompressFormat _format) {

@@ -187,26 +187,34 @@ Vertex::~Vertex() {
 #endif
 }
 void Vertex::_Build(PointF* _vertices, unsigned _num, bool _editable) {
+#ifdef _WIN32
 	D3D11_BUFFER_DESC bufferDesc;
 	bufferDesc.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 	bufferDesc.ByteWidth = _num * sizeof(PointF);
-	bufferDesc.StructureByteStride = 0;//Structured Buffer¸¸ ÇØ´ç
+	bufferDesc.StructureByteStride = 0;//Structured Bufferë§Œ í•´ë‹¹
 	bufferDesc.Usage = _editable ? D3D11_USAGE_DEFAULT : D3D11_USAGE_IMMUTABLE;
 	bufferDesc.CPUAccessFlags = 0;
 	bufferDesc.MiscFlags = 0;
 
 	D3D11_SUBRESOURCE_DATA subSourceData;
 	subSourceData.pSysMem = _vertices;
-	subSourceData.SysMemPitch = 0;//2D, 3D ÅØ½ºÃÄ¸¸ ÇØ´ç
-	subSourceData.SysMemSlicePitch = 0;//3D ÅØ½ºÃÄ¸¸ ÇØ´ç
+	subSourceData.SysMemPitch = 0;//2D, 3D í…ìŠ¤ì³ë§Œ í•´ë‹¹
+	subSourceData.SysMemSlicePitch = 0;//3D í…ìŠ¤ì³ë§Œ í•´ë‹¹
 	device->CreateBuffer(&bufferDesc, &subSourceData, &vertex);
+#elif __ANDROID__
+
+#endif
 }
 void Vertex::_Edit(PointF* _vertices, unsigned _num) {
+#ifdef _WIN32
 	if (context1) {
 		context1->UpdateSubresource1(vertex, 0, nullptr, _vertices, 0, 0, D3D11_COPY_DISCARD);
 	} else {
 		context->UpdateSubresource(vertex, 0, nullptr, _vertices, 0, 0);
 	}
+#elif __ANDROID__
+
+#endif
 }
 void Vertex::Build(bool _editable/*=false*/) {
 #ifdef _DEBUG
@@ -222,13 +230,12 @@ void Vertex::Build(bool _editable/*=false*/) {
 	glGenBuffers(1, &vertex);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex);
 
-	if (glBufferStorage) {
-		glBufferStorage(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(), 
+
+	/*if (glBufferStorage) {
+		glBufferStorage(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(),
 			_editable?GL_DYNAMIC_STORAGE_BIT:0);
-	} else {
-		glBufferData(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(), 
-			_editable?GL_DYNAMIC_DRAW:GL_STATIC_DRAW);
-	}
+	} else {*/
+	glBufferData(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(), _editable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
 #endif
 }
 bool Vertex::IsBuild()const {return (bool)vertex;}

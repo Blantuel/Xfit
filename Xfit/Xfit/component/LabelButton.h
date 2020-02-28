@@ -24,8 +24,7 @@ public:
 	void SetRectHitTest();
 	SizeLabel* GetLabel()const;
 
-	virtual void Size(bool _scale = true, float _scaleRatio = 1.f);
-	virtual void PrepareDraw(float _scaleRatio = 1.f);
+	virtual void Size(bool _scale = true);
 };
 
 

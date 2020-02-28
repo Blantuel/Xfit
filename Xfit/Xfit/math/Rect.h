@@ -5,6 +5,22 @@
 class RectF {
 public:
 	float left, right, top, bottom;
+
+	static const RectF MakeRect(float x, float y, float width, float height) {
+		RectF rect;
+
+		const int width2 = width / 2;
+		const int height2 = height / 2;
+
+		rect.left = -width2 + x;
+		rect.right = width2 + x;
+
+		rect.top = height2 + y;
+		rect.bottom = -height2 + y;
+
+		return rect;
+	}
+
 	RectF() {}
 	RectF(float nLeft, float nRight, float nTop, float nBottom) :left(nLeft), right(nRight), top(nTop), bottom(nBottom) {}
 	void SetRect(float nLeft, float nRight, float nTop, float nBottom) {
@@ -42,6 +58,21 @@ public:
 		bottom += y;
 		return *this;
 	}
+	//사각형을 위치를 비율로 곱한 값만큼 이동
+	RectF& MoveRatio(float x, float y) {
+		const float leftT = left;
+		const float rightT = right;
+		const float topT = top;
+		const float bottomT = bottom;
+
+		left = (0.5f * x + 0.5f) * leftT + (0.5f * x - 0.5f) * rightT;
+		right = (0.5f * x - 0.5f) * leftT + (0.5f * x + 0.5f) * rightT;
+		top = (0.5f * y + 0.5f) * topT + (0.5f * y - 0.5f) * bottomT;
+		bottom = (0.5f * y - 0.5f) * topT + (0.5f * y + 0.5f) * bottomT;
+
+		return *this;
+	}
+
 	RectF& Extend(float x, float y) {
 		left -= x / 2.f;
 		right += x / 2.f;
@@ -52,10 +83,10 @@ public:
 	RectF& ExtendRatio(float x, float y) {
 		const float rx = (right - left) / 2.f;
 		const float ry = -(bottom - top) / 2.f;
-		left += rx - (rx*x);
-		right -= rx - (rx*x);
-		top += -(ry - (ry*x));
-		bottom -= -(ry - (ry*x));
+		left -= (rx * x) - rx;
+		right += (rx * x) - rx;
+		top += (ry * y) - ry;
+		bottom -= (ry * y) - ry;
 		return *this;
 	}
 	bool IsRectIn(const RectF& rect)const {
@@ -95,15 +126,18 @@ public:
 	static const RectF And(const RectF& rect1, const RectF& rect2) {
 		RectF rect(rect1.left>rect2.left ? rect1.left : rect2.left,
 			rect1.right>rect2.right ? rect2.right : rect1.right,
-			rect1.top>rect2.top ? rect1.top : rect2.top,
-			rect1.bottom>rect2.bottom ? rect2.bottom : rect1.bottom);
+			rect1.top>rect2.top ? rect2.top : rect1.top,
+			rect1.bottom>rect2.bottom ? rect1.bottom : rect2.bottom);
 		return rect;
+	}
+	float GetArea()const {
+		return (right - left) * (top - bottom);
 	}
 	static const RectF Or(const RectF& rect1, const RectF& rect2) {
 		RectF rect(rect1.left<rect2.left ? rect1.left : rect2.left,
 			rect1.right<rect2.right ? rect2.right : rect1.right,
-			rect1.top<rect2.top ? rect1.top : rect2.top,
-			rect1.bottom<rect2.bottom ? rect2.bottom : rect1.bottom);
+			rect1.top<rect2.top ? rect2.top : rect1.top,
+			rect1.bottom<rect2.bottom ? rect1.bottom : rect2.bottom);
 		return rect;
 	}
 	const RectF operator+(const PointF& _point) {
@@ -115,6 +149,30 @@ public:
 class Rect {
 public:
 	int left, right, top, bottom;
+
+	static const Rect MakeRect(int x, int y, int width, int height) {
+		Rect rect;
+
+		const int width2 = width / 2;
+		const int height2 = height / 2;
+
+		rect.left = -width2 + x;
+		if (width % 2 == 1) {
+			rect.right = width2 + 1 + x;
+		} else {
+			rect.right = width2 + x;
+		}
+
+		rect.top = height2 + y;
+		if (height % 2 == 1) {
+			rect.bottom = -height2 - 1 + y;
+		} else {
+			rect.bottom = -height2 + y;
+		}
+
+		return rect;
+	}
+
 	Rect() {}
 	Rect(int nLeft, int nRight, int nTop, int nBottom) :left(nLeft), right(nRight), top(nTop), bottom(nBottom) {}
 	void SetRect(int nLeft, int nRight, int nTop, int nBottom) {
@@ -136,44 +194,76 @@ public:
 	bool Compare(const Rect& nRect)const {
 		return (nRect.left == left) && (nRect.right == right) && (nRect.top == top) && (nRect.bottom == bottom);
 	}
-	Rect& Move(float x, float y) {
+
+	//사각형을 위치를 비율로 곱한 값만큼 이동
+	Rect& MoveRatio(float x, float y) {
+		const float leftT = left;
+		const float rightT = right;
+		const float topT = top;
+		const float bottomT = bottom;
+
+		left = (int)((0.5f * x + 0.5f) * leftT + (0.5f * x - 0.5f) * rightT);
+		right = (int)((0.5f * x - 0.5f) * leftT + (0.5f * x + 0.5f) * rightT);
+		top = (int)((0.5f * y + 0.5f) * topT + (0.5f * y - 0.5f) * bottomT);
+		bottom = (int)((0.5f * y - 0.5f) * topT + (0.5f * y + 0.5f) * bottomT);
+
+		return *this;
+	}
+
+	Rect& Move(int x, int y) {
 		left += x;
 		right += x;
 		top += y;
 		bottom += y;
+
 		return *this;
 	}
-	Rect& Extend(float x, float y) {
-		left -= x / 2.f;
-		right += x / 2.f;
-		top += y / 2.f;
-		bottom -= y / 2.f;
+	Rect& Extend(int x, int y) {
+		const int xx = x / 2;
+		const int yy = y / 2;
+
+		left -= xx;
+		if (x % 2 == 1) {
+			right += xx + 1;
+		} else {
+			right += xx;
+		}
+		
+		top += yy;
+		if (y % 2 == 1) {
+			bottom -= yy + 1;
+		} else {
+			bottom -= yy;
+		}
 		return *this;
 	}
 	Rect& ExtendRatio(float x, float y) {
-		const float rx = (right - left) / 2.f;
-		const float ry = -(bottom - top) / 2.f;
-		left += rx - (rx * x);
-		right -= rx - (rx * x);
-		top += -(ry - (ry * x));
-		bottom -= -(ry - (ry * x));
+		const float rx = (float)(right - left) / 2.f;
+		const float ry = -(float)(bottom - top) / 2.f;
+		left -= (int)((rx * x) - rx);
+		right += (int)((rx * x) - rx);
+		top += (int)((ry * y) - ry);
+		bottom -= (int)((ry * y) - ry);
 		return *this;
 	}
 	bool IsRectIn(const Rect& rect)const {
 		return (left <= rect.right) && (right >= rect.left) && (top >= rect.bottom) && (bottom <= rect.top);
 	}
-	static const Rect And(const Rect& rect1, const Rect& rect2) {
+	static const Rect And(const RectF& rect1, const RectF& rect2) {
 		Rect rect(rect1.left > rect2.left ? rect1.left : rect2.left,
 			rect1.right > rect2.right ? rect2.right : rect1.right,
-			rect1.top > rect2.top ? rect1.top : rect2.top,
-			rect1.bottom > rect2.bottom ? rect2.bottom : rect1.bottom);
+			rect1.top > rect2.top ? rect2.top : rect1.top,
+			rect1.bottom > rect2.bottom ? rect1.bottom : rect2.bottom);
 		return rect;
+	}
+	float GetArea()const {
+		return (right - left) * (top - bottom);
 	}
 	static const Rect Or(const Rect& rect1, const Rect& rect2) {
 		Rect rect(rect1.left < rect2.left ? rect1.left : rect2.left,
 			rect1.right < rect2.right ? rect2.right : rect1.right,
-			rect1.top < rect2.top ? rect1.top : rect2.top,
-			rect1.bottom < rect2.bottom ? rect2.bottom : rect1.bottom);
+			rect1.top < rect2.top ? rect2.top : rect1.top,
+			rect1.bottom < rect2.bottom ? rect1.bottom : rect2.bottom);
 		return rect;
 	}
 	const Rect operator+(const Point& _point) {

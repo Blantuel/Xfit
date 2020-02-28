@@ -11,7 +11,7 @@ Blend::Blend(Value _srcColor, Value _destColor, Value _srcAlpha, Value _destAlph
 	if (_System::_DirectX11::device1) {
 		D3D11_BLEND_DESC1 blendDesc;
 		ZeroMemory(&blendDesc, sizeof(blendDesc));
-		//AlphaToCoverageEnable¿Í IndependentBlendEnable´Â false
+		//AlphaToCoverageEnableì™€ IndependentBlendEnableëŠ” false
 
 		blendDesc.RenderTarget[0].BlendEnable = true;
 		blendDesc.RenderTarget[0].SrcBlend = DirectX11Value[(int)_srcColor];
@@ -32,7 +32,7 @@ Blend::Blend(Value _srcColor, Value _destColor, Value _srcAlpha, Value _destAlph
 	} else {
 		D3D11_BLEND_DESC blendDesc;
 		ZeroMemory(&blendDesc, sizeof(blendDesc));
-		//AlphaToCoverageEnable¿Í IndependentBlendEnable´Â false
+		//AlphaToCoverageEnableì™€ IndependentBlendEnableëŠ” false
 
 		blendDesc.RenderTarget[0].BlendEnable = true;
 		blendDesc.RenderTarget[0].SrcBlend = DirectX11Value[(int)_srcColor];
@@ -47,14 +47,21 @@ Blend::Blend(Value _srcColor, Value _destColor, Value _srcAlpha, Value _destAlph
 		if (FAILED(hr));
 	}
 }
-#elif __ANDROID__
-Blend::Blend(Value _srcColor, Value _destColor, Value _srcAlpha, Value _destAlpha, Equation _colorEquation, Equation _alphaEquation,
-	float _constR/* = 1.f*/, float _constG/* = 1.f*/, float _constB/* = 1.f*/, float _constA/* = 1.f*/) :
-	srcColor(_srcColor), destColor(_destColor), srcAlpha(_srcAlpha),
-	destAlpha(_destAlpha), colorEquation(_colorEquation), alphaEquation(_alphaEquation), consts{ _constR,  _constG ,_constB, _constA } {}
-#endif
+
 
 Blend::~Blend() {
 	if (blendState1)blendState1->Release();
 	blendState->Release();
 }
+
+#elif __ANDROID__
+Blend::Blend(Value _srcColor, Value _destColor, Value _srcAlpha, Value _destAlpha, Equation _colorEquation, Equation _alphaEquation,
+	float _constR/* = 1.f*/, float _constG/* = 1.f*/, float _constB/* = 1.f*/, float _constA/* = 1.f*/) :
+	srcColor(_srcColor), destColor(_destColor), srcAlpha(_srcAlpha),
+	destAlpha(_destAlpha), colorEquation(_colorEquation), alphaEquation(_alphaEquation), consts{ _constR,  _constG ,_constB, _constA } {
+
+}
+
+Blend::~Blend() {}
+#endif
+

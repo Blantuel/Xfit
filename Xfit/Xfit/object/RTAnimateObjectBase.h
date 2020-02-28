@@ -5,7 +5,7 @@
 
 class Sampler;
 class Frame;
-class Vertex2D;
+class Vertex;
 
 class RTAnimateObjectBaseError : public Error {
 public:
@@ -33,7 +33,7 @@ class RTAnimateObjectBase : public MatrixObject, public AnimateBase {
 protected:
 	GLuint texture;
 
-	void DrawImage(const Vertex2D* _vertex,const Vertex2D* _uv);
+	void DrawImage(const Vertex* _vertex,const Vertex* _uv);
 public:
 	Matrix colorMat;
 	Sampler* sampler;

@@ -64,14 +64,14 @@ void RTAnimateObject::Build(unsigned _width,unsigned _height,FrameFormat _format
 	case FrameFormat::RGB:
 		fmt=GL_RGB;
 		break;
-	case FrameFormat::BGRA:
+	/*case FrameFormat::BGRA:
 		fmt = GL_BGRA;
 		_format = FrameFormat::RGBA;
 		break;
 	case FrameFormat::BGR:
 		fmt = GL_BGR;
 		_format = FrameFormat::RGB;
-		break;
+		break;*/
 	default:throw RTAnimateObjectBaseError(RTAnimateObjectBaseError::Code::InvalidFormat);
 	}
 

@@ -16,8 +16,10 @@ struct ShapeInstanceNode {
 #pragma pack(pop)
 
 class ShapeInstance :public MatrixObject {
+#ifdef _WIN32
 	ID3D11Buffer* instanceBuffer;
-
+#elif __ANDROID__
+#endif
 	unsigned num;
 	unsigned maxNum;
 public:

@@ -4,7 +4,7 @@
 #include "../data/Memory.h"
 
 
-static thread soundThread;
+static std::thread soundThread;
 
 #ifdef _WIN32
 static HANDLE hEvent;
@@ -450,7 +450,7 @@ void Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµ
 
 	(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_PLAYING);
 #endif
-	soundThread = thread(Sound::ThreadFunc);
+	soundThread = std::thread(Sound::ThreadFunc);
 }
 void Sound::Release() {
 	soundExit = true;

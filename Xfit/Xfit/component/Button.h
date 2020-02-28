@@ -26,10 +26,10 @@ public:
 };
 class Button : public ImageBase {
 public:
-	virtual bool ButtonOver(Point _mousePos, void* _data) { return false; }
-	virtual bool ButtonDown(Point _mousePos, void* _data) { return false; }
-	virtual bool ButtonUp(Point _mousePos, void* _data) { return false; }
-	virtual bool ButtonOut(Point _mousePos, void* _data) { return false; }
+	virtual bool ButtonOver(PointF _mousePos, void* _data) { return false; }
+	virtual bool ButtonDown(PointF _mousePos, void* _data) { return false; }
+	virtual bool ButtonUp(PointF _mousePos, void* _data) { return false; }
+	virtual bool ButtonOut(PointF _mousePos, void* _data) { return false; }
 
 	virtual bool Update();
 	HitTest* hitTest;
@@ -50,10 +50,14 @@ public:
 
 	virtual void Draw();
 
-	bool(*buttonOver)(Button* _target, Point _mousePos, void* _data);
-	bool(*buttonDown)(Button* _target, Point _mousePos, void* _data);
-	bool(*buttonUp)(Button* _target, Point _mousePos, void* _data);
-	bool(*buttonOut)(Button* _target, Point _mousePos, void* _data);
+#ifdef _WIN32
+	bool(*buttonOver)(Button* _target, PointF _mousePos, void* _data);
+#endif
+
+	bool(*buttonDown)(Button* _target, PointF _mousePos, void* _data);
+	bool(*buttonUp)(Button* _target, PointF _mousePos, void* _data);
+	bool(*buttonOut)(Button* _target, PointF _mousePos, void* _data);
+
 private:
 	State state;
 };

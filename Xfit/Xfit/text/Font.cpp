@@ -1,9 +1,9 @@
 #include "Font.h"
 
 FT_Library Font::library = nullptr;
-Array<Font::CharImage> Font::charImages;
+Array<Font::CharImage*> Font::charImages;
 size_t Font::charImageBlockLen;
-mutex Font::mutex;
+std::mutex Font::mutex;
 thread_local unsigned* Font::widths;
 thread_local unsigned* Font::heights;
 thread_local int* Font::paddings;
@@ -46,7 +46,10 @@ bool Font::IsItalic()const {return face->style_flags& FT_STYLE_FLAG_ITALIC;}
 Font::~Font() {
 	Font::mutex.lock();
 	for(int i=charImages.Size()-1;i>=0;i--) {
-		if(charImages[i].font==this)charImages.EraseIndex(i);
+		if (charImages[i]->font == this) {
+			delete charImages[i];
+			charImages.EraseIndex(i);
+		}
 	}
 	Font::mutex.unlock();
 	FT_Done_Face(face);

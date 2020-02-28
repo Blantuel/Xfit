@@ -18,6 +18,7 @@ public:
 	Code GetCode()const{return code;}
 	ShapeError(Code _code):code(_code) {}
 };
+
 class Shape : public MatrixObject{
 public:
 	float lineWidth;

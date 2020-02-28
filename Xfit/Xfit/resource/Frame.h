@@ -25,6 +25,7 @@ class Frame {
 	friend class ImageInstance;
 
 protected:
+	unsigned width, height;
 #ifdef _WIN32
 	union {
 		ID3D11ShaderResourceView* srv;
@@ -39,7 +40,6 @@ protected:
 	GLenum fmt;
 #endif
 
-	unsigned width, height;
 public:
 	unsigned GetWidth()const;
 	unsigned GetHeight()const;

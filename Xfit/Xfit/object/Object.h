@@ -14,4 +14,5 @@ public:
 	bool visible;
 	virtual ~Object() {}
 	virtual void Draw();
+
 };

@@ -81,6 +81,7 @@ namespace System {
 	};
 	enum class ScreenMode {
 		Window,
+		BorderlessScreen,
 		Fullscreen
 	};
 #ifdef _WIN32
@@ -102,7 +103,8 @@ namespace System {
 		float maxFrame;
 		unsigned msaaCount, msaaQuality;
 		unsigned screenIndex;
-		unsigned refleshRate;
+		unsigned refleshRateTop;
+		unsigned refleshRateBottom;
 
 #ifdef _WIN32
 		const Tchar* title;
@@ -130,13 +132,11 @@ namespace System {
 	};
 	
 	inline void(*createFunc)();
-	inline void(*activateFunc)(void* _data);
-	inline void(*sizeFunc)(void* _data);
-	inline void(*updateFuncs)(void* _data);
+	inline void(*activateFunc)();
+	inline void(*sizeFunc)();
+	inline void(*updateFuncs)();
+	inline void(*dragDropFuncs)();
 	inline void(*destroyFunc)();
-	inline void* activateData = nullptr;
-	inline void* sizeData = nullptr;
-	inline void* updateData = nullptr;
 
 	inline Vertex* defaultUV;
 	inline Sampler* defaultSampler;
@@ -159,7 +159,7 @@ namespace System {
 #ifdef _WIN32
 	void Create(HINSTANCE _hInstance);
 #elif __ANDROID__
-	void Create(ANativeActivity* _activity);
+
 #endif
 
 	void Init(CreateInfo* _info);
@@ -191,9 +191,17 @@ namespace System {
 	ScreenMode GetScreenMode();
 
 	bool IsPause();
-
+#ifdef _WIN32
 	TCHAR* GetClipboardData();
 	void ClipboardClose();
+
+	void DragFileOn(bool _on = true);
+	PointF GetDragFilePoint();
+
+	unsigned GetDragFileCount();
+	//최대255글자
+	void GetDragFile(unsigned _index, char* _outFileName);
+#endif
 
 	unsigned GetMsaaCount();
 	unsigned GetMsaaQuality();
@@ -214,6 +222,7 @@ namespace System {
 	void Render();
 
 	int GetDisplayNum();
+	int GetDisplayModeNum(unsigned _displayIndex);
 	int GetCurrentDisplayIndex();
 	int GetCurrentDisplayModeIndex();//게임에 적용된 현재 해상도 가져옴.
 	int GetCurrentDisplayModeIndex(unsigned _displayIndex);//해당 모니터 기본 해상도 가져옴.
@@ -221,7 +230,11 @@ namespace System {
 
 	PointU GetDisplayModeSize(unsigned _displayIndex, unsigned _displayModeIndex);
 
+	unsigned GetDisplayModeRefleshRateTop(unsigned _displayIndex, unsigned _displayModeIndex);
+	unsigned GetDisplayModeRefleshRateBottom(unsigned _displayIndex, unsigned _displayModeIndex);
+
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex);
+	void SetBorderlessScreenMode(unsigned _displayIndex);
 	void SetWindowMode(PointU _size, Point _pos, WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow);
 	WindowState GetWindowState();
 
@@ -238,3 +251,10 @@ namespace System {
 	void Wait(unsigned _time);
 #endif
 };
+
+#ifdef __ANDROID__
+
+struct android_app;
+
+void Main(struct android_app* state);
+#endif

@@ -118,7 +118,7 @@ void TextBox::_PrepareDraw() {
 
 
 		for (unsigned j = 0; j < Font::charImages.Size(); j++) {
-			if ((Font::charImages[j].text == text[i]) && (Font::charImages[j].pixelSize == currentSize) && (Font::charImages[j].font == fonts[fontIndex].font)) {
+			if ((Font::charImages[j]->text == text[i]) && (Font::charImages[j]->pixelSize == currentSize) && (Font::charImages[j]->font == fonts[fontIndex].font)) {
 				charImageIndex = j;
 				break;
 			}
@@ -133,8 +133,9 @@ void TextBox::_PrepareDraw() {
 
 			if (Font::charImages.Size() >= Font::charImages.MaxSize()) Font::charImages.ReAlloc(Font::charImages.MaxSize() + Font::charImageBlockLen);
 			Font::charImages.Resize(Font::charImages.Size() + 1);
+			Font::charImages[Font::charImages.Size() - 1] = new Font::CharImage;
 
-			Font::charImages_t[i] = &Font::charImages[Font::charImages.Size() - 1];
+			Font::charImages_t[i] = Font::charImages[Font::charImages.Size() - 1];
 
 			Font::charImages_t[i]->width = glyph->bitmap.width;
 			Font::charImages_t[i]->height = glyph->bitmap.rows;
@@ -158,7 +159,7 @@ void TextBox::_PrepareDraw() {
 			Font::charImages_t[i]->top = glyph->bitmap_top;
 			if (top < Font::charImages_t[i]->top)top = Font::charImages_t[i]->top;
 		} else {
-			Font::charImages_t[i] = &Font::charImages[charImageIndex];
+			Font::charImages_t[i] = Font::charImages[charImageIndex];
 			if (top < Font::charImages_t[i]->top)top = Font::charImages_t[i]->top;
 		}
 		
@@ -255,7 +256,7 @@ void TextBox::_PrepareDraw() {
 		if (text[i] == L'\n') {
 			lineIndex++;
 			alignLenIndex++;
-			totalHeight += Font::heights[lineIndex];
+			totalHeight2 += Font::heights[lineIndex];
 			switch (aligns[alignIndex].align) {
 			case Align::Left:
 				advanceX = 0;

@@ -2,6 +2,8 @@
 #include "../data/Memory.h"
 #include "../system/System.h"
 
+using namespace std;
+
 Matrix::Matrix() {}
 Matrix::Matrix(initializer_list<float> _initializer_list) {
 	Memory::Copy(e, 16, _initializer_list.begin(), 16);
@@ -10,13 +12,19 @@ void Matrix::Identity() {
 	memset(e,0,sizeof(float)*16);
 	e[0]=1.f;e[5]=1.f;e[10]=1.f;e[15]=1.f;
 }
+
+static void MatrixSwap(float* _a, float* _b) {
+	const float temp = *_a;
+	*_a = *_b;
+	*_b = temp;
+}
 Matrix& Matrix::Transpose() {
-	swap(_14, _41);
-	swap(_13, _31);
-	swap(_12, _21);
-	swap(_24, _42);
-	swap(_34, _43);
-	swap(_23, _32);
+	MatrixSwap(&_14, &_41);
+	MatrixSwap(&_13, &_31);
+	MatrixSwap(&_12, &_21);
+	MatrixSwap(&_24, &_42);
+	MatrixSwap(&_34, &_43);
+	MatrixSwap(&_23, &_32);
 	return *this;
 }
 Matrix Matrix::GetIdentity() {

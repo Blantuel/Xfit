@@ -2,6 +2,6 @@
 
 #include "../stdafx.h"
 
-class Error : public exception {
+class Error : public std::exception {
 public:
 };

@@ -321,6 +321,36 @@
     <ClInclude Include="component\Slider.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="text\SizeTextBox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\TextBoxImage.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="text\SizeAnimateTextBox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\SizeButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="physics\SizeRectHitTest.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\Scrollbar.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\LabelOptionButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="component\EditBox.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="network\Socket.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="network\IP.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="view\Viewport.cpp">
@@ -548,6 +578,36 @@
     <ClCompile Include="component\Slider.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="text\SizeTextBox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\TextBoxImage.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\SizeAnimateTextBox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\SizeButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="physics\SizeRectHitTest.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\Scrollbar.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\LabelOptionButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="component\EditBox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="network\Socket.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="network\IP.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="imgPx2D.hlsl" />
@@ -561,5 +621,8 @@
     <FxCompile Include="lineInsGeo2D.hlsl" />
     <FxCompile Include="linePx2D.hlsl" />
     <FxCompile Include="shapePx2D.hlsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".editorconfig" />
   </ItemGroup>
 </Project>

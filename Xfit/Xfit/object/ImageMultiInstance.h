@@ -5,20 +5,21 @@
 
 class Sampler;
 class FrameArray;
-class Vertex2D;
+class Vertex;
 
 template <typename T> class Array;
 
 class ImageMultiInstance :public Object {
-	//GLuint ins;//insº¯¼ö´Â 0À¸·Î ÀÌ¹ÌÁö°¡ BuildInstanceµÆ´ÂÁö¸¦ ÆÇº°ÇÔ.
-
+#ifdef __ANDROID__
+	GLuint ins;//insë³€ìˆ˜ëŠ” 0ìœ¼ë¡œ ì´ë¯¸ì§€ê°€ BuildInstanceëëŠ”ì§€ë¥¼ íŒë³„í•¨.
+#endif
 
 	unsigned insLen, insMaxLen;
 public:
 	Sampler * sampler;
 	FrameArray* frame;
-	Vertex2D* vertex;
-	Vertex2D* uv;
+	Vertex* vertex;
+	Vertex* uv;
 	Matrix colorMat;
 	Array<MultiInstanceNode>* nodes;
 

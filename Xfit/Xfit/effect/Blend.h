@@ -26,7 +26,7 @@ class Blend {
 		GL_FUNC_REVERSE_SUBTRACT,
 		GL_MAX,
 		GL_MIN
-	}
+	};
 #elif _WIN32
 	static constexpr D3D11_BLEND DirectX11Value[] = {
 		D3D11_BLEND_SRC_COLOR,

@@ -31,7 +31,7 @@ class Sound {
 
 	static inline Array<Sound*> sounds;
 
-	mutex soundMutex;
+	std::mutex soundMutex;
 
 	static inline bool soundExit = false;
 public:

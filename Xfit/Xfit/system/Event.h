@@ -4,14 +4,14 @@
 
 template <bool autoReset,bool norifyAll>
 class Event {
-	mutex mutex;
-	condition_variable value;
+	std::mutex mutex;
+	std::condition_variable value;
 	bool trigger;
 public:
 	Event(bool _trigger=false) :trigger(_trigger) {}
 
 	void Wait() {
-		unique_lock<::mutex> lock(mutex);
+		std::unique_lock<std::mutex> lock(mutex);
 		while (!trigger)value.wait(lock);
 		if constexpr (autoReset)trigger = false;
 	}

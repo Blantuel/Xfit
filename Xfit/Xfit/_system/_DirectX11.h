@@ -143,16 +143,6 @@ namespace _System::_DirectX11 {
 
 	//shapeVertConstantBuffer2D
 	inline ID3D11Buffer* lineInsGeoConstantBuffer2D = nullptr;
-
-	inline ID3D11ClassLinkage* imgPx2DClassLinkage;
-	inline ID3D11ShaderReflection* imgPx2DReflection;
-	inline unsigned imgPx2DInterfaceNum;
-	inline ID3D11ClassInstance** imgPx2DClassInstances;
-	inline ID3D11ClassInstance* imgPx2DloadSample;
-	inline ID3D11ClassInstance* imgPx2DsamplerSample;
-	
-	inline unsigned imgPx2DisampleOffset;
-
 }
 
 #endif

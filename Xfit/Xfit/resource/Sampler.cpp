@@ -9,11 +9,73 @@
 
 using namespace _System::_OpenGL;
 
-Sampler::Sampler() {
-	glGenSamplers(1, &sampler);
+void Sampler::SetWarpMode(TextureAdressMode _mode, GLenum _name) {
+	switch(_mode) {
+		case TextureAdressMode::Clamp:
+			glSamplerParameteri(sampler, _name, GL_CLAMP_TO_EDGE);
+			break;
+		case TextureAdressMode::Warp:
+			glSamplerParameteri(sampler, _name, GL_REPEAT);
+			break;
+		case TextureAdressMode::Mirror:
+			glSamplerParameteri(sampler, _name, GL_MIRRORED_REPEAT);
+			break;
+		case TextureAdressMode::Border:
+			glSamplerParameteri(sampler, _name, GL_CLAMP_TO_BORDER);
+			break;
+		case TextureAdressMode::MirrorOnce:
+			break;
+	}
 }
 
-void Sampler::SetMinFilter(MinFilter _minFilter) {
+Sampler::Sampler(Filter _filter /*= Filter::MinMagMipLinear*/, TextureAdressMode _textureAdressModeU /*= TextureAdressMode::Clamp*/
+		,TextureAdressMode _textureAdressModeV /*= TextureAdressMode::Clamp*/, TextureAdressMode _textureAdressModeW /*= TextureAdressMode::Clamp*/,
+				 unsigned _maxAnisotropy /*= 16*/) {
+	glGenSamplers(1, &sampler);
+	glBindSampler(0, sampler);
+
+	switch(_filter) {
+		case Filter::MinMagMipPoint:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case Filter::MinMagPoint_MipLinear:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case Filter::MinPoint_MagLinear_MipPoint:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case Filter::MinPoint_MagMipLinear:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case Filter::MinLinear_MagMipPoint:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case Filter::MinLinear_MagPoint_MipLinear:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		case Filter::MinMagLinear_MipPoint:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_NEAREST);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case Filter::MinMagMipLinear:
+			glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+			glSamplerParameteri(sampler, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+		case Filter::Anisotropic:
+			break;
+	}
+	SetWarpMode(_textureAdressModeU, GL_TEXTURE_WRAP_S);
+	SetWarpMode(_textureAdressModeV, GL_TEXTURE_WRAP_T);
+	SetWarpMode(_textureAdressModeW, GL_TEXTURE_WRAP_R);
+}
+
+/*void Sampler::SetMinFilter(MinFilter _minFilter) {
 	glSamplerParameteri(sampler, GL_TEXTURE_MIN_FILTER, (GLint)_minFilter);
 }
 void Sampler::SetMagFilter(MagFilter _magFilter) {
@@ -24,7 +86,8 @@ void Sampler::SetWrapModeU(WarpMode _warpModeU) {
 }
 void Sampler::SetWrapModeV(WarpMode _warpModeV) {
 	glSamplerParameteri(sampler, GL_TEXTURE_WRAP_T, (GLint)_warpModeV);
-}
+}*/
+
 Sampler::~Sampler() {
 	glDeleteSamplers(1, &sampler);
 }

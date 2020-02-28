@@ -11,20 +11,20 @@
 namespace _System::_Loop {
 	void Loop() {
 		if (!start) {
-			time = Time::GetTime();
+			time = std::chrono::high_resolution_clock::now();
 			start = true;
 		} else {
 			const auto time2 = time;
-			time = Time::GetTime();
-			deltaTime = (float)(time - time2);
+			time = std::chrono::high_resolution_clock::now();
+			deltaTime = std::chrono::duration_cast<std::chrono::duration<float>>(time - time2).count();
 			if (maxFrame > 0.0) {
 				while ((1.f / maxFrame) > deltaTime) {
 					const auto time2 = time;
-					time = Time::GetTime();
-					deltaTime += (float)(time - time2);
+					time = std::chrono::high_resolution_clock::now();
+					deltaTime += std::chrono::duration_cast<std::chrono::duration<float>>(time - time2).count();
 				}
 			}
 		}
-		System::updateFuncs(System::updateData);
+		System::updateFuncs();
 	}
 }

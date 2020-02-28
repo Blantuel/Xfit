@@ -13,7 +13,7 @@ class Index {
 		ID3D11Buffer* index;
 	};
 #elif __ANDROID__
-	GLuint vertex;
+	GLuint index;
 #endif
 
 	unsigned num;

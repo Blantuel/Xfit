@@ -36,7 +36,7 @@ public:
 	unsigned scrollPx;
 	VerticalAlign verticalAlign;
 	unsigned width, height;
-	const wchar_t* text;
+	wchar_t* text;
 	FontContainer* fonts;
 	FontColor* colors;
 	FontSize* sizes;

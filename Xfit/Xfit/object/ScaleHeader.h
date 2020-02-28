@@ -32,6 +32,21 @@ inline const PointF WindowRatioPoint(PosType _posType) {
 		const float windowRatio = WindowRatio();
 		return PointF(windowRatio, windowRatio);
 	}
+	return PointF(0.f, 0.f);
+}
+inline const float WindowRatioPointX(PosType _posType) {
+	if (_posType == PosType::Stretch) {
+		return WindowWidthRatio();
+	} else if (_posType == PosType::Center) {
+		return WindowRatio();
+	}
+}
+inline const float WindowRatioPointY(PosType _posType) {
+	if (_posType == PosType::Stretch) {
+		return WindowHeightRatio();
+	} else if (_posType == PosType::Center) {
+		return WindowRatio();
+	}
 }
 
 
@@ -55,7 +70,7 @@ inline float YToMouseY(float _y) {
 inline float MouseXToX(float _x) {
 	return _x - (float)System::GetWindowWidth() / 2.f;
 }
-inline float MouseYTOY(float _y) {
+inline float MouseYToY(float _y) {
 	return -_y + (float)System::GetWindowHeight() / 2.f;
 }
 inline float GetLineWidth(float _width = 2.f) {
@@ -65,7 +80,7 @@ inline float GetLineWidth(float _width = 2.f) {
 inline float MouseXToX(int _x) {
 	return (float)_x - (float)System::GetWindowWidth() / 2.f;
 }
-inline float MouseYTOY(int _y) {
+inline float MouseYToY(int _y) {
 	return -(float)_y + (float)System::GetWindowHeight() / 2.f;
 }
 const PointF PixelPerfectPoint(PointF _p, unsigned _width, unsigned _height, CenterPointPos _centerPointPos, bool _isVertical = false);

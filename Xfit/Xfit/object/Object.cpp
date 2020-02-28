@@ -22,13 +22,13 @@ void Object::Draw() {
 		context->OMSetBlendState(blend->blendState, blend->consts, 0xffffffff);
 	} else {
 		const float noBlendFactor[4] = { 0.f,0.f,0.f,0.f };
-		context->OMSetBlendState(nullptr, noBlendFactor, 0xffffffff);//ºí·£µù ¾øÀ½.
+		context->OMSetBlendState(nullptr, noBlendFactor, 0xffffffff);//ë¸”ëžœë”© ì—†ìŒ.
 	}
 #elif __ANDROID__
 	if (blend) {
 		glEnable(GL_BLEND);
-		glBlendFuncSeparate((GLenum)blend->srcColor, (GLenum)blend->destColor, (GLenum)blend->destColor, (GLenum)blend->destAlpha);
-		glBlendEquationSeparate((GLenum)blend->colorEquation, (GLenum)blend->alphaEquation);
+		glBlendFuncSeparate((GLenum)Blend::OpenGLValue[(int)blend->srcColor], (GLenum)Blend::OpenGLValue[(int)blend->destColor], (GLenum)Blend::OpenGLValue[(int)blend->destColor], (GLenum)Blend::OpenGLValue[(int)blend->destAlpha]);
+		glBlendEquationSeparate((GLenum)Blend::OpenGLEquation[(int)blend->colorEquation], (GLenum)Blend::OpenGLEquation[(int)blend->alphaEquation]);
 		glBlendColor(blend->consts[0], blend->consts[1], blend->consts[2], blend->consts[3]);
 	} else {
 		glDisable(GL_BLEND);

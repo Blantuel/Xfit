@@ -5,7 +5,6 @@
 
 class SizeRectHitTest : public RectHitTest {
 public:
-	PosType posType;
 	RectF baseRect;
 
 	virtual void Size();

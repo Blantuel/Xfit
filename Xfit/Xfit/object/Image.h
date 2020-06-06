@@ -32,5 +32,6 @@ public:
 	Image(PointF _pos,PointF _scale,float _rotation, Blend* _blend,Sampler* _sampler,Frame* _frame,Vertex* _vertex,Vertex* _uv,Index* _index);
 
 	virtual RectF GetRect()const;
+	virtual RectF GetRect90()const;
 };
 

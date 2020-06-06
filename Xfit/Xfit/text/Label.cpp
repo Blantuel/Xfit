@@ -41,6 +41,7 @@ void Label::PrepareDraw() {
 	if (colors[0].len == 0)colorLen = len;
 	else colorLen = colors[0].len;
 
+
 	Font::mutex.lock();
 	for (size_t i = 0; i < len; i++, fontLenIndex++, sizeLenIndex++, renderLenIndex++) {
 		if (fontLenIndex >= fontLen) {
@@ -83,6 +84,10 @@ void Label::PrepareDraw() {
 		if (charImageIndex == SIZE_MAX) {
 			auto index = FT_Get_Char_Index(face, text[i]);
 
+			FT_GlyphSlot glyph = nullptr;
+			FT_Load_Glyph(face, index, FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL);
+			glyph = face->glyph;
+			FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
 
 			if (Font::charImages.Size() >= Font::charImages.MaxSize())
 				Font::charImages.ReAlloc(Font::charImages.MaxSize() + Font::charImageBlockLen);
@@ -91,11 +96,6 @@ void Label::PrepareDraw() {
 			Font::charImages[Font::charImages.Size() - 1] = new Font::CharImage;
 
 			Font::charImages_t[i] = Font::charImages[Font::charImages.Size() - 1];
-
-			FT_GlyphSlot glyph = nullptr;
-			FT_Load_Glyph(face, index, FT_LOAD_NO_BITMAP | FT_LOAD_TARGET_NORMAL);
-			glyph = face->glyph;
-			FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
 
 			imageSize = glyph->bitmap.width * glyph->bitmap.rows;
 
@@ -114,7 +114,6 @@ void Label::PrepareDraw() {
 			Font::charImages_t[i]->pixelSize = currentSize;
 			Font::charImages_t[i]->font = fonts[fontIndex].font;
 			
-
 			Font::charImages_t[i]->advanceX = glyph->advance.x >> 6;//하위 6비트는 버린다.
 			if (glyph->advance.x & 0x3F)Font::charImages_t[i]->advanceX++;//26.6소수의 소숫점 아래 자리(6비트)가 0이상이면
 			Font::charImages_t[i]->left = glyph->bitmap_left;
@@ -137,6 +136,7 @@ void Label::PrepareDraw() {
 		}
 	}
 	Font::mutex.unlock();
+	
 	width += padding;
 	for (size_t i = 0; i < len; i++) {
 		int heightT = (top - Font::charImages_t[i]->top + Font::charImages_t[i]->height);

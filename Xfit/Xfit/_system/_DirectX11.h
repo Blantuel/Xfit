@@ -122,7 +122,7 @@ namespace _System::_DirectX11 {
 
 	inline ID3D11VertexShader* imgInsVert2DShader = nullptr;
 	inline ID3D11InputLayout* imgInsVert2DLayout = nullptr;
-	//imgPx2DShader
+	inline ID3D11PixelShader* imgInsPx2DShader = nullptr;
 
 	inline ID3D11VertexShader* imgMultiInsVert2DShader = nullptr;
 	inline ID3D11InputLayout* imgMultiInsVert2DLayout = nullptr;
@@ -143,6 +143,9 @@ namespace _System::_DirectX11 {
 
 	//shapeVertConstantBuffer2D
 	inline ID3D11Buffer* lineInsGeoConstantBuffer2D = nullptr;
+
+	inline thread_local ID3D11DeviceContext1* context1T;
+	inline thread_local ID3D11DeviceContext* contextT;
 }
 
 #endif

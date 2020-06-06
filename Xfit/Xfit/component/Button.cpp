@@ -7,30 +7,30 @@
 
 Button::Button(const ButtonFrame& _upFrame, const ButtonFrame& _overFrame, const ButtonFrame& _downFrame, const ButtonFrame& _disableFrame, HitTest* _hitTest,
 	PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler) :
-	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
+	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr), isButtonDown(false),
 	upFrame(_upFrame), overFrame(_overFrame), downFrame(_downFrame), disableFrame(_disableFrame), hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
 Button::Button(HitTest* _hitTest, PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler):
-	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
+	state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr), isButtonDown(false),
 	upFrame(nullptr, nullptr, System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV),
 	hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
-Button::Button() : state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr), data(nullptr),
+Button::Button() : state(State::UP), buttonOver(nullptr), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr), data(nullptr), isButtonDown(false),
 upFrame(nullptr,nullptr,System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV) {}
 
 #elif __ANDROID__
 
 Button::Button(const ButtonFrame& _upFrame, const ButtonFrame& _overFrame, const ButtonFrame& _downFrame, const ButtonFrame& _disableFrame, HitTest* _hitTest,
 			   PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler) :
-		state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
+		state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr), isButtonDown(false),
 		upFrame(_upFrame), overFrame(_overFrame), downFrame(_downFrame), disableFrame(_disableFrame), hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
 Button::Button(HitTest* _hitTest, PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler):
-		state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr),
+		state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), data(nullptr), isButtonDown(false),
 		upFrame(nullptr, nullptr, System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV),
 		hitTest(_hitTest), ImageBase(_pos, _scale, _rotation, _blend, _sampler) {}
 
-Button::Button() : state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr), data(nullptr),
+Button::Button() : state(State::UP), buttonDown(nullptr), buttonUp(nullptr), buttonOut(nullptr), hitTest(nullptr), data(nullptr), isButtonDown(false),
 				   upFrame(nullptr,nullptr,System::defaultUV), overFrame(nullptr, nullptr, System::defaultUV), downFrame(nullptr, nullptr, System::defaultUV), disableFrame(nullptr, nullptr, System::defaultUV) {}
 
 #endif
@@ -60,6 +60,7 @@ bool Button::Update() {
 				}
 
 				state = State::DOWN;
+				isButtonDown = true;
 
 				if (result) ButtonDown(mousePos, data);
 				 else result = ButtonDown(mousePos, data);
@@ -69,17 +70,21 @@ bool Button::Update() {
 				}
 				return result;
 			} else if (Input::IsLMouseClicked()) {
-				state = State::OVER;
+				if (isButtonDown) {
+					state = State::OVER;
+					isButtonDown = false;
 
-				result = ButtonUp(mousePos, data);
-				if (buttonUp) {
-					if (result) buttonUp(this, mousePos, data);
-					else result = buttonUp(this, mousePos, data);
+					result = ButtonUp(mousePos, data);
+					if (buttonUp) {
+						if (result) buttonUp(this, mousePos, data);
+						else result = buttonUp(this, mousePos, data);
+					}
+
+					if (!result) result = downFrame.frame && downFrame.uv && downFrame.vertex;
 				}
-
-				if (!result) result = downFrame.frame && downFrame.uv && downFrame.vertex;
 				return result;
 			} else if ((state != State::DOWN) && (state != State::OVER)) {
+				isButtonDown = false;
 				state = State::OVER;
 
 				result = ButtonOver(mousePos, data);
@@ -92,6 +97,7 @@ bool Button::Update() {
 				return result;
 			}
 		} else if (state == State::DOWN || state == State::OVER) {
+			isButtonDown = false;
 			if (state == State::DOWN) {
 				if (downFrame.frame && downFrame.uv && downFrame.vertex) {
 					result = true;
@@ -112,10 +118,11 @@ bool Button::Update() {
 				else result = buttonOut(this, mousePos, data);
 			}
 			return result;
-		}
+		} else isButtonDown = false;
 #elif __ANDROID__
 		if (hitTest->Test(mousePos)) {
 			if (Input::IsLMouseClick()) {
+				isButtonDown = true;
 				if (downFrame.frame && downFrame.uv && downFrame.vertex) {
 					result = true;
 				} else {
@@ -131,18 +138,21 @@ bool Button::Update() {
 				}
 				return result;
 			} else if (Input::IsLMouseClicked()) {
-				state = State::UP;
+				if(isButtonDown) {
+					state = State::UP;
 
-				result = ButtonUp(mousePos, data);
-				if (buttonUp) {
-					if (result) buttonUp(this, mousePos, data);
-					else result = buttonUp(this, mousePos, data);
+					result = ButtonUp(mousePos, data);
+					if (buttonUp) {
+						if (result) buttonUp(this, mousePos, data);
+						else result = buttonUp(this, mousePos, data);
+					}
+
+					if (!result) result = downFrame.frame && downFrame.uv && downFrame.vertex;
 				}
-
-				if (!result) result = downFrame.frame && downFrame.uv && downFrame.vertex;
 				return result;
 			}
 		} else if (state == State::DOWN) {
+			isButtonDown = false;
 			result = downFrame.frame && downFrame.uv && downFrame.vertex;
 			state = State::UP;
 
@@ -154,7 +164,7 @@ bool Button::Update() {
 				else result = buttonOut(this, mousePos, data);
 			}
 			return result;
-		}
+		} else isButtonDown = false;
 #endif
 	}
 	return false;

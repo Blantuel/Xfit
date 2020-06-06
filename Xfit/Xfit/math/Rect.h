@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../math/Point.h"
 
@@ -22,7 +22,7 @@ public:
 	}
 
 	RectF() {}
-	RectF(float nLeft, float nRight, float nTop, float nBottom) :left(nLeft), right(nRight), top(nTop), bottom(nBottom) {}
+	constexpr RectF(float nLeft, float nRight, float nTop, float nBottom) :left(nLeft), right(nRight), top(nTop), bottom(nBottom) {}
 	void SetRect(float nLeft, float nRight, float nTop, float nBottom) {
 		left = nLeft;
 		right = nRight;
@@ -58,7 +58,6 @@ public:
 		bottom += y;
 		return *this;
 	}
-	//»ç°¢ÇüÀ» À§Ä¡¸¦ ºñÀ²·Î °öÇÑ °ª¸¸Å­ ÀÌµ¿
 	RectF& MoveRatio(float x, float y) {
 		const float leftT = left;
 		const float rightT = right;
@@ -71,6 +70,14 @@ public:
 		bottom = (0.5f * y - 0.5f) * topT + (0.5f * y + 0.5f) * bottomT;
 
 		return *this;
+	}
+	void Rotate90() {
+		float topT = top;
+		float bottomT = bottom;
+		top = right;
+		bottom = left;
+		left = bottomT;
+		right = topT;
 	}
 
 	RectF& Extend(float x, float y) {
@@ -195,7 +202,7 @@ public:
 		return (nRect.left == left) && (nRect.right == right) && (nRect.top == top) && (nRect.bottom == bottom);
 	}
 
-	//»ç°¢ÇüÀ» À§Ä¡¸¦ ºñÀ²·Î °öÇÑ °ª¸¸Å­ ÀÌµ¿
+	//ì‚¬ê°í˜•ì„ ìœ„ì¹˜ë¥¼ ë¹„ìœ¨ë¡œ ê³±í•œ ê°’ë§Œí¼ ì´ë™
 	Rect& MoveRatio(float x, float y) {
 		const float leftT = left;
 		const float rightT = right;

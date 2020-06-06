@@ -1,12 +1,9 @@
-#pragma once
+﻿#pragma once
 
 #include "../system/System.h"
 #include "CenterPointPos.h"
 
-enum class PosType {
-	Stretch,
-	Center
-};
+#include "../_system/_Renderer.h"
 
 inline float originalWindowWidth, originalWindowHeight;
 
@@ -21,32 +18,15 @@ inline bool IsWindowWidthRatio() {
 	return (float)System::GetWindowWidth() / (float)System::GetWindowHeight() > originalWindowWidth / originalWindowHeight;
 }
 
-inline float WindowRatio() {
-	return IsWindowWidthRatio() ? WindowHeightRatio() : WindowWidthRatio();
+//originalWindowWidth, originalWindowHeight 설정하고 호출
+inline void InitWindowRatio() {
+	if ((float)System::GetWindowWidth() / (float)System::GetWindowHeight() > originalWindowWidth / originalWindowHeight) {
+		_System::_Renderer::windowRatio = (float)System::GetWindowHeight() / originalWindowHeight;
+	} else _System::_Renderer::windowRatio = (float)System::GetWindowWidth() / originalWindowWidth;
 }
 
-inline const PointF WindowRatioPoint(PosType _posType) {
-	if (_posType == PosType::Stretch) {
-		return PointF(WindowWidthRatio(), WindowHeightRatio());
-	} else if (_posType == PosType::Center) {
-		const float windowRatio = WindowRatio();
-		return PointF(windowRatio, windowRatio);
-	}
-	return PointF(0.f, 0.f);
-}
-inline const float WindowRatioPointX(PosType _posType) {
-	if (_posType == PosType::Stretch) {
-		return WindowWidthRatio();
-	} else if (_posType == PosType::Center) {
-		return WindowRatio();
-	}
-}
-inline const float WindowRatioPointY(PosType _posType) {
-	if (_posType == PosType::Stretch) {
-		return WindowHeightRatio();
-	} else if (_posType == PosType::Center) {
-		return WindowRatio();
-	}
+inline float WindowRatio() {
+	return _System::_Renderer::windowRatio;
 }
 
 

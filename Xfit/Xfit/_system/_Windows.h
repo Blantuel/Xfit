@@ -32,6 +32,9 @@ namespace _System::_Windows {
 	inline bool maximized;
 	inline bool minimized;
 
+	inline bool maximizing;
+	inline bool minimizing;
+
 	void Create();
 	void Init(System::CreateInfo* _info);
 
@@ -45,6 +48,9 @@ namespace _System::_Windows {
 	inline int zScroll=0;
 	inline bool mouseOut;
 	inline unsigned prevCharsLen = 0;
+
+	inline unsigned currentDisplayIndex = -1;
+	inline unsigned currentDisplayModeIndex = -1;
 
 	bool Loop();
 	void Release();

@@ -4,7 +4,7 @@
 #include "Math.h"
 
 
-class alignas(16) Matrix {
+class Matrix {
 public:
 	union {
 #ifdef SSE4

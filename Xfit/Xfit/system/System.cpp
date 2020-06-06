@@ -30,7 +30,7 @@ namespace System {
 
 		Time::Init();
 
-		_System::_Windows::Create();//DXGI, DirectX11 ï¿½ï¿½ï¿½ï¿½
+		_System::_Windows::Create();
 
 		System::createFunc();
 
@@ -94,12 +94,13 @@ namespace System {
 			delete defaultIndex;
 		}
 		if (defaultSampler)delete defaultSampler;
+		if (pointSampler)delete pointSampler;
 		if (defaultBlend)delete defaultBlend;
 
+		_System::_DXGI::Release();
 		_System::_DirectX11::Release();
 		//_System::_OpenGL::Release();
 		_System::_Windows::Release();
-
 	}
 #elif __ANDROID__
 
@@ -107,7 +108,7 @@ namespace System {
 
 	void Init(CreateInfo* _info) {
 #ifdef _WIN32
-		_System::_Windows::Init(_info);//DXGI, DirectX11 ï¿½ï¿½ï¿½ï¿½
+		_System::_Windows::Init(_info);
 #elif __ANDROID__
 		_System::_Android::Init(_info);
 #endif
@@ -203,13 +204,14 @@ namespace System {
 		defaultIndex->Build();
 	}
 	void Render() {
+		//_System::_DirectX11::context->ExecuteCommandList(_System::_DirectX11::commandList, FALSE);
+
 #ifdef _WIN32
 		_System::_DXGI::Render();
 #elif __ANDROID__
 		eglSwapBuffers(_System::_Android::engine.display, _System::_Android::engine.surface);
 #endif
 	}
-
 	bool IsVSync() { return _System::_Renderer::vSync; }
 
 	unsigned GetMsaaCount() { return _System::_Renderer::msaaCount; }
@@ -279,9 +281,7 @@ namespace System {
 	}
 	Point GetWindowPos() {
 #ifdef _WIN32
-		RECT rect;
-		GetWindowRect(_System::_Windows::hWnd, &rect);
-		return Point(rect.left, rect.top);
+		return _System::_Renderer::windowPos;
 #elif __ANDROID__
         return Point(0,0);
 #endif
@@ -303,16 +303,37 @@ namespace System {
 	}
 	bool IsMaximizedWindow() {
 #ifdef _WIN32
-		return _System::_Windows::minimized;
+		return _System::_Windows::maximized;
 #elif __ANDROID__
 		return false;
 #endif
 	}
 	bool IsMinimizedWindow() {
 #ifdef _WIN32
-		return _System::_Windows::maximized;
+		return _System::_Windows::minimized;
 #elif __ANDROID__
 		return false;
+#endif
+	}
+
+	bool IsMaximizingWindow() {
+#ifdef _WIN32
+		return _System::_Windows::maximizing;
+#elif __ANDROID__
+		return false;
+#endif
+	}
+	bool IsMinimizingWindow() {
+#ifdef _WIN32
+		return _System::_Windows::minimizing;
+#elif __ANDROID__
+		return false;
+#endif
+	}
+
+	void MinimizeWindow() {
+#ifdef _WIN32
+		ShowWindow(_System::_Windows::hWnd, SW_MINIMIZE);
 #endif
 	}
 	void ResizeWindow(unsigned _width, unsigned _height) {
@@ -372,7 +393,7 @@ namespace System {
 #ifdef _WIN32
 		#ifdef _DEBUG
 		_CrtSetBreakAlloc(_value);
-#endif
+		#endif
 #else
 #endif
 	}
@@ -429,8 +450,11 @@ namespace System {
 		Sleep(_milisecond);
 	}
 #elif __ANDROID__
-	void Wait(unsigned _time) {
-
+	void Wait(unsigned _milisecond) {
+		timespec s, o;
+		s.tv_sec = 0;
+		s.tv_nsec = _milisecond * 1000000;
+		nanosleep(&s, &o);
 	}
 #endif
 
@@ -516,14 +540,35 @@ namespace System {
 		SetWindowPos(_System::_Windows::hWnd, 0, _pos.x, _pos.y, 0, 0, SWP_NOZORDER | SWP_NOSIZE | SWP_NOACTIVATE);
 	}
 
-	TCHAR* GetClipboardData() {
+	wchar_t* GetClipboardData() {
 		if (IsClipboardFormatAvailable(CF_UNICODETEXT)) {
 			OpenClipboard(_System::_Windows::hWnd);
 			_System::_Windows::clipBoardMem = ::GetClipboardData(CF_UNICODETEXT);
-			return (TCHAR*)GlobalLock(_System::_Windows::clipBoardMem);
+			return (wchar_t*)GlobalLock(_System::_Windows::clipBoardMem);
 		}
 		return nullptr;
 	}
+	void SetClipbpardData(wchar_t* _text) {
+		const size_t len = _tcslen(_text) + 1;
+
+		HANDLE handle = GlobalAlloc(GMEM_MOVEABLE, len * sizeof(wchar_t));
+
+		wchar_t* data = (TCHAR*)GlobalLock(handle);
+		if (data != nullptr) {
+#ifdef _WIN32
+			memcpy_s(data, len * sizeof(wchar_t), _text, len * sizeof(wchar_t));
+#else
+			memcpy(data, _text, len * sizeof(TCHAR));
+#endif
+			GlobalUnlock(handle);
+			if (OpenClipboard(_System::_Windows::hWnd)) {
+				EmptyClipboard();
+				SetClipboardData(CF_UNICODETEXT, handle);
+				CloseClipboard();
+			}
+		}
+	}
+	//GetClipboardData¸¦ È£ÃâÇßÀ» ¶§¸¸ È£Ãâ
 	void ClipboardClose() {
 		GlobalUnlock(_System::_Windows::clipBoardMem);
 		CloseClipboard();
@@ -547,6 +592,137 @@ namespace System {
 	void GetDragFile(unsigned _index, char* _outFileName) {
 		DragQueryFileA(_System::_Windows::hDrop, _index, _outFileName, 255);
 	}
+#elif __ANDROID__
+	wchar_t* GetClipboardData() {
+		JavaVM* javaVM = _System::_Android::engine.app->activity->vm;
+		JNIEnv* jniEnv = _System::_Android::engine.app->activity->env;
+
+		javaVM->AttachCurrentThread(&jniEnv, nullptr);
+
+		// Retrieves NativeActivity.
+		jobject lNativeActivity = _System::_Android::engine.app->activity->clazz;
+		jclass ClassNativeActivity = jniEnv->GetObjectClass(lNativeActivity);
+
+		jmethodID GetClipBoardDataF = jniEnv->GetMethodID(ClassNativeActivity, "GetClipBoardData", "()Ljava/lang/String;");
+		jobject strObj = jniEnv->CallObjectMethod(lNativeActivity, GetClipBoardDataF);
+
+		const char* str = jniEnv->GetStringUTFChars((jstring)strObj, nullptr);
+
+		std::wstring wstr = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
+		wchar_t* data = new wchar_t[wstr.size()+1];
+		memcpy(data, wstr.c_str(), (wstr.size()+1) * sizeof(wchar_t));
+
+		jniEnv->ReleaseStringUTFChars((jstring)strObj, str);
+
+		// Finished with the JVM.
+		javaVM->DetachCurrentThread();
+
+		return data;
+	}
+	void SetClipbpardData(wchar_t* _text) {
+		JavaVM* javaVM = _System::_Android::engine.app->activity->vm;
+		JNIEnv* jniEnv = _System::_Android::engine.app->activity->env;
+
+		javaVM->AttachCurrentThread(&jniEnv, nullptr);
+
+		// Retrieves NativeActivity.
+		jobject lNativeActivity = _System::_Android::engine.app->activity->clazz;
+		jclass ClassNativeActivity = jniEnv->GetObjectClass(lNativeActivity);
+
+		jmethodID SetClipBoardDataF = jniEnv->GetMethodID(ClassNativeActivity, "SetClipBoardData", "(Ljava/lang/String;)V");
+
+		jstring str = jniEnv->NewStringUTF(std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(_text).c_str());
+
+		jniEnv->CallVoidMethod(lNativeActivity, SetClipBoardDataF, str);
+
+		jniEnv->DeleteLocalRef(str);
+
+		// Finished with the JVM.
+		javaVM->DetachCurrentThread();
+	}
+	void ClipboardClose() {
+	}
 #endif
+	RectF GetScreenRect() {
+		return RectF(-(float)_System::_Renderer::windowSize.width / 2.f, (float)_System::_Renderer::windowSize.width / 2.f,
+			(float)_System::_Renderer::windowSize.height / 2.f, -(float)_System::_Renderer::windowSize.height / 2.f);
+	}
+	void OpenBrowser(const wchar_t* _url) {
+#ifdef _WIN32
+		ShellExecuteW(NULL, L"open", _url, L"", L"", SW_SHOW);
+#elif __ANDROID__
+		JavaVM* javaVM = _System::_Android::engine.app->activity->vm;
+		JNIEnv* jniEnv = _System::_Android::engine.app->activity->env;
+
+		javaVM->AttachCurrentThread(&jniEnv, nullptr);
+
+		// Retrieves NativeActivity.
+		jobject lNativeActivity = _System::_Android::engine.app->activity->clazz;
+		jclass ClassNativeActivity = jniEnv->GetObjectClass(lNativeActivity);
+
+		jmethodID ShowKeyboard = jniEnv->GetMethodID(ClassNativeActivity, "OpenBrowser", "(Ljava/lang/String;)V");
+		jstring str;
+		str = jniEnv->NewStringUTF(std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(_url).c_str());
+
+		jniEnv->CallVoidMethod(lNativeActivity, ShowKeyboard, str);
+
+
+		// Finished with the JVM.
+		javaVM->DetachCurrentThread();
+#endif
+	}
+#ifdef __ANDROID__
+	const char* GetProgramPath() {
+		return _System::_Android::engine.app->activity->internalDataPath;
+	}
+	const wchar_t* GetProgramPathW() {
+		return nullptr;
+	}
+#elif _WIN32
+	unsigned GetProgramPath(char* _out, unsigned _len) {
+		return GetCurrentDirectoryA(_len, _out);
+	}
+	unsigned GetProgramPathW(wchar_t* _out, unsigned _len) {
+		return GetCurrentDirectoryW(_len, _out);
+	}
+#endif
+
+    IP GetIP() {
+#ifdef _WIN32
+		wchar_t name[255];
+		GetHostNameW(name, sizeof(name));
+		ADDRINFOW info;
+		ADDRINFOW* outInfo;
+		memset(&info, 0, sizeof(info));
+		info.ai_family = AF_INET;
+		info.ai_socktype = SOCK_STREAM;
+		info.ai_protocol = IPPROTO_TCP;
+
+		GetAddrInfoW(name, NULL, &info, &outInfo);
+
+		IP ipObject;
+		ipObject.WriteIPInt(((sockaddr_in const*)outInfo->ai_addr)->sin_addr.S_un.S_addr);
+		return ipObject;
+#elif __ANDROID__
+        JavaVM* javaVM = _System::_Android::engine.app->activity->vm;
+        JNIEnv* jniEnv = _System::_Android::engine.app->activity->env;
+
+        javaVM->AttachCurrentThread(&jniEnv, nullptr);
+
+        // Retrieves NativeActivity.
+        jobject lNativeActivity = _System::_Android::engine.app->activity->clazz;
+        jclass ClassNativeActivity = jniEnv->GetObjectClass(lNativeActivity);
+
+        jmethodID GetIP = jniEnv->GetMethodID(ClassNativeActivity, "GetIP", "()I");
+        int ip = jniEnv->CallIntMethod(lNativeActivity, GetIP);
+
+        // Finished with the JVM.
+        javaVM->DetachCurrentThread();
+
+		IP ipObject;
+		ipObject.WriteIPInt(ip);
+		return ipObject;
+#endif
+	}
 }
 

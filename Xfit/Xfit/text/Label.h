@@ -20,7 +20,7 @@ public:
 	int* charWidths;
 
 	Label();
-	void PrepareDraw();
+	virtual void PrepareDraw();
 
 	unsigned GetMaxScrollTextCount()const;
 };

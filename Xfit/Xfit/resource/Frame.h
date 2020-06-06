@@ -27,14 +27,10 @@ class Frame {
 protected:
 	unsigned width, height;
 #ifdef _WIN32
-	union {
-		ID3D11ShaderResourceView* srv;
-		ID3D11ShaderResourceView1* srv1;
-	};
-	union {
-		ID3D11Texture2D* texture;
-		ID3D11Texture2D1* texture1;
-	};
+	ID3D11ShaderResourceView* srv;
+	ID3D11ShaderResourceView1* srv1;
+	ID3D11Texture2D* texture;
+	ID3D11Texture2D1* texture1;
 #elif __ANDROID__
 	GLuint texture;
 	GLenum fmt;
@@ -46,9 +42,9 @@ public:
 	bool IsBuild()const;
 
 	Frame();
-	~Frame();
-	Frame(const void* _data, unsigned _width, unsigned _height, FrameFormat _format = FrameFormat::RGBA);
-	void Build(const void* _data, unsigned _width, unsigned _height, FrameFormat _format = FrameFormat::RGBA);
+	virtual ~Frame();
+	Frame(const void* _data, unsigned _width, unsigned _height, FrameFormat _format = FrameFormat::RGBA, unsigned _mipLevels = 1);
+	void Build(const void* _data, unsigned _width, unsigned _height, FrameFormat _format = FrameFormat::RGBA, unsigned _mipLevels = 1);
 	void Edit(const void* _data, unsigned _width, unsigned _height, unsigned _offsetX = 0, unsigned _offsetY = 0);
 	void BuildCompress(const void* _data, unsigned _size, unsigned _width, unsigned _height, FrameCompressFormat _format);
 	void EditCompress(const void* _data, unsigned _size, unsigned _width, unsigned _height, unsigned _offsetX = 0, unsigned _offsetY = 0);

@@ -8,7 +8,7 @@
 #ifdef __ANDROID__
 extern "C"
 JNIEXPORT void JNICALL
-Java_com_example_certainwarrior_XfitActivity_ApplyTextEditBox(JNIEnv *env, jobject thiz, jstring string) {
+Java_com_willygames_certainwarrior_XfitActivity_ApplyTextEditBox(JNIEnv *env, jobject thiz, jstring string) {
     const char* str = env->GetStringUTFChars(string, nullptr);
 
     EditBox::staticText = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
@@ -17,10 +17,24 @@ Java_com_example_certainwarrior_XfitActivity_ApplyTextEditBox(JNIEnv *env, jobje
 
     EditBox::isFinish = true;
 }
+
+extern "C"
+JNIEXPORT void JNICALL
+Java_com_willygames_certainwarrior_XfitActivity_EnterTextEditBox(JNIEnv *env, jobject thiz,
+															  jstring string) {
+	const char* str = env->GetStringUTFChars(string, nullptr);
+
+	EditBox::staticText = std::wstring_convert<std::codecvt_utf8<wchar_t>>().from_bytes(str);
+
+	env->ReleaseStringUTFChars(string, str);
+
+	EditBox::isEnter = true;
+}
+
 #endif
 
-EditBox::EditBox(FontColor* _fontColor, FontContainer* _fontContainer, ScaleImage* _box, ScaleImage* _cursor, PointF _basePos, PointF _baseScale, unsigned _width, unsigned _textPixelSize) : posType(PosType::Center),
-	focus(false), basePos(_basePos), baseScale(_baseScale), baseTextWidth(_width), box(_box) {
+EditBox::EditBox(FontColor* _fontColor, FontContainer* _fontContainer, ScaleImage* _box, ScaleImage* _cursor, PointF _basePos, unsigned _width, unsigned _textPixelSize) :
+	focus(false), basePos(_basePos), baseTextWidth(_width), box(_box) {
 
 #ifndef __ANDROID__
 	dt = 0;
@@ -40,23 +54,40 @@ EditBox::EditBox(FontColor* _fontColor, FontContainer* _fontContainer, ScaleImag
 	label->sizeLen = 1;
 	label->textWidth = (unsigned int)((float)baseTextWidth * WindowRatio());
 
-	textImage = new Image(_basePos * WindowRatioPoint(posType), PointF((float)baseTextWidth * baseScale.x * WindowRatio(), 0),
+	textImage = new Image(_basePos * WindowRatio(), PointF((float)baseTextWidth * WindowRatio(), 0),
 		0.f, System::defaultBlend, System::pointSampler, label, System::defaultVertex2D, System::defaultUV, System::defaultIndex);
 
 	box->basePos = basePos;
 
-	box->baseScale = PointF((float)(baseTextWidth + 5) * baseScale.x / (float)box->frame->GetWidth(), (float)_textPixelSize * baseScale.y / (float)box->frame->GetHeight());
+	box->baseScale = PointF((float)(baseTextWidth + 5) / (float)box->frame->GetWidth(), (float)_textPixelSize / (float)box->frame->GetHeight());
 
 	box->Size();
 
 #ifndef __ANDROID__
 	cursor->basePos = basePos + PointF(-(float)baseTextWidth / 2.f, 0.f);
-	cursor->baseScale = PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), (float)_textPixelSize * baseScale.y / (float)cursor->frame->GetHeight());
+	cursor->baseScale = PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), (float)_textPixelSize  / (float)cursor->frame->GetHeight());
 
 	cursor->Size();
 
 	cursor->visible = false;
 #endif
+}
+
+void EditBox::SetWidth(unsigned _width) {
+	baseTextWidth = _width;
+	Size();
+}
+void EditBox::SetTextPx(unsigned _px) {
+	label->baseSizes[0] = _px;
+	label->sizes[0].pixelSize = _px;
+	Size();
+}
+
+unsigned EditBox::GetTextPx()const {
+	return label->baseSizes[0];
+}
+unsigned EditBox::GetWidth()const {
+	return baseTextWidth;
 }
 
 #ifndef __ANDROID__
@@ -79,29 +110,31 @@ void EditBox::EnterChar(bool* _changePos, bool* _requireDraw) {
 		*_requireDraw = true;
 		prevCharsLen = Input::GetPrevCharsLen();
 	} else if (Input::GetEnterCharState() == EnterCharState::Finish) {
-		if (Input::GetChars()[0] == L'\b') {
-			if (text.size() > 0 && cursorPos > 0) {
-				text.erase(cursorPos - 1, 1);
-				cursorPos--;
-				label->scrollTextCount--;
-				*_changePos = true;
+		if (Input::GetChars()[0] != L'\n' && Input::GetChars()[0] != L'\r') {
+			if (Input::GetChars()[0] == L'\b') {
+				if (text.size() > 0 && cursorPos > 0) {
+					text.erase(cursorPos - 1, 1);
+					cursorPos--;
+					label->scrollTextCount--;
+					*_changePos = true;
+				}
+			} else {
+				unsigned textSize = text.size();
+				if (cursorPos > 0 && prevCharsLen > 0)text.erase(cursorPos - 1, prevCharsLen);
+				text.insert(cursorPos - prevCharsLen, Input::GetChars());
+				if (text.size() - textSize > 0) {
+					cursorPos += text.size() - textSize;
+					label->scrollTextCount += text.size() - textSize;
+					*_changePos = true;
+				}
 			}
-		} else {
-			unsigned textSize = text.size();
-			if (cursorPos > 0 && prevCharsLen > 0)text.erase(cursorPos - 1, prevCharsLen);
-			text.insert(cursorPos - prevCharsLen, Input::GetChars());
-			if (text.size() - textSize > 0) {
-				cursorPos += text.size() - textSize;
-				label->scrollTextCount += text.size() - textSize;
-				*_changePos = true;
-			}
+			label->text = text.c_str();
+
+			textWidths.resize(text.size());
+
+			label->charWidths = textWidths.data();
+			*_requireDraw = true;
 		}
-		label->text = text.c_str();
-
-		textWidths.resize(text.size());
-
-		label->charWidths = textWidths.data();
-		*_requireDraw = true;
 		prevCharsLen = 0;
 	}
 }
@@ -111,9 +144,9 @@ void EditBox::_Draw(bool* _changePos, bool* _requireDraw) {
 	if (*_requireDraw) {
 		label->textWidth = baseTextWidth * WindowRatio();
 		label->SizePrepareDraw(WindowRatio());
-		textImage->SetScaleY(label->GetHeight() * baseScale.y);
+		textImage->SetScaleY(label->GetHeight());
 
-		textImage->SetPos(PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center));
+		textImage->SetPos(PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center));
 
 #ifndef __ANDROID__
 		if (*_changePos) {
@@ -131,16 +164,28 @@ void EditBox::_Draw(bool* _changePos, bool* _requireDraw) {
 #endif
 	}
 }
+
+ScaleImage* EditBox::GetBox()const {
+	return box;
+}
+ScaleImage* EditBox::GetCursor()const {
+#ifndef __ANDROID__
+	return cursor;
+#else
+	return nullptr;
+#endif
+}
+
 EditBox::~EditBox() {
-	delete label->sizes;
-	delete label->baseSizes;
+	delete[] label->sizes;
+	delete[] label->baseSizes;
 	delete label;
 	delete textImage;
 }
 
 void EditBox::Draw() {
 	box->Draw();
-	if (label->text[0] != 0) {
+	if (label->text && label->text[0] != 0) {
 		textImage->Draw();
 	}
 #ifndef __ANDROID__
@@ -157,10 +202,10 @@ void EditBox::Size() {
 		label->textWidth = baseTextWidth * WindowRatio();
 		label->SizePrepareDraw(WindowRatio());
 
-		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()) * baseScale, 0.f);
+		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()), 0.f);
 
-		textImage->pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
-		textImage->SetScale(PointF(baseScale.x * baseTextWidth * WindowRatio(), label->GetHeight() * baseScale.y));
+		textImage->pos = PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
+		textImage->SetScale(PointF(baseTextWidth * WindowRatio(), label->GetHeight()));
 
 		text = L"";
 		label->text = text.c_str();
@@ -172,13 +217,13 @@ void EditBox::Size() {
 
 		label->SizePrepareDraw(WindowRatio());
 
-		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()) * baseScale, 0.f);
+		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()), 0.f);
 
-		textImage->pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
-		textImage->SetScale(PointF(baseScale.x * baseTextWidth * WindowRatio(), label->GetHeight() * baseScale.y));
+		textImage->pos = PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
+		textImage->SetScale(PointF(baseTextWidth * WindowRatio(), label->GetHeight()));
 	}
 #else
-	const float cursorWidth = (baseScale.x * GetLineWidth(1.f) * WindowRatio());
+	const float cursorWidth = (GetLineWidth(1.f) * WindowRatio());
 	if (cursorWidth > 1.f) cursor->scale.x = cursorWidth;
 	else cursor->scale.x = 1.f;
 
@@ -190,12 +235,12 @@ void EditBox::Size() {
 		label->textWidth = baseTextWidth * WindowRatio();
 		label->SizePrepareDraw(WindowRatio());
 
-		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()) * baseScale, 0.f);
+		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()), 0.f);
 		cursor->SetTransform(PointF(basePos.x - ((float)label->textWidth / 2.f) / WindowRatio(), basePos.y),
-							 PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), label->sizes[0].pixelSize / (float)cursor->frame->GetHeight() * baseScale.y), 0.f);
+							 PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), label->sizes[0].pixelSize / (float)cursor->frame->GetHeight()), 0.f);
 
-		textImage->pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
-		textImage->SetScale(PointF(baseScale.x * baseTextWidth * WindowRatio(), label->GetHeight() * baseScale.y));
+		textImage->pos = PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
+		textImage->SetScale(PointF(baseTextWidth * WindowRatio(), label->GetHeight()));
 
 		text = L"";
 		label->text = text.c_str();
@@ -223,12 +268,12 @@ void EditBox::Size() {
 			if (textWidths[i] == -1)break;
 			gainWidth += textWidths[i];
 		}
-		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()) * baseScale, 0.f);
-		cursor->SetTransform(PointF(basePos.x - ((float)label->textWidth / 2.f + gainWidth) / WindowRatio(), basePos.y),
-							 PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), label->sizes[0].pixelSize / (float)cursor->frame->GetHeight() * baseScale.y), 0.f);
+		box->SetTransform(basePos, PointF((baseTextWidth + 5) / (float)box->frame->GetWidth(), label->sizes[0].pixelSize / (float)box->frame->GetHeight()), 0.f);
+		cursor->SetTransform(PointF(basePos.x + (-(float)label->textWidth / 2.f + gainWidth) / WindowRatio(), basePos.y),
+							 PointF(GetLineWidth(1.f) / (float)cursor->frame->GetWidth() / WindowRatio(), label->sizes[0].pixelSize / (float)cursor->frame->GetHeight()), 0.f);
 
-		textImage->pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
-		textImage->SetScale(PointF(baseScale.x * baseTextWidth * WindowRatio(), label->GetHeight() * baseScale.y));
+		textImage->pos = PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center);
+		textImage->SetScale(PointF(baseTextWidth * WindowRatio(), label->GetHeight()));
 	}
 #endif
 
@@ -237,7 +282,7 @@ void EditBox::Size() {
 
 void EditBox::SetPos(PointF _pos) {
 	basePos = _pos;
-	textImage->SetPos(PixelPerfectPoint(basePos * WindowRatioPoint(posType), label->GetWidth(), label->GetHeight(), CenterPointPos::Center));
+	textImage->SetPos(PixelPerfectPoint(basePos * WindowRatio(), label->GetWidth(), label->GetHeight(), CenterPointPos::Center));
 	box->SetPos(basePos);
 #ifndef __ANDROID__
 	unsigned i;
@@ -253,18 +298,44 @@ void EditBox::SetPos(PointF _pos) {
 #endif
 }
 
+void EditBox::SetX(float _x) {
+	SetPos(PointF(_x, basePos.y));
+}
+void EditBox::SetY(float _y) {
+	SetPos(PointF(basePos.x, _y));
+}
+PointF EditBox::GetPos()const {
+	return basePos;
+}
+float EditBox::GetX()const {
+	return basePos.x;
+}
+float EditBox::GetY()const {
+	return basePos.y;
+}
+
 bool EditBox::Update() {
 	bool requireDraw = false;
 	bool changePos = false;
 
 #ifdef __ANDROID__
-	if(isFinish && thisEditBox == this) {
-		isFinish = false;
-		thisEditBox = nullptr;
-		text = staticText;
-		staticText = L"";
-		Size();
+	if(thisEditBox == this) {
+		if(isFinish) {
+			isFinish = false;
+			thisEditBox = nullptr;
+			text = staticText;
+			staticText = L"";
+			Size();
+			focus = false;
+			Input::IMEFinish();
+		} else if(isEnter) {
+			isEnter = false;
+			text = staticText;
+			staticText = L"";
+			Size();
+		}
 	}
+
 	if (Input::IsLMouseClick()) {
 		PointF mousePos = Input::GetMousePos();
 		if (RectF(box->pos.x - box->scale.x / 2.f, box->pos.x + box->scale.x / 2.f, box->pos.y + box->scale.y / 2.f, box->pos.y - box->scale.y / 2.f).IsPointIn(mousePos)) {
@@ -272,15 +343,16 @@ bool EditBox::Update() {
 			thisEditBox = this;
 			Input::ShowKeyboard(true, text);
 			Input::IMEStart();
-		} else {
+		} else if(focus) {
 			focus = false;
-			//Input::ShowKeyboard(false);
+			thisEditBox = nullptr;
+			Input::ShowKeyboard(false, L"");
 			Input::IMEFinish();
 		}
-
-	} else if (!System::IsActivated()) {
+	} else if (!System::IsActivated() && focus) {
 		focus = false;
-		//Input::ShowKeyboard(false);
+		thisEditBox = nullptr;
+		Input::ShowKeyboard(false, L"");
 		Input::IMEFinish();
 	}
 	_Draw(&changePos, &requireDraw);
@@ -414,7 +486,6 @@ bool EditBox::Update() {
 			Input::IMEFinish();
 			cursor->visible = false;
 		}
-
 	} else if (!System::IsActivated()) {
 		focus = false;
         Input::IMEFinish();
@@ -422,5 +493,29 @@ bool EditBox::Update() {
 	}
 	_Draw(&changePos, &requireDraw);
 	return true;
+#endif
+}
+
+void EditBox::SetFocus(bool _focus) {
+	focus = _focus;
+#ifdef __ANDROID__
+	if (focus) {
+		thisEditBox = this;
+		Input::ShowKeyboard(true, text);
+		Input::IMEStart();
+	} else {
+		Input::IMEFinish();
+		thisEditBox = nullptr;
+		Input::ShowKeyboard(false, L"");
+	}
+#else
+	if (focus) {
+		Input::IMEStart();
+		cursor->visible = true;
+		dt = 0.f;
+	} else {
+		Input::IMEFinish();
+		cursor->visible = false;
+	}
 #endif
 }

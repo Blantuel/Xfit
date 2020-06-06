@@ -1,7 +1,9 @@
 ﻿#pragma once
 
 #include "../math/Point.h"
+#include "../math/Rect.h"
 #include "../system/Error.h"
+#include "../network/IP.h"
 
 template <typename T> class Array;
 
@@ -108,6 +110,7 @@ namespace System {
 
 #ifdef _WIN32
 		const Tchar* title;
+		const Tchar* iconResource;
 		const Tchar* cursorResource;
 		Point windowPos;
 #endif
@@ -134,6 +137,7 @@ namespace System {
 	inline void(*createFunc)();
 	inline void(*activateFunc)();
 	inline void(*sizeFunc)();
+	inline void(*moveFunc)();
 	inline void(*updateFuncs)();
 	inline void(*dragDropFuncs)();
 	inline void(*destroyFunc)();
@@ -182,6 +186,10 @@ namespace System {
 	bool IsResizeWindow();
 	bool IsMaximizedWindow();
 	bool IsMinimizedWindow();
+
+	bool IsMaximizingWindow();
+	bool IsMinimizingWindow();
+
 	void SetTitle(const Tchar* _title);
 	void SetWindowShow(WindowShow _windowShow);
 
@@ -191,9 +199,11 @@ namespace System {
 	ScreenMode GetScreenMode();
 
 	bool IsPause();
-#ifdef _WIN32
-	TCHAR* GetClipboardData();
+
+	wchar_t* GetClipboardData();
+	void SetClipbpardData(wchar_t* _text);
 	void ClipboardClose();
+#ifdef _WIN32
 
 	void DragFileOn(bool _on = true);
 	PointF GetDragFilePoint();
@@ -202,6 +212,10 @@ namespace System {
 	//최대255글자
 	void GetDragFile(unsigned _index, char* _outFileName);
 #endif
+
+	RectF GetScreenRect();
+
+	void OpenBrowser(const wchar_t* _url);
 
 	unsigned GetMsaaCount();
 	unsigned GetMsaaQuality();
@@ -239,16 +253,24 @@ namespace System {
 	WindowState GetWindowState();
 
 	void MoveWindow(Point _pos);
+	void MinimizeWindow();
 
 	void SetMaxFrame(double _maxFrame);
 	float GetMaxFrame();
 
 	bool IsActivated();
 
-#ifdef _WIN32
 	void Wait(unsigned _milisecond);
-#elif __ANDROID__
-	void Wait(unsigned _time);
+
+	IP GetIP();
+
+#ifdef __ANDROID__
+	const char* GetProgramPath();
+	const wchar_t* GetProgramPathW();
+#else
+	//반환값 : 경로 문자 수
+	unsigned  GetProgramPath(char* _out, unsigned _len);
+	unsigned GetProgramPathW(wchar_t* _out, unsigned _len);
 #endif
 };
 

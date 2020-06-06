@@ -1,6 +1,6 @@
 #pragma once
 
-#include "Button.h"
+#include "SizeButton.h"
 
 class Vertex;
 class Frame;
@@ -21,7 +21,7 @@ public:
 	CheckBoxError(CheckBoxError::Code _code) :code(_code) {}
 };
 
-class Checkbox : public Button {
+class Checkbox : public SizeButton {
 protected:
 	bool checked;
 
@@ -32,7 +32,6 @@ public:
 	Checkbox(const CheckFrame& _checkFrame, const ButtonFrame& _upFrame, const ButtonFrame& _overFrame, const ButtonFrame& _downFrame, const ButtonFrame& _disableFrame, HitTest* _hitTest,
 		PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler);
 
-	Checkbox();
 	bool IsChecked() const;
 	virtual void SetCheck(bool _on);
 	virtual void Draw();

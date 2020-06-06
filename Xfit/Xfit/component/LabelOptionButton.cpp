@@ -24,7 +24,7 @@ unsigned LabelOptionButton::GetOptionInLen()const {
 	return optionLen;
 }
 
-LabelOptionButton::LabelOptionButton(PosType _posType, SizeLabel* _label, unsigned _option, unsigned _optionLen, PointF _pos /*= PointF(0.f, 0.f)*/,
+LabelOptionButton::LabelOptionButton(SizeLabel* _label, unsigned _option, unsigned _optionLen, PointF _pos /*= PointF(0.f, 0.f)*/,
 	CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
-	LabelButton(_posType, _label,_pos, _centerPointPos), option(_option), optionLen(_optionLen) {
+	LabelButton(_label,_pos, _centerPointPos), option(_option), optionLen(_optionLen) {
 }

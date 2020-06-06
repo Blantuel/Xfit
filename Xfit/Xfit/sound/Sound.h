@@ -35,7 +35,7 @@ class Sound {
 
 	static inline bool soundExit = false;
 public:
-	static void Init(size_t _maxSoundLen, unsigned _samplingRate = 44100);
+	static bool Init(size_t _maxSoundLen, unsigned _samplingRate = 44100);
 	static void Release();
 
 	void Decode(SoundSource* _data);

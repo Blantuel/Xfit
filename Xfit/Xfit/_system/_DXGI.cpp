@@ -221,6 +221,7 @@ namespace _System::_DXGI {
 				hr = i.output1->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_SCALING, &i.num, nullptr);//먼저 마지막 인수를 nullptr로 해서 모드 갯수를 가져옴.
 				if (FAILED(hr));
 
+				i.displayModes = nullptr;
 				i.displayModes1 = new DXGI_MODE_DESC1[i.num];
 
 				hr = i.output1->GetDisplayModeList1(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_SCALING, &i.num, i.displayModes1);
@@ -237,6 +238,7 @@ namespace _System::_DXGI {
 				if (FAILED(hr));
 
 				i.displayModes = new DXGI_MODE_DESC[i.num];
+				i.displayModes1 = nullptr;
 
 				hr = i.output->GetDisplayModeList(DXGI_FORMAT_R8G8B8A8_UNORM, DXGI_ENUM_MODES_SCALING, &i.num, i.displayModes);
 				if (FAILED(hr));
@@ -327,6 +329,30 @@ namespace _System::_DXGI {
 		} else {
 			currentOutput = -1;
 			currentDisplayMode = -1;
+
+			if (outputs[0].output1) {
+				i = outputs[0].num - 1;
+				for (; i >= 0; i--) {
+					if (_info->refleshRateTop == outputs[0].displayModes1[i].RefreshRate.Numerator && _info->refleshRateBottom == outputs[0].displayModes1[i].RefreshRate.Denominator) {
+						break;
+					}
+				}
+				if (i == -1) {
+					_info->refleshRateTop = outputs[0].displayModes1[outputs[0].current].RefreshRate.Numerator;
+					_info->refleshRateBottom = outputs[0].displayModes1[outputs[0].current].RefreshRate.Denominator;
+				}
+			} else {
+				i = outputs[0].num - 1;
+				for (; i >= 0; i--) {
+					if (_info->refleshRateTop == outputs[0].displayModes[i].RefreshRate.Numerator && _info->refleshRateBottom == outputs[0].displayModes[i].RefreshRate.Denominator) {
+						break;
+					}
+				}
+				if (i == -1) {
+					_info->refleshRateTop = outputs[0].displayModes[outputs[0].current].RefreshRate.Numerator;
+					_info->refleshRateBottom = outputs[0].displayModes[outputs[0].current].RefreshRate.Denominator;
+				}
+			}
 
 			DWORD style = WS_CAPTION | WS_SYSMENU | (_System::_Windows::resizeWindow ? WS_THICKFRAME : 0) | (_System::_Windows::maximized ? WS_MAXIMIZEBOX : 0)
 				| (_System::_Windows::minimized ? WS_MINIMIZEBOX : 0);
@@ -499,5 +525,25 @@ namespace _System::_DXGI {
 	void SetWindowMode() {
 		currentOutput = -1;
 		currentDisplayMode = -1;
+	}
+	void Release() {
+		SafeRelease(&device);
+		SafeRelease(&adapter);
+
+		SafeRelease(&factory1);
+		SafeRelease(&factory2);
+
+		SafeRelease(&swapChain);
+		SafeRelease(&swapChain1);
+		SafeRelease(&swapChain2);
+		SafeRelease(&swapChain3);
+
+		for (auto& i : outputs) {
+			SafeRelease(&i.output);
+			SafeRelease(&i.output1);
+
+			if(i.displayModes)delete[]i.displayModes;
+			if(i.displayModes1)delete[]i.displayModes1;
+		}
 	}
 }

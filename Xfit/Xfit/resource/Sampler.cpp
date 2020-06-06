@@ -4,6 +4,7 @@
 #include "../_system/_OpenGL.h"
 #include "../_system/_Vulkan.h"
 #include "../_system/_DirectX11.h"
+#include "../_system/_Android.h"
 
 #ifdef __ANDROID__
 
@@ -31,6 +32,7 @@ void Sampler::SetWarpMode(TextureAdressMode _mode, GLenum _name) {
 Sampler::Sampler(Filter _filter /*= Filter::MinMagMipLinear*/, TextureAdressMode _textureAdressModeU /*= TextureAdressMode::Clamp*/
 		,TextureAdressMode _textureAdressModeV /*= TextureAdressMode::Clamp*/, TextureAdressMode _textureAdressModeW /*= TextureAdressMode::Clamp*/,
 				 unsigned _maxAnisotropy /*= 16*/) {
+	_System::_Android::Lock();
 	glGenSamplers(1, &sampler);
 	glBindSampler(0, sampler);
 
@@ -73,6 +75,7 @@ Sampler::Sampler(Filter _filter /*= Filter::MinMagMipLinear*/, TextureAdressMode
 	SetWarpMode(_textureAdressModeU, GL_TEXTURE_WRAP_S);
 	SetWarpMode(_textureAdressModeV, GL_TEXTURE_WRAP_T);
 	SetWarpMode(_textureAdressModeW, GL_TEXTURE_WRAP_R);
+	_System::_Android::Unlock();
 }
 
 /*void Sampler::SetMinFilter(MinFilter _minFilter) {
@@ -89,7 +92,9 @@ void Sampler::SetWrapModeV(WarpMode _warpModeV) {
 }*/
 
 Sampler::~Sampler() {
+	_System::_Android::Lock();
 	glDeleteSamplers(1, &sampler);
+	_System::_Android::Unlock();
 }
 
 #elif _WIN32

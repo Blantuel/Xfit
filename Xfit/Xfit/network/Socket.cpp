@@ -72,7 +72,7 @@ void Socket::Send(const char* _buf, int _len)const {
 int Socket::Recv(char* _buf, int _len) {
 	int left = _len;
 	while (left > 0) {
-		int res = recv(handle, _buf, _len, 0);
+		int res = recv(handle, _buf, left, 0);
 		if (res == SOCKET_ERROR || res == 0) {
 			throw SocketError(SocketError::Code::RecvError);
 		}
@@ -144,14 +144,20 @@ Socket* Socket::Accept(unsigned _portNumber) {
 }
 
 void Socket::Send(const char* _buf, int _len)const {
-    if (send(handle, _buf, _len, 0) == -1) {
-        throw SocketError(SocketError::Code::SendError);
+    int left = _len;
+    while (left > 0) {
+        int res = send(handle, _buf, left, 0);
+        if (res == -1 || res == 0) {
+            throw SocketError(SocketError::Code::SendError);
+        }
+        left -= res;
+        _buf += res;
     }
 }
 int Socket::Recv(char* _buf, int _len) {
     int left = _len;
     while (left > 0) {
-        int res = recv(handle, _buf, _len, 0);
+        int res = recv(handle, _buf, left, 0);
         if (res == -1 || res == 0) {
             throw SocketError(SocketError::Code::RecvError);
         }

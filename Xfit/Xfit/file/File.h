@@ -81,6 +81,9 @@ public:
 		_other.hFile = INVALID_HANDLE_VALUE;
 		return *this;
 	}
+	static bool IsFileExists(const char* _path) {
+		return _access(_path, 0) == 0;
+	}
 	template<typename T> unsigned WriteBytes(unsigned size, const T* buffer) {
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
@@ -137,6 +140,12 @@ public:
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 #endif
 		return SetFilePointer(hFile, 0, nullptr, DWORD(MoveOption::Current));
+	}
+	template<typename T> unsigned Read(T* _data)const {
+		return ReadBytes(sizeof(T), _data);
+	}
+	template <typename T> unsigned Write(const T& _data) { 
+		return WriteBytes(sizeof(T), &_data);
 	}
 	~File() { if (IsOpen())Close(); }
 };
@@ -204,7 +213,14 @@ public:
 		hFile = _other.hFile;
 		_other.hFile = nullptr;
 	}
-	
+	static bool IsFileExists(const char* _path) {
+		FILE* f = fopen(_path, "rb");
+		if(f) {
+			fclose(f);
+			return true;
+		}
+		return false;
+	}
 	File& operator=(File &&_other) {
 		hFile = _other.hFile;
 		_other.hFile = nullptr;
@@ -214,19 +230,19 @@ public:
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 #endif
-		const unsigned write = fwrite(_buffer, _size, 1, hFile);
-		if (!write) throw FileError((FileError::Code)errno);
+		const unsigned write = fwrite(_buffer, 1, _size, hFile);
+		//if (!write) throw FileError((FileError::Code)errno);
 		return  write;
 	}
 	template<typename T> unsigned ReadBytes(unsigned _size, T* _buffer)const {
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 #endif
-		const unsigned read = fread(_buffer, _size, 1, hFile);
-		if (!read) throw FileError((FileError::Code)errno);
-		return  read;
+		const unsigned read = fread(_buffer, 1, _size, hFile);
+		//if (read < ) throw FileError((FileError::Code)errno);
+		return read;
 	}
-	void SetPos(int _index = 0, MoveOption _moveType = MoveOption::Begin) {
+	bool SetPos(int _index = 0, MoveOption _moveType = MoveOption::Begin) {
 #ifdef _DEBUG
 		if (!IsOpen()) throw FileError(FileError::Code::NotOpened);
 		int index = _index;
@@ -235,7 +251,7 @@ public:
 		if (index > (GetSize() - 1))throw FileError( FileError::Code::OverflowIndex);
 		 else if (index < 0) throw FileError(FileError::Code::MinusIndex);
 #endif
-		fseek(hFile, _index, (int)_moveType);
+		return fseek(hFile, _index, (int)_moveType) == 0;
 	}
 	unsigned GetSize()const {
 #ifdef _DEBUG
@@ -264,8 +280,8 @@ public:
 #endif
 		return (unsigned)ftell(hFile);
 	}
-	template<typename T> unsigned Read(T* _data)const {return fread(&_data, sizeof(T), 1, hFile);}
-	template <typename T> unsigned Write(const T& _data) { return fwrite(&_data, sizeof(T), 1, hFile); }
+	template<typename T> unsigned Read(T* _data)const {return fread(_data, 1, sizeof(T), hFile);}
+	template <typename T> unsigned Write(const T& _data) { return fwrite(&_data, 1, sizeof(T), hFile); }
 	~File() { if (IsOpen())Close(); }
 };
 #endif

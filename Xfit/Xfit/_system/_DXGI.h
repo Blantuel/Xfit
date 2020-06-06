@@ -45,10 +45,9 @@ namespace _System::_DXGI {
 		unsigned current;
 		IDXGIOutput* output;
 		IDXGIOutput1* output1;
-		union {
-			DXGI_MODE_DESC* displayModes;
-			DXGI_MODE_DESC1* displayModes1;
-		};
+	
+		DXGI_MODE_DESC* displayModes;
+		DXGI_MODE_DESC1* displayModes1;
 		RECT rect;
 	};
 	inline Array<Output> outputs(10);
@@ -61,6 +60,8 @@ namespace _System::_DXGI {
 	void SetBorderlessScreenMode(unsigned _displayIndex);
 	int GetDisplayFromWindow();
 	void SetWindowMode();
+
+	void Release();
 }
 
 #endif

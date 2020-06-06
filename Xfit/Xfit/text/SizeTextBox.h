@@ -1,19 +1,29 @@
-#pragma once
+ï»¿#pragma once
 
 #include "TextBox.h"
 
-
+#include "../object/ScaleHeader.h"
 
 class SizeTextBox : public TextBox {
 public:
 	unsigned* baseSizes;
 	unsigned baseWidth, baseHeight;
 	unsigned sizeLen;
-	//¸Þ¸ð¸® ÇÒ´çÇÑ ÈÄ º¹»ç
+	//ë©”ëª¨ë¦¬ í• ë‹¹í•œ í›„ ë³µì‚¬
 	void CopyBaseSizes();
-	//ÀÌ¹Ì ÀÖ´Â ¸Þ¸ð¸®¿¡ º¹»ç
+	//ì´ë¯¸ ìžˆëŠ” ë©”ëª¨ë¦¬ì— ë³µì‚¬
 	void WriteBaseSizes();
 
+	bool IsChangeSize(float _ratio)const;
+
 	void SizePrepareDraw(float _ratio);
-	void SizePrepareDrawEdit(float _ratio);
+
+	static void TEXTBOX_SIZE(SizeTextBox* _textBox) { if (_textBox->IsChangeSize(WindowRatio())) { _textBox->SizePrepareDraw(WindowRatio()); } }
+	static void TEXTBOX_SIZE2(SizeTextBox* _textBox, float _scale) {if (_textBox->IsChangeSize(WindowRatio() * _scale)) { _textBox->SizePrepareDraw(WindowRatio() * _scale); }}
+
+
+	static void MakeBasicSizeTextBox(unsigned _baseTextWidth, unsigned _baseTextHeight, FontSize* _fontSize, unsigned* _baseSize, SizeTextBox* _sizeTextBox, unsigned _fontPx, FontColor* _fontColor = nullptr, unsigned _color = 0, TextBox::Align _align = TextBox::Align::Left, TextBox::VerticalAlign _verticalAlign = TextBox::VerticalAlign::High);
+
+	static void MakeBasicSizeTextBoxText(const wchar_t* _text, unsigned _baseTextWidth, unsigned _baseTextHeight, FontSize* _fontSize, unsigned* _baseSize, SizeTextBox* _sizeTextBox, unsigned _fontPx, FontColor* _fontColor = nullptr, unsigned _color = 0, TextBox::Align _align = TextBox::Align::Left, TextBox::VerticalAlign _verticalAlign = TextBox::VerticalAlign::High);
+
 };

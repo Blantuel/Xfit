@@ -8,7 +8,6 @@
 
 using namespace std;
 
-static EGLConfig config;
 static EGLint format;
 
 namespace _System::_Android {
@@ -58,7 +57,7 @@ struct saved_state {
 void makeWindow() {
     ANativeWindow_setBuffersGeometry(engine.app->window, 0, 0, format);
 
-    engine.surface = eglCreateWindowSurface(engine.display, config, engine.app->window, NULL);
+    engine.surface = eglCreateWindowSurface(engine.display, engine.config, engine.app->window, NULL);
     eglMakeCurrent(engine.display, engine.surface, engine.surface, engine.context);
 
     int w,h;
@@ -97,15 +96,16 @@ static int engine_init_display(struct engine* engine) {
     EGLint minor;
     eglInitialize(engine->display, &major, &minor);
 
-    eglChooseConfig(engine->display, attribs, &config, 1, &numConfigs);
+    eglChooseConfig(engine->display, attribs, &engine->config, 1, &numConfigs);
 
     int attrib_list[] = {
             EGL_CONTEXT_CLIENT_VERSION, 3,
             EGL_NONE
     };
-    engine->context = eglCreateContext(engine->display, config, NULL, attrib_list);
+    engine->context = eglCreateContext(engine->display, engine->config, NULL, attrib_list);
 
-    eglGetConfigAttrib(engine->display, config, EGL_NATIVE_VISUAL_ID, &format);
+
+    eglGetConfigAttrib(engine->display, engine->config, EGL_NATIVE_VISUAL_ID, &format);
 
 
     makeWindow();
@@ -119,6 +119,8 @@ static int engine_init_display(struct engine* engine) {
 
     glDisable(GL_DEPTH_TEST);
 
+
+	eglSwapInterval(engine->display, 1);
 
     return 0;
 }
@@ -242,7 +244,6 @@ void Main(struct android_app* state) {
     state->onInputEvent = engine_handle_input;
 	_System::_Android::engine.app = state;
 
-
     while (1) {
         // Read all pending events.
         int ident;
@@ -274,12 +275,11 @@ void Main(struct android_app* state) {
                 source->process(state, source);
             }
         }
-
         if (engine.animating) {
 			_System::_Loop::Loop();
-        }
-        if (state->destroyRequested != 0) {
-            goto exitLabel;
+			if (state->destroyRequested != 0) {
+				goto exitLabel;
+			}
         }
     }
     exitLabel:;

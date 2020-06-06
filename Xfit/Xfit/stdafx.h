@@ -12,13 +12,15 @@
 #include <memory>
 #include <cstdlib>
 #include <codecvt>
+#include <array>
+#include <regex>
 
 
 #if defined(_M_AMD64) || defined(_M_IX86) || defined(__amd64__) || defined(__i386__)
 
 #if defined(_M_AMD64) || defined(__amd64__)
 
-#define SSE4 1
+//#define SSE4 1
 //#define AVX2 1
 //#define AVX512 1
 
@@ -60,6 +62,7 @@
 #include <mmdeviceapi.h>
 #include <Audioclient.h>
 #include <io.h>
+#include <tchar.h>
 
 #ifndef _tWinMain
 #ifdef UNICODE
@@ -75,15 +78,8 @@
 #include <d3dcompiler.h>
 
 
-#ifdef _DEBUG
+#define PRINTMSG(...) {char* __str = new char[2000];sprintf_s(__str,2000,__VA_ARGS__);OutputDebugStringA(__str);delete[]__str;} 
 
-#define PRINTMSG(...) {char* __str = new char[16384];sprintf_s(__str,16384,__VA_ARGS__);OutputDebugStringA(__str);delete[]__str;} 
-
-#else
-
-#define PRINTMSG(...) ((void)0)
-
-#endif
 
 #elif __linux__
 
@@ -93,6 +89,11 @@
 	#include <sys/socket.h>
 	#include <netinet/in.h>
 	#include <arpa/inet.h>
+	#include <netdb.h>
+    #include <sys/ioctl.h>
+    #include <net/if.h>
+    #include <ifaddrs.h>
+	#include <dlfcn.h>
 
 	#ifdef __ANDROID__
 

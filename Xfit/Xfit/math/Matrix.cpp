@@ -37,19 +37,33 @@ Matrix Matrix::GetIdentity() {
 Matrix Matrix::GetMatrix2DTranspose(float _dx, float _dy, float _sx, float _sy, float _r) {
 	const float c = cosf(_r), s = sinf(_r);
 
+#ifdef _WIN32
 	const Matrix mat = { c*_sx, -s * _sx, 0.f, 0.f,
-		s * _sy, c*_sy, 0.f, 0.f,
-		0.f, 0.f, 1.f, 0.f,
-		_dx,_dy, 0.f, 1.f };
+						 s * _sy, c*_sy, 0.f, 0.f,
+						 0.f, 0.f, 1.f, 0.f,
+						 _dx,_dy, 0.f, 1.f };
+#elif __ANDROID__
+	const Matrix mat = { c*_sx, s * _sy, 0.f, _dx,
+						 -s * _sx, c*_sy, 0.f, _dy,
+						 0.f, 0.f, 1.f, 0.f,
+						 0.f, 0.f, 0.f, 1.f };
+#endif
 	return mat;
 }
 Matrix Matrix::GetMatrix2D(float _dx, float _dy, float _sx, float _sy, float _r) {
 	const float c = cosf(_r), s = sinf(_r);
 
+#ifdef _WIN32
 	const Matrix mat = { c*_sx, s * _sy, 0.f, _dx,
 		-s * _sx, c*_sy, 0.f, _dy,
 		0.f, 0.f, 1.f, 0.f,
 		0.f, 0.f, 0.f, 1.f };
+#elif __ANDROID__
+	const Matrix mat = { c*_sx, -s * _sx, 0.f, 0.f,
+						 s * _sy, c*_sy, 0.f, 0.f,
+						 0.f, 0.f, 1.f, 0.f,
+						 _dx,_dy, 0.f, 1.f };
+#endif
 	return mat;
 }
 Matrix Matrix::GetMatrix3DTranspose(float _dx, float _dy, float _dz, float _sx, float _sy, float _sz, float _rx, float _ry, float _rz) {

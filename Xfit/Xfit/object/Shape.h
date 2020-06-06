@@ -1,6 +1,6 @@
 #pragma once
 
-#include "MatrixObject.h"
+#include "SizeMatrixObject.h"
 #include "../system/Error.h"
 #include "../math/Point3Dw.h"
 
@@ -19,15 +19,13 @@ public:
 	ShapeError(Code _code):code(_code) {}
 };
 
-class Shape : public MatrixObject{
+class Shape : public SizeMatrixObject {
 public:
-	float lineWidth;
-	ShapeVertex* vertex;
 	Point3DwF fillColor;
 	Point3DwF lineColor;
-	
+    ShapeVertex* vertex;
+    float lineWidth;
 
-	Shape();
 	Shape(PointF _pos,PointF _scale,float _rotation,Blend* _blend, ShapeVertex* _vertex, Point3DwF _fillColor = Point3DwF(1.f,1.f,1.f,1.f),
 		Point3DwF _lineColor = Point3DwF(0.f, 0.f, 0.f, 1.f),float _lineWidth = 1.f);
 

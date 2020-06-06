@@ -7,6 +7,25 @@
 #include "../text/SizeLabel.h"
 
 
+void FadeLabelButton::Remake() {
+	visible = true;
+	Disable(false);
+	SizeLabel* label = (SizeLabel*)upFrame.frame;
+	label->SizePrepareDraw(WindowRatio());
+
+	fadeFrame = 0;
+
+	colorMat.e[15] = 1.f;
+
+	pos = PixelPerfectPoint(basePos * WindowRatio(), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(), centerPointPos);
+
+	scale = PointF((float)label->GetWidth(), (float)label->GetHeight());
+
+	fading = false;
+
+	UpdateMatrix();
+}
+
 bool FadeLabelButton::Update() {
 	const bool result = Button::Update();
 	if (fading) {
@@ -26,7 +45,7 @@ bool FadeLabelButton::Update() {
 
 			colorMat.e[15] = 1.f - ratio;
 
-			pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(), centerPointPos);
+			pos = PixelPerfectPoint(basePos * WindowRatio(), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(), centerPointPos);
 
 			scale = PointF((float)label->GetWidth(), (float)label->GetHeight());
 
@@ -38,9 +57,9 @@ bool FadeLabelButton::Update() {
 	}
 	return result;
 }
-void FadeLabelButton::Size(bool _scale/* = true*/) {
-	if (fading) LabelButton::Size(false);
-	else LabelButton::Size(_scale);
+void FadeLabelButton::Size() {
+	if (fading) LabelButton::Size();
+	else LabelButton::Size();
 }
 bool FadeLabelButton::ButtonDown(PointF _mousePos, void* _data) {
 	if (!fading) {
@@ -49,7 +68,7 @@ bool FadeLabelButton::ButtonDown(PointF _mousePos, void* _data) {
 	}
 	return false;
 }
-FadeLabelButton::FadeLabelButton(PosType _posType, SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/,
+FadeLabelButton::FadeLabelButton(SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/,
 	float _mag/* = 2.f*/, float _fadeTime /*= 0.5f*/) :
-	LabelButton(_posType,_label, _pos, _centerPointPos), fading(false), mag(_mag), fadeTime(_fadeTime), fadeFrame(0), faded(nullptr) {
+	LabelButton(_label, _pos, _centerPointPos), fading(false), mag(_mag), fadeTime(_fadeTime), fadeFrame(0), faded(nullptr) {
 }

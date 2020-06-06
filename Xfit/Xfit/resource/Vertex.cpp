@@ -2,6 +2,7 @@
 
 #include "../_system/_OpenGL.h"
 #include "../_system/_DirectX11.h"
+#include "../_system/_Android.h"
 
 #ifdef _WIN32
 using namespace _System::_DirectX11;
@@ -179,11 +180,14 @@ Vertex::Vertex() {
 	vertex = 0;
 }
 #endif
+
 Vertex::~Vertex() {
 #ifdef _WIN32
 	if (vertex)vertex->Release();
 #elif __ANDROID__
+	_System::_Android::Lock();
 	if(vertex)glDeleteBuffers(1,&vertex);
+	_System::_Android::Unlock();
 #endif
 }
 void Vertex::_Build(PointF* _vertices, unsigned _num, bool _editable) {
@@ -202,18 +206,30 @@ void Vertex::_Build(PointF* _vertices, unsigned _num, bool _editable) {
 	subSourceData.SysMemSlicePitch = 0;//3D 텍스쳐만 해당
 	device->CreateBuffer(&bufferDesc, &subSourceData, &vertex);
 #elif __ANDROID__
+	_System::_Android::Lock();
+	glGenBuffers(1, &vertex);
+	glBindBuffer(GL_ARRAY_BUFFER, vertex);
 
+	/*if (glBufferStorage) {
+		glBufferStorage(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(),
+			_editable?GL_DYNAMIC_STORAGE_BIT:0);
+	} else {*/
+	glBufferData(GL_ARRAY_BUFFER, _num * sizeof(PointF), _vertices, _editable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+	_System::_Android::Unlock();
 #endif
 }
 void Vertex::_Edit(PointF* _vertices, unsigned _num) {
 #ifdef _WIN32
-	if (context1) {
-		context1->UpdateSubresource1(vertex, 0, nullptr, _vertices, 0, 0, D3D11_COPY_DISCARD);
+	if (context1T) {
+		context1T->UpdateSubresource1(vertex, 0, nullptr, _vertices, 0, 0, D3D11_COPY_DISCARD);
 	} else {
-		context->UpdateSubresource(vertex, 0, nullptr, _vertices, 0, 0);
+		contextT->UpdateSubresource(vertex, 0, nullptr, _vertices, 0, 0);
 	}
 #elif __ANDROID__
-
+	_System::_Android::Lock();
+	glBindBuffer(GL_ARRAY_BUFFER, vertex);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, _num * sizeof(PointF), _vertices);
+	_System::_Android::Unlock();
 #endif
 }
 void Vertex::Build(bool _editable/*=false*/) {
@@ -227,6 +243,7 @@ void Vertex::Build(bool _editable/*=false*/) {
 
 
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glGenBuffers(1, &vertex);
 	glBindBuffer(GL_ARRAY_BUFFER, vertex);
 
@@ -236,6 +253,7 @@ void Vertex::Build(bool _editable/*=false*/) {
 			_editable?GL_DYNAMIC_STORAGE_BIT:0);
 	} else {*/
 	glBufferData(GL_ARRAY_BUFFER, num * sizeof(PointF), vertices.GetData(), _editable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+	_System::_Android::Unlock();
 #endif
 }
 bool Vertex::IsBuild()const {return (bool)vertex;}
@@ -253,8 +271,10 @@ void Vertex::Edit() {
 #ifdef _WIN32
 	Vertex::_Edit(vertices.GetData(), num);
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glBindBuffer(GL_ARRAY_BUFFER, vertex);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, num * sizeof(PointF), vertices.GetData());
+	_System::_Android::Unlock();
 #endif
 }
 void Vertex::Delete() {
@@ -265,7 +285,9 @@ void Vertex::Delete() {
 	vertex->Release();
 	vertex = nullptr;
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glDeleteBuffers(1,&vertex);
+	_System::_Android::Unlock();
 	vertex=0;
 #endif
 }

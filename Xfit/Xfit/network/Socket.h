@@ -43,5 +43,7 @@ public:
 
 	void Send(const char* _buf, int _len)const;
 	int Recv(char* _buf, int _len);
+
+	int GetHandle()const {return handle;}
 };
 

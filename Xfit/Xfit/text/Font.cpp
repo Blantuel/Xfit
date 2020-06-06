@@ -1,4 +1,5 @@
 #include "Font.h"
+#include "TextBox.h"
 
 FT_Library Font::library = nullptr;
 Array<Font::CharImage*> Font::charImages;
@@ -14,8 +15,23 @@ thread_local unsigned Font::blockImageSize;
 
 void Font::Init(size_t _charImageMaxLen, size_t _charImageBlockLen) {
 	FT_Init_FreeType(&library);
-	charImages.Alloc((size_t)_charImageMaxLen);
+	charImages.Alloc(_charImageMaxLen);
 	charImageBlockLen = _charImageBlockLen;
+
+	fontColor[0].color = 0;
+	fontColor[0].len = 0;
+
+	fontLeftAlignPack[0].align = TextBox::Align::Left;
+	fontLeftAlignPack[0].len = 0;
+
+	fontCenterAlignPack[0].align = TextBox::Align::Center;
+	fontCenterAlignPack[0].len = 0;
+
+	fontRightAlignPack[0].align = TextBox::Align::Right;
+	fontRightAlignPack[0].len = 0;
+
+	fontLineSpacing[0].lineSpacing = 1.f;
+	fontLineSpacing[0].len = 0;
 }
 void Font::ThreadInit(size_t _maxLine, size_t _maxLen, size_t _maxImageSize, size_t _blockImageSize) {
 	widths = new unsigned[_maxLine];
@@ -34,6 +50,10 @@ void Font::ThreadRelease() {
 	delete[]image;
 }
 void Font::Release() {
+	for (auto i : charImages) {
+		if(i->bitmap)delete[]i->bitmap;
+		delete i;
+	}
 	charImages.Free();
 	FT_Done_FreeType(library);
 }
@@ -47,6 +67,7 @@ Font::~Font() {
 	Font::mutex.lock();
 	for(int i=charImages.Size()-1;i>=0;i--) {
 		if (charImages[i]->font == this) {
+			if (charImages[i]->bitmap)delete[]charImages[i]->bitmap;
 			delete charImages[i];
 			charImages.EraseIndex(i);
 		}

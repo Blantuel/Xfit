@@ -116,18 +116,18 @@ void TextBox::_PrepareDraw() {
 			continue;
 		}
 
-
 		for (unsigned j = 0; j < Font::charImages.Size(); j++) {
 			if ((Font::charImages[j]->text == text[i]) && (Font::charImages[j]->pixelSize == currentSize) && (Font::charImages[j]->font == fonts[fontIndex].font)) {
 				charImageIndex = j;
 				break;
 			}
 		}
+		
 		if (charImageIndex == UINT_MAX) {
 			auto index = FT_Get_Char_Index(face, text[i]);
 
 			FT_Load_Glyph(face, index, FT_LOAD_NO_BITMAP);
-			const FT_GlyphSlot& glyph = face->glyph;
+			const FT_GlyphSlot glyph = face->glyph;
 
 			FT_Render_Glyph(glyph, FT_RENDER_MODE_NORMAL);
 
@@ -146,8 +146,7 @@ void TextBox::_PrepareDraw() {
 			imageSize = Font::charImages_t[i]->width * Font::charImages_t[i]->height;
 			if (imageSize == 0 || text[i] == L'	') {
 				Font::charImages_t[i]->bitmap = nullptr;
-			}
-			else {
+			} else {
 				Font::charImages_t[i]->bitmap = new unsigned char[imageSize];
 
 				Memory::Copy(Font::charImages_t[i]->bitmap, imageSize, glyph->bitmap.buffer, imageSize);
@@ -157,6 +156,7 @@ void TextBox::_PrepareDraw() {
 			if (glyph->advance.x & 0x3F)Font::charImages_t[i]->advanceX++;//26.6소수의 소숫점 아래 자리(6비트)가 0이상이면
 			Font::charImages_t[i]->left = glyph->bitmap_left;
 			Font::charImages_t[i]->top = glyph->bitmap_top;
+
 			if (top < Font::charImages_t[i]->top)top = Font::charImages_t[i]->top;
 		} else {
 			Font::charImages_t[i] = Font::charImages[charImageIndex];
@@ -189,6 +189,7 @@ void TextBox::_PrepareDraw() {
 		totalWidth += Font::charImages_t[i]->advanceX;
 	}
 	Font::mutex.unlock();
+
 	if (lineHeight > 0) {
 		totalHeight += lineHeight;
 		Font::heights[heightIndex++] = lineHeight;
@@ -349,9 +350,6 @@ void TextBox::_PrepareDraw() {
 }
 void TextBox::PrepareDraw() {
 	_PrepareDraw();
-	Build(Font::image, width, height);
-}
-void TextBox::PrepareDrawEdit() {
-	_PrepareDraw();
-	Edit(Font::image, width, height);
+	if(IsBuild())Edit(Font::image, width, height);
+	else Build(Font::image, width, height);
 }

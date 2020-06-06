@@ -5,22 +5,38 @@ bool LabelToggleButton::ButtonDown(PointF _mousePos, void* _data) {
 	return true;
 }
 bool LabelToggleButton::ButtonUp(PointF _mousePos, void* _data) {
-	SetToogle(!toggle);
+	SetToogle(!_toggle);
 	return true;
 }
 bool LabelToggleButton::ButtonOut(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 1.f;
 	return true;
 }
-void LabelToggleButton::SetToogle(bool _toggle) {
-	toggle = _toggle;
+bool LabelToggleButton::SetToogle(bool _toggle) {
+	bool result = false;
+	this->_toggle = _toggle;
 
-	if (toggle)colorMat.e[3] = 1.f;
-	else colorMat.e[3] = 0.f;
-
-	colorMat.e[15] = 1.f;
+	if (this->_toggle) {
+		if (colorMat.e[3] != 1.f) {
+			colorMat.e[3] = 1.f;
+			result = true;
+		}
+	} else {
+		if (colorMat.e[3] != 0.f) {
+			colorMat.e[3] = 0.f;
+			result = true;
+		}
+	}
+	if (colorMat.e[15] != 1.f) {
+		colorMat.e[15] = 1.f;
+		result = true;
+	}
+	if (toggle) {
+		result = toggle(this, this->_toggle, nullptr) ? true : result;
+	}
+	return result;
 }
-bool LabelToggleButton::IsToggle()const { return toggle; }
-LabelToggleButton::LabelToggleButton(PosType _posType, SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
-	LabelButton(_posType, _label,_pos, _centerPointPos), toggle(false) {
+bool LabelToggleButton::IsToggle()const { return _toggle; }
+LabelToggleButton::LabelToggleButton(SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
+	LabelButton(_label,_pos, _centerPointPos), _toggle(false), toggle(nullptr) {
 }

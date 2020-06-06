@@ -7,6 +7,8 @@
 
 #include "../file/AssetFile.h"
 
+#include "_XfitDataFiles.h"
+
 using namespace std;
 
 namespace _System::_OpenGL {
@@ -88,20 +90,15 @@ namespace _System::_OpenGL {
 		const GLuint vertShader = glCreateShader(GL_VERTEX_SHADER);
 		const GLuint fragShader = glCreateShader(GL_FRAGMENT_SHADER);
 
-		AssetFile shaderFile;
-		shaderFile.Open(_vertPath);
-		int shaderSize = (int)shaderFile.GetSize();
-		char* shaderData = new char[shaderSize];
+		AssetFile file(_vertPath);
 
-		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
-		shaderFile.Close();
-
-		glShaderSource(vertShader, 1, (const char**)& shaderData, &shaderSize);
+		int shaderSize = file.GetSize();
+		char* data = new char[shaderSize];
+		file.ReadBytes(shaderSize, data);
+		glShaderSource(vertShader, 1, &data, &shaderSize);
 
 
 		glCompileShader(vertShader);
-
-		delete[]shaderData;
 
 		GLint compileStatus;
 		glGetShaderiv(vertShader, GL_COMPILE_STATUS, &compileStatus);
@@ -115,19 +112,17 @@ namespace _System::_OpenGL {
 			delete[]compileLogCharAr;
 		}
 
-		shaderFile.Open(_fragPath);
-		shaderSize = (int)shaderFile.GetSize();
-		shaderData = new char[shaderSize];
+		delete[] data;
+		file.Close();
 
-		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
-		shaderFile.Close();
+		file.Open(_fragPath);
+		shaderSize = file.GetSize();
+		data = new char[shaderSize];
+		file.ReadBytes(shaderSize, data);
 
-		glShaderSource(fragShader, 1, (const char**)&shaderData, &shaderSize);
-
+		glShaderSource(fragShader, 1, &data, &shaderSize);
 
 		glCompileShader(fragShader);
-
-		delete[]shaderData;
 
 		glGetShaderiv(fragShader, GL_COMPILE_STATUS, &compileStatus);
 		if (!compileStatus) {
@@ -139,6 +134,9 @@ namespace _System::_OpenGL {
 			PRINTMSG("!!XFit OpenGL Shader Compile Error : %s\n", compileLogCharAr);
 			delete[]compileLogCharAr;
 		}
+
+		delete[] data;
+		file.Close();
 
 		const GLuint prog = glCreateProgram();
 
@@ -171,21 +169,15 @@ namespace _System::_OpenGL {
 	static GLuint LoadAndCompileShader(const char* _path,GLenum _type) {
 		const GLuint shader = glCreateShader(_type);
 
+		AssetFile file(_path);
 
-		AssetFile shaderFile;
-		shaderFile.Open(_path);
-		int shaderSize = (int)shaderFile.GetSize();
-		char* shaderData = new char[shaderSize];
+		int shaderSize = file.GetSize();
+		char* data = new char[shaderSize];
+		file.ReadBytes(shaderSize, data);
 
-		shaderFile.ReadBytes((unsigned)shaderSize, shaderData);
-		shaderFile.Close();
-
-		glShaderSource(shader, 1, (const char**)&shaderData, &shaderSize);
-
+		glShaderSource(shader, 1, &data, &shaderSize);
 
 		glCompileShader(shader);
-
-		delete[]shaderData;
 
 		GLint compileStatus;
 		glGetShaderiv(shader, GL_COMPILE_STATUS, &compileStatus);
@@ -218,6 +210,9 @@ namespace _System::_OpenGL {
 		}
 		glDetachShader(prog, shader);
 		glDeleteShader(shader);
+
+		delete []data;
+		file.Close();
 
 		return prog;
 	}
@@ -272,25 +267,32 @@ namespace _System::_OpenGL {
 			//glProgramUniform1i(imgMultiInsFragProg, imgMultiInsFrag::samplerUniform, 0);
 		} else {*/
 			imgProg = LoadAndCompileShader2("shaders/imgVert2D.glsl", "shaders/imgFrag2D.glsl");
-			//shapeProg = LoadAndCompileShader2("shaders/shapeVert.glsl", "shaders/shapeFrag.glsl");
-			//imgInsProg = LoadAndCompileShader2("shaders/imgInsVert.glsl", "shaders/imgFrag.glsl");
-			//imgMultiInsProg = LoadAndCompileShader2("shaders/imgMultiInsVert.glsl", "shaders/imgMultiInsFrag.glsl");
+			shapeProg = LoadAndCompileShader2("shaders/shapeVert.glsl", "shaders/shapeFrag.glsl");
+			imgInsProg = LoadAndCompileShader2("shaders/imgInsVert2D.glsl", "shaders/imgInsFrag2D.glsl");
+			imgMultiInsProg = LoadAndCompileShader2("shaders/imgMultiInsVert2D.glsl", "shaders/imgMultiInsFrag2D.glsl");
 
 			img::matUniform = glGetUniformLocation(imgProg, "matUniform");
             img::viewMatUniform = glGetUniformLocation(imgProg, "viewMatUniform");
-			//shape::matUniform = glGetUniformLocation(shapeProg, "matUniform");
+			imgIns::matUniform = glGetUniformLocation(imgInsProg, "matUniform");
+			imgIns::viewMatUniform = glGetUniformLocation(imgInsProg, "viewMatUniform");
+            imgMultiIns::matUniform = glGetUniformLocation(imgMultiInsProg, "matUniform");
+            imgMultiIns::viewMatUniform = glGetUniformLocation(imgMultiInsProg, "viewMatUniform");
+			shape::matUniform = glGetUniformLocation(shapeProg, "matUniform");
+			shape::viewMatUniform = glGetUniformLocation(shapeProg, "viewMatUniform");
+			shape::colorUniform = glGetUniformLocation(shapeProg, "colorUniform");
 
 			img::colorMatUniform = glGetUniformLocation(imgProg, "colorMatUniform");
 			//shape::colorUniform = glGetUniformLocation(shapeProg, "colorUniform");
-			//imgIns::colorMatUniform = glGetUniformLocation(imgInsProg, "colorMatUniform");
 			//imgMultiIns::colorMatUniform = glGetUniformLocation(imgMultiInsProg, "colorMatUniform");
 
 			img::samplerUniform = glGetUniformLocation(imgProg, "samplerUniform");
-			//imgIns::samplerUniform = glGetUniformLocation(imgInsProg, "samplerUniform");
+			imgIns::samplerUniform = glGetUniformLocation(imgInsProg, "samplerUniform");
+            imgMultiIns::samplerUniform = glGetUniformLocation(imgMultiInsProg, "samplerUniform");
 			//imgMultiIns::samplerUniform = glGetUniformLocation(imgMultiInsProg, "samplerUniform");
 
 			glUniform1i(img::samplerUniform, 0);
-			//glUniform1i(imgIns::samplerUniform, 0);
+			glUniform1i(imgIns::samplerUniform, 0);
+			glUniform1i(imgMultiIns::samplerUniform, 0);
 			//glUniform1i(imgMultiIns::samplerUniform, 0);
 		//}
 		_System::_Renderer::vSync = _info->vSync;

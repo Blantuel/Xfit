@@ -7,9 +7,6 @@ struct FontSize;
 struct FontColor;
 struct FontContainer;
 
-
-
-
 class TextBox : public Frame {
 public:
 	enum class Align {
@@ -45,6 +42,13 @@ public:
 
 	
 	void PrepareDraw();
-	void PrepareDrawEdit();
 	unsigned GetScrollHeight()const;
 };
+
+
+
+
+inline TextBox::AlignPack fontLeftAlignPack[1];
+inline TextBox::AlignPack fontCenterAlignPack[1];
+inline TextBox::AlignPack fontRightAlignPack[1];
+inline TextBox::LineSpacing fontLineSpacing[1];

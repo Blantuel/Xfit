@@ -5,16 +5,14 @@
 #include "../_system/_Vulkan.h"
 #include "../_system/_DirectX11.h"
 
-//using namespace _System::_OpenGL;
 
 #ifdef _WIN32
 using namespace _System::_DirectX11;
 
 
-Shape::Shape():vertex(nullptr),fillColor(1.f,1.f,1.f,1.f),lineColor(0.f,0.f,0.f,1.f),lineWidth(1.f) {}
 Shape::Shape(PointF _pos, PointF _scale, float _rotation, Blend* _blend, ShapeVertex* _vertex, Point3DwF _fillColor /*= Point3DwF(1.f, 1.f, 1.f, 1.f)*/,
 	Point3DwF _lineColor /*= Point3DwF(0.f, 0.f, 0.f, 1.f)*/, float _lineWidth /*= 1.f*/)
-	: MatrixObject(_pos, _scale, _rotation, _blend), vertex(_vertex), fillColor(_fillColor), lineColor(_lineColor),lineWidth(_lineWidth) {}
+	: SizeMatrixObject(_pos, _scale, _rotation, _blend), vertex(_vertex), fillColor(_fillColor), lineColor(_lineColor),lineWidth(_lineWidth) {}
 
 void Shape::Draw() {
 #ifdef _DEBUG
@@ -62,24 +60,50 @@ void Shape::Draw() {
 	_System::_DirectX11::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_LINESTRIP);
 
 	_System::_DirectX11::context->Draw(vertex->GetNum()+1,0);
+}
+#elif __ANDROID__
+using namespace _System::_OpenGL;
 
-	/*if(glUseProgramStages) {
-		glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, shapeVertProg);
+Shape::Shape(PointF _pos, PointF _scale, float _rotation, Blend* _blend, ShapeVertex* _vertex, Point3DwF _fillColor /*= Point3DwF(1.f, 1.f, 1.f, 1.f)*/,
+             Point3DwF _lineColor /*= Point3DwF(0.f, 0.f, 0.f, 1.f)*/, float _lineWidth /*= 1.f*/)
+        : SizeMatrixObject(_pos, _scale, _rotation, _blend), vertex(_vertex), fillColor(_fillColor), lineColor(_lineColor),lineWidth(_lineWidth) {}
 
-		glProgramUniformMatrix4fv(shapeVertProg, shapeVert::matUniform, 1, GL_FALSE, mat.e);
+void Shape::Draw() {
+#ifdef _DEBUG
+    if(!vertex)throw ShapeError(ShapeError::Code::NullVertex);
+	if(!vertex->IsBuild())throw ShapeError(ShapeError::Code::NotVertexBuild);
+#endif
+    if (!visible)return;
+    Object::Draw();
 
-		glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, shapeFragProg);
+    /*if(glUseProgramStages) {
+        glUseProgramStages(progPipeline, GL_VERTEX_SHADER_BIT, shapeVertProg);
 
-		glProgramUniform4fv(shapeFragProg, shapeFrag::colorUniform, 1, (float*)&color);
-	} else {
-		glUseProgram(shapeProg);
-		glUniformMatrix4fv(shape::matUniform, 1, GL_FALSE, mat.e);
-		glUniform4fv(shape::colorUniform, 1, (float*)&color);
-	}
+        glProgramUniformMatrix4fv(shapeVertProg, shapeVert::matUniform, 1, GL_FALSE, mat.e);
 
-	glBindBuffer(GL_ARRAY_BUFFER, vertex->vertex);
+        glUseProgramStages(progPipeline, GL_FRAGMENT_SHADER_BIT, shapeFragProg);
 
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);*/
+        glProgramUniform4fv(shapeFragProg, shapeFrag::colorUniform, 1, (float*)&color);
+    } else {*/
+        glUseProgram(shapeProg);
+        glUniformMatrix4fv(shape::matUniform, 1, GL_FALSE, mat.e);
+        glUniformMatrix4fv(shape::viewMatUniform, 1, GL_FALSE, Matrix::GetScale(2.f / (float)System::GetWindowWidth(), 2.f / (float)System::GetWindowHeight()).e);
+        glUniform4fv(shape::colorUniform, 1, (float*)&fillColor);
+    //}
+
+    glBindBuffer(GL_ARRAY_BUFFER, vertex->vertex);
+
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+
+    glDrawArrays(GL_TRIANGLE_FAN, 0, vertex->GetNum());
+
+    if(lineWidth > 0.f && lineColor.a > 0.f) {
+        glLineWidth(lineWidth);
+
+        glUniform4fv(shape::colorUniform, 1, (float *) &lineColor);
+
+        glDrawArrays(GL_LINE_STRIP, 0, vertex->GetNum() + 1);
+    }
 }
 
 #endif

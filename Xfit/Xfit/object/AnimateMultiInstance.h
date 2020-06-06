@@ -9,7 +9,9 @@ struct AnimateMultiInstanceNode {
 
 class AnimateMultiInstance : public ImageMultiInstance {
 public:
-	Array<AnimateMultiInstanceNode>* animateNodes;
+	Array<AnimateMultiInstanceNode> animateNodes;
+
+    AnimateMultiInstance(PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler, FrameArray* _frame, Vertex* _vertex, Vertex* _uv, Index* _index);
 
 	void Play(unsigned _index,bool _loop = false);
 	void Stop(unsigned _index);

@@ -102,12 +102,13 @@ namespace Input {
             } else {
 				str = jniEnv->NewStringUTF(std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(_text).c_str());
             }
-
             jniEnv->CallVoidMethod(lNativeActivity, ShowKeyboard, str);
-		} else {
-            jmethodID HideKeyboard = jniEnv->GetMethodID(ClassNativeActivity, "HideKeyboard", "()Ljava/lang/String;");
 
-            jniEnv->CallObjectMethod(lNativeActivity, HideKeyboard);
+			jniEnv->DeleteLocalRef(str);
+		} else {
+            jmethodID HideKeyboard = jniEnv->GetMethodID(ClassNativeActivity, "HideKeyboard", "()V");
+
+            jniEnv->CallVoidMethod(lNativeActivity, HideKeyboard);
 		}
 
 		// Finished with the JVM.

@@ -11,15 +11,13 @@ public:
 
 	CenterPointPos centerPointPos;
 
-	ScaleImage(PosType _posType, PointF _pos, PointF _scale, float _rotation, CenterPointPos _centerPointPos, bool _isVertical,
+	ScaleImage(PointF _pos, PointF _scale, float _rotation, CenterPointPos _centerPointPos, bool _isVertical,
 		Blend* _blend, Sampler* _sampler, Frame* _frame, Vertex* _uv, Index* _index);
 
 	PointF basePos;
 	PointF baseScale;
 
-	PosType posType;
-
-	void Size(float _scaleRatio = 1.f);
+	void Size();
 
 	virtual void SetPos(PointF _pos);
 	virtual void SetX(float _x);
@@ -27,7 +25,7 @@ public:
 	virtual void SetScale(PointF _scale);
 	virtual void SetScaleX(float _scaleX);
 	virtual void SetScaleY(float _scaleY);
-	//virtual void SetRotation(float _rotation);
+	virtual void SetRotation(float _rotation);
 	virtual void SetTransform(PointF _pos, PointF _scale, float _rotation);
 };
 

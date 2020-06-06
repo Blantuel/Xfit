@@ -3,8 +3,7 @@
 
 void SizeRectHitTest::Size() {
 	rect = baseRect;
-	const PointF ratioPoint = WindowRatioPoint(posType);
-	rect.MoveRatio(ratioPoint.x, ratioPoint.y);
+	rect.MoveRatio(WindowRatio(), WindowRatio());
 
 	rect.ExtendRatio(WindowRatio(), WindowRatio());
 }

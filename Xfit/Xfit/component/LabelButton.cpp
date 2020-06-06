@@ -1,38 +1,31 @@
 #include "LabelButton.h"
-#include "../text/SizeLabel.h"
 #include "../physics/RectHitTest.h"
 #include "../resource/Vertex.h"
 #include "../text/Font.h"
 #include "../system/System.h"
 
-bool LabelButton::ButtonDown(Point _mousePos, void* _data) {
+bool LabelButton::ButtonDown(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 0.5f;
 	return true;
 }
-bool LabelButton::ButtonUp(Point _mousePos, void* _data) {
+bool LabelButton::ButtonUp(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 1.f;
 	return true;
 }
-bool LabelButton::ButtonOut(Point _mousePos, void* _data) {
+bool LabelButton::ButtonOut(PointF _mousePos, void* _data) {
 	colorMat.e[15] = 1.f;
 	return true;
 }
 
-LabelButton::LabelButton(PosType _posType, SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
-	Button(new RectHitTest, _pos, PointF(1.f, 1.f), 0.f, System::defaultBlend,System::pointSampler), posType(_posType), centerPointPos(_centerPointPos), basePos(_pos) {
-	pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), _label->GetWidth(), _label->GetHeight(), _centerPointPos);
-
-
-	scale = PointF(_label->GetWidth(), _label->GetHeight());
-	UpdateMatrix();
-
+LabelButton::LabelButton(SizeLabel* _label, PointF _pos/* = PointF(0.f, 0.f)*/, CenterPointPos _centerPointPos /*= CenterPointPos::Center*/) :
+	Button(new RectHitTest, _pos, PointF(1.f, 1.f), 0.f, System::defaultBlend,System::pointSampler), centerPointPos(_centerPointPos), basePos(_pos) {
 	upFrame.frame = _label;
 	upFrame.vertex = SelectVertex2D(_centerPointPos);
 
 	upFrame.uv = System::defaultUV;
 	upFrame.index = System::defaultIndex;
 
-	SetRectHitTest();
+	Size();
 }
 
 void LabelButton::SetRectHitTest() {
@@ -72,16 +65,26 @@ void LabelButton::SetRectHitTest() {
 	}
 }
 
-void LabelButton::Size(bool _scale /*= true*/) {
-	if (_scale) {
-		pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(),centerPointPos);
-		scale = PointF(upFrame.frame->GetWidth(), upFrame.frame->GetHeight());
-	} else {
-		pos = PixelPerfectPoint(basePos * WindowRatioPoint(posType), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(), centerPointPos);
-	}
+void LabelButton::Size() {
+	pos = PixelPerfectPoint(basePos * WindowRatio(), upFrame.frame->GetWidth(), upFrame.frame->GetHeight(),centerPointPos);
+	scale = PointF(upFrame.frame->GetWidth(), upFrame.frame->GetHeight());
+	
 	UpdateMatrix();
 
 	SetRectHitTest();
+}
+
+void LabelButton::SetPos(PointF _pos) {
+	basePos = _pos;
+	Size();
+}
+void LabelButton::SetX(float _x) {
+	basePos.x = _x;
+	Size();
+}
+void LabelButton::SetY(float _y) {
+	basePos.y = _y;
+	Size();
 }
 
 LabelButton::~LabelButton() {

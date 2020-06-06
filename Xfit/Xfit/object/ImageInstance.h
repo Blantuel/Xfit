@@ -1,14 +1,14 @@
 #pragma once
 
-#include "Object.h"
-#include "../math/Matrix.h"
+#include "SizeMatrixObject.h"
 #include "../system/Error.h"
+#include "../data/Array.h"
 
 class Sampler;
 class Frame;
 class Vertex;
+class Index;
 
-template <typename T> class Array;
 
 class ImageInstanceError : public Error {
 public:
@@ -33,27 +33,39 @@ public:
 	ImageInstanceError(Code _code):code(_code){}
 };
 
-class ImageInstance :public Object {
-#ifdef __ANDROID__
+#pragma pack(push,1)
+struct ImageInstanceNode {
+	Matrix mat;
+	Matrix colorMat;
+};
+#pragma pack(pop)
+
+class ImageInstance :public SizeMatrixObject {
+#ifdef _WIN32
+	ID3D11Buffer* instanceBuffer;
+#elif __ANDROID__
 	GLuint ins;//ins변수는 0으로 이미지가 BuildInstance됐는지를 판별함.
 #endif
-
-	unsigned insLen, insMaxLen;
+	unsigned num;
+	unsigned maxNum;
 public:
+	PointF basePos;
+	PointF baseScale;
+
 	Sampler * sampler;
 	Frame* frame;
 	Vertex* vertex;
 	Vertex* uv;
-	Matrix colorMat;
-	Array<Matrix>* nodes;
+	Index* index;
+	Array<ImageInstanceNode> nodes;
 
 	virtual void Draw();
 
 	void BuildInstance();
-	void UpdateInstance();
+	void UpdateInstance(unsigned _start = 0, unsigned _num = UINT_MAX);
 	void Delete();
 
-	ImageInstance();
+	ImageInstance(PointF _pos, PointF _scale, float _rotation, Blend* _blend, Sampler* _sampler, Frame* _frame, Vertex* _vertex, Vertex* _uv, Index* _index);
 	virtual ~ImageInstance();
 
 	unsigned GetNum()const;

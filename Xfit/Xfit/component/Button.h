@@ -25,6 +25,7 @@ public:
 	ButtonError(ButtonError::Code _code) :code(_code) {}
 };
 class Button : public ImageBase {
+	bool isButtonDown;
 public:
 	virtual bool ButtonOver(PointF _mousePos, void* _data) { return false; }
 	virtual bool ButtonDown(PointF _mousePos, void* _data) { return false; }

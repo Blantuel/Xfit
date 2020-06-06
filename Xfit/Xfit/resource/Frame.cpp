@@ -1,6 +1,7 @@
 #include "Frame.h"
 #include "../_system/_DirectX11.h"
 #include "../_system/_OpenGL.h"
+#include "../_system/_Android.h"
 
 #ifdef _WIN32
 using namespace _System::_DirectX11;
@@ -10,22 +11,22 @@ using namespace _System::_OpenGL;
 
 
 unsigned Frame::GetWidth()const {
-#ifdef _DEBUG
-	if (!IsBuild())throw FrameError(FrameError::Code::NotBuild);
-#endif
 	return width;
 }
 unsigned Frame::GetHeight()const {
-#ifdef _DEBUG
-	if (!IsBuild())throw FrameError(FrameError::Code::NotBuild);
-#endif
 	return height;
 }
-
+#ifdef _WIN32
+bool Frame::IsBuild()const { return (bool)texture || (bool)texture1; }
+#elif __ANDROID__
 bool Frame::IsBuild()const { return (bool)texture; }
+#endif
 Frame::Frame():width(0),height(0){
 #ifdef _WIN32
 	texture = nullptr;
+	texture1 = nullptr;
+	srv = nullptr;
+	srv1 = nullptr;
 #elif __ANDROID__
 	texture = 0;
 	fmt = 0;
@@ -34,25 +35,35 @@ Frame::Frame():width(0),height(0){
 
 Frame::~Frame() { 
 #ifdef _WIN32
-	if (texture) {
+	if (texture1) {
+		srv1->Release();
+		texture1->Release();
+	} else if (texture) {
 		srv->Release();
 		texture->Release();
 	}
 #elif __ANDROID__
-	if (texture)glDeleteTextures(1, &texture);
+	if (texture) {
+		_System::_Android::Lock();
+		glDeleteTextures(1, &texture);
+		_System::_Android::Unlock();
+	}
 #endif
 	
 }
 
-Frame::Frame(const void* _data, unsigned _width, unsigned _height, FrameFormat _format/*=FrameFormat::RGBA*/) {
+Frame::Frame(const void* _data, unsigned _width, unsigned _height, FrameFormat _format/*=FrameFormat::RGBA*/, unsigned _mipLevels /*= 1*/) {
 #ifdef _WIN32
 	texture = nullptr;
+	texture1 = nullptr;
+	srv = nullptr;
+	srv1 = nullptr;
 #elif __ANDROID__
 	texture = 0;
 #endif
-	Build(_data, _width, _height, _format);
+	Build(_data, _width, _height, _format, _mipLevels);
 }
-void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFormat _format/*=FrameFormat::RGBA*/) {
+void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFormat _format/*=FrameFormat::RGBA*/, unsigned _mipLevels /*= 1*/) {
 #ifdef _DEBUG
 	if (IsBuild())throw FrameError(FrameError::Code::AlreadyBuild);
 #endif
@@ -63,34 +74,43 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 	if (_System::_DirectX11::device3) {
 		D3D11_TEXTURE2D_DESC1 texture2DDesc;
 		texture2DDesc.ArraySize = 1;
-		texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | (_mipLevels != 1 ? D3D11_BIND_RENDER_TARGET : 0);
 		texture2DDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		texture2DDesc.Width = width;
 		texture2DDesc.Height = height;
-		texture2DDesc.MipLevels = 1;
-		texture2DDesc.MiscFlags = 0;
+		texture2DDesc.MipLevels = _mipLevels;
+		texture2DDesc.MiscFlags = _mipLevels != 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 		texture2DDesc.SampleDesc.Count = 1;
 		texture2DDesc.SampleDesc.Quality = 0;
 		texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
 		texture2DDesc.CPUAccessFlags = 0;
 		texture2DDesc.TextureLayout = D3D11_TEXTURE_LAYOUT_UNDEFINED;
 
-		if (_data == nullptr) {
-			_System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, nullptr, &texture1);
-		} else {
-			D3D11_SUBRESOURCE_DATA subSourceData;
-			subSourceData.pSysMem = _data;
-			subSourceData.SysMemPitch = _width * 4;//byte단위
-			subSourceData.SysMemSlicePitch = 0;
+		if (_mipLevels == 1) {
+			if (_data != nullptr) {
+				D3D11_SUBRESOURCE_DATA data;
+				data.pSysMem = _data;
+				data.SysMemPitch = width * 4;
+				data.SysMemSlicePitch = 0;
 
-			_System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, &subSourceData, &texture1);
+				_System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, &data, &texture1);
+			} else _System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, nullptr, &texture1);
+		} else {
+			_System::_DirectX11::device3->CreateTexture2D1(&texture2DDesc, nullptr, &texture1);
+			if (_data != nullptr) {
+				if (context1T) {
+					context1T->UpdateSubresource1(texture1, 0, nullptr, _data, _width * 4, 0, 0);
+				} else {
+					contextT->UpdateSubresource(texture1, 0, nullptr, _data, _width * 4, 0);
+				}
+			}
 		}
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC1 srvDesc;
 		ZeroMemory(&srvDesc, sizeof(srvDesc));
 		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MipLevels = _mipLevels == 0 ? -1 : _mipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.PlaneSlice = 0;//The index (plane slice number) of the plane to use in the texture.
 
@@ -98,38 +118,57 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 	} else {
 		D3D11_TEXTURE2D_DESC texture2DDesc;
 		texture2DDesc.ArraySize = 1;
-		texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texture2DDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | (_mipLevels != 1 ? D3D11_BIND_RENDER_TARGET : 0);
 		texture2DDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		texture2DDesc.Width = width;
 		texture2DDesc.Height = height;
-		texture2DDesc.MipLevels = 1;
-		texture2DDesc.MiscFlags = 0;
+		texture2DDesc.MipLevels = _mipLevels;
+		texture2DDesc.MiscFlags = _mipLevels != 1 ? D3D11_RESOURCE_MISC_GENERATE_MIPS : 0;
 		texture2DDesc.SampleDesc.Count = 1;
 		texture2DDesc.SampleDesc.Quality = 0;
 		texture2DDesc.Usage = D3D11_USAGE_DEFAULT;
 		texture2DDesc.CPUAccessFlags = 0;
 
-		if (_data == nullptr) {
-			_System::_DirectX11::device->CreateTexture2D(&texture2DDesc, nullptr, &texture);
+		if (_mipLevels == 1) {
+			if (_data != nullptr) {
+				D3D11_SUBRESOURCE_DATA data;
+				data.pSysMem = _data;
+				data.SysMemPitch = width * 4;
+				data.SysMemSlicePitch = 0;
+
+				_System::_DirectX11::device->CreateTexture2D(&texture2DDesc, &data, &texture);
+			} else _System::_DirectX11::device->CreateTexture2D(&texture2DDesc, nullptr, &texture);
 		} else {
-			D3D11_SUBRESOURCE_DATA subSourceData;
-			subSourceData.pSysMem = _data;
-			subSourceData.SysMemPitch = _width * 4;//byte단위
-			subSourceData.SysMemSlicePitch = 0;
-			
-			_System::_DirectX11::device->CreateTexture2D(&texture2DDesc, &subSourceData, &texture);
+			_System::_DirectX11::device->CreateTexture2D(&texture2DDesc, nullptr, &texture);
+			if (_data != nullptr) {
+				if (context1T) {
+					context1T->UpdateSubresource1(texture, 0, nullptr, _data, _width * 4, 0, D3D11_COPY_DISCARD);
+				} else {
+					contextT->UpdateSubresource(texture, 0, nullptr, _data, _width * 4, 0);
+				}
+			}
 		}
 
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
 		ZeroMemory(&srvDesc, sizeof(srvDesc));
 		srvDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
+		srvDesc.Texture2D.MipLevels = _mipLevels == 0 ? -1 : _mipLevels;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		
 		_System::_DirectX11::device->CreateShaderResourceView(texture, &srvDesc, &srv);
 	}
+	if (_mipLevels != 1) {
+		if (context1T) {
+			if(texture1)context1T->GenerateMips(srv1);
+			else context1T->GenerateMips(srv);
+		} else {
+			contextT->GenerateMips(srv);
+		}
+	}
 #elif __ANDROID__
+    _System::_Android::Lock();
+
 	glGenTextures(1, &texture);
 
 	switch (_format) {
@@ -153,12 +192,16 @@ void Frame::Build(const void* _data, unsigned _width, unsigned _height, FrameFor
 
 	glBindTexture(GL_TEXTURE_2D, texture);
 	//if (glTexStorage2D) {
-		glTexStorage2D(GL_TEXTURE_2D, 1, GL_RGBA8, width, height);
+		glTexStorage2D(GL_TEXTURE_2D, _mipLevels, GL_RGBA8, width, height);
 
 		glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, width, height, GL_RGBA, GL_UNSIGNED_BYTE, _data);
+		if(_mipLevels > 1) {
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
 
 		//glTexImage2D(GL_TEXTURE_2D, 0, (GLenum)_format, width, height, 0, fmt, GL_UNSIGNED_BYTE, _data);
 
+	_System::_Android::Unlock();
 #endif
 }
 void Frame::BuildCompress(const void* _data, unsigned _size, unsigned _width, unsigned _height, FrameCompressFormat _format) {
@@ -190,13 +233,21 @@ void Frame::Delete() {
 #endif
 
 #ifdef _WIN32
-	if (texture) {
+	if (texture1) {
+		srv1->Release();
+		texture1->Release();
+		texture1 = nullptr;
+		srv1 = nullptr;
+	} else if (texture) {
 		srv->Release();
 		texture->Release();
 		texture = nullptr;
+		srv = nullptr;
 	}
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glDeleteTextures(1, &texture);
+	_System::_Android::Unlock();
 	texture = 0;
 #endif
 }
@@ -208,14 +259,18 @@ void Frame::Edit(const void* _data, unsigned _width, unsigned _height, unsigned 
 #endif
 
 #ifdef _WIN32
-	if (context1) {
-		context1->UpdateSubresource1(texture, 0, nullptr, _data, _width * 4, 0, D3D11_COPY_DISCARD);
+	if (context1T) {
+		if(texture1)context1T->UpdateSubresource1(texture1, 0, nullptr, _data, _width * 4, 0, D3D11_COPY_DISCARD);
+		else context1T->UpdateSubresource1(texture, 0, nullptr, _data, _width * 4, 0, D3D11_COPY_DISCARD);
 	} else {
-		context->UpdateSubresource(texture, 0, nullptr, _data, _width * 4, 0);
+		contextT->UpdateSubresource(texture, 0, nullptr, _data, _width * 4, 0);
 	}
 #elif __ANDROID__
+
+	_System::_Android::Lock();
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glTexSubImage2D(GL_TEXTURE_2D, 0, _offsetX, _offsetY, _width, _height, fmt, GL_UNSIGNED_BYTE, _data);
+	_System::_Android::Unlock();
 #endif
 }
 void Frame::EditCompress(const void* _data, unsigned _size, unsigned _width, unsigned _height, unsigned _offsetX/* = 0*/, unsigned _offsetY/* = 0*/) {

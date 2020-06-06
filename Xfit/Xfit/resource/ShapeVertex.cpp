@@ -1,6 +1,8 @@
 #include "ShapeVertex.h"
 #include "../math/Hexagon.h"
 
+#include "../_system/_Android.h"
+
 void ShapeVertex::Build(bool _editable/* = false*/) {
 	num = vertices.Size() + 1;
 	PointF* vts = new PointF[num];

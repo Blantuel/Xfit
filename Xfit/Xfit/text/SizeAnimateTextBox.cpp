@@ -24,7 +24,7 @@ bool SizeAnimateTextBox::Update() {
 			}
 			text[textCount] = 0;
 
-			SizePrepareDrawEdit(WindowRatio());
+			SizePrepareDraw(WindowRatio());
 			
 			time -= animateSpeed;
 			return true;

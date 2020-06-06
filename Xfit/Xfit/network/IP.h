@@ -10,6 +10,7 @@ class IP {
 	in_addr ip;
 #endif
 public:
-	
+	void WriteIPInt(int _ip);
+	void GetIPText(char* _outIP, unsigned _len);
 	bool ReadIP(char* _ipText);
 };

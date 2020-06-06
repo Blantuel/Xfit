@@ -57,6 +57,8 @@
       <WarningLevel>Level4</WarningLevel>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -93,6 +95,8 @@
       <WarningLevel>Level4</WarningLevel>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <WholeProgramOptimization>true</WholeProgramOptimization>
+      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <DisableSpecificWarnings>4828</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -122,6 +126,7 @@
     <ClInclude Include="component\Scrollbar.h" />
     <ClInclude Include="component\SizeButton.h" />
     <ClInclude Include="component\Slider.h" />
+    <ClInclude Include="component\ToggleButton.h" />
     <ClInclude Include="data\Array.h" />
     <ClInclude Include="data\ImageType.h" />
     <ClInclude Include="data\ImageUtil.h" />
@@ -148,9 +153,13 @@
     <ClInclude Include="encoder\WebPLosslessEncoder.h" />
     <ClInclude Include="file\AssetFile.h" />
     <ClInclude Include="file\File.h" />
+    <ClInclude Include="file\INI.h" />
     <ClInclude Include="file\Register.h" />
     <ClInclude Include="file\ResourceManager.h" />
+    <ClInclude Include="math\Random.h" />
     <ClInclude Include="network\IP.h" />
+    <ClInclude Include="object\ImageInstance.h" />
+    <ClInclude Include="object\ImageMultiInstance.h" />
     <ClInclude Include="object\LabelImage.h" />
     <ClInclude Include="object\Line.h" />
     <ClInclude Include="math\Hexagon.h" />
@@ -176,6 +185,7 @@
     <ClInclude Include="component\RadioButton.h" />
     <ClInclude Include="object\ScaleImage.h" />
     <ClInclude Include="object\Shape.h" />
+    <ClInclude Include="object\SizeMatrixObject.h" />
     <ClInclude Include="object\TextBoxImage.h" />
     <ClInclude Include="physics\Collision.h" />
     <ClInclude Include="physics\HitTest.h" />
@@ -225,6 +235,7 @@
     <ClInclude Include="_system\_Renderer.h" />
     <ClInclude Include="_system\_Vulkan.h" />
     <ClInclude Include="_system\_Windows.h" />
+    <ClInclude Include="_system\_XfitDataFiles.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="component\EditBox.cpp" />
@@ -236,6 +247,7 @@
     <ClCompile Include="component\Scrollbar.cpp" />
     <ClCompile Include="component\SizeButton.cpp" />
     <ClCompile Include="component\Slider.cpp" />
+    <ClCompile Include="component\ToggleButton.cpp" />
     <ClCompile Include="data\Compress.cpp" />
     <ClCompile Include="data\ImageUtil.cpp" />
     <ClCompile Include="decoder\Decoder.cpp" />
@@ -253,7 +265,11 @@
     <ClCompile Include="encoder\ImageEncoder.cpp" />
     <ClCompile Include="encoder\WebPAnimateLosslessEncoder.cpp" />
     <ClCompile Include="encoder\WebPLosslessEncoder.cpp" />
+    <ClCompile Include="file\INI.cpp" />
+    <ClCompile Include="math\Random.cpp" />
     <ClCompile Include="network\IP.cpp" />
+    <ClCompile Include="object\ImageInstance.cpp" />
+    <ClCompile Include="object\ImageMultiInstance.cpp" />
     <ClCompile Include="object\LabelImage.cpp" />
     <ClCompile Include="object\Line.cpp" />
     <ClCompile Include="math\Hexagon.cpp" />
@@ -276,6 +292,7 @@
     <ClCompile Include="object\ScaleHeader.cpp" />
     <ClCompile Include="object\ScaleImage.cpp" />
     <ClCompile Include="object\Shape.cpp" />
+    <ClCompile Include="object\SizeMatrixObject.cpp" />
     <ClCompile Include="object\TextBoxImage.cpp" />
     <ClCompile Include="physics\Collision.cpp" />
     <ClCompile Include="physics\RectHitTest.cpp" />
@@ -302,7 +319,7 @@
     <ClCompile Include="text\SizeLabel.cpp" />
     <ClCompile Include="text\SizeTextBox.cpp" />
     <ClCompile Include="text\Text.cpp" />
-    <ClCompile Include="text\Textbox.cpp" />
+    <ClCompile Include="text\TextBox.cpp" />
     <ClCompile Include="time\Time.cpp" />
     <ClCompile Include="view\Viewport.cpp" />
     <ClCompile Include="_system\_Android.cpp" />
@@ -343,6 +360,22 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="imgInsPx2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="imgInsVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="imgMultiInsPx2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
+    </FxCompile>
+    <FxCompile Include="imgMultiInsVert2D.hlsl">
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
     <FxCompile Include="lineGeo2D.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Geometry</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Geometry</ShaderType>
@@ -391,9 +424,6 @@
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
     </FxCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include=".editorconfig" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

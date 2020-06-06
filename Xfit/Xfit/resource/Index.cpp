@@ -2,6 +2,7 @@
 
 #include "../_system/_OpenGL.h"
 #include "../_system/_DirectX11.h"
+#include "../_system/_Android.h"
 
 #ifdef _WIN32
 using namespace _System::_DirectX11;
@@ -22,7 +23,9 @@ Index::~Index() {
 #ifdef _WIN32
 	if (index)index->Release();
 #elif __ANDROID__
+	_System::_Android::Lock();
 	if (index)glDeleteBuffers(1, &index);
+	_System::_Android::Unlock();
 #endif
 }
 void Index::Build(bool _editable/*=false*/) {
@@ -49,11 +52,13 @@ void Index::Build(bool _editable/*=false*/) {
 
 
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glGenBuffers(1, &index);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, index);
 
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, num * sizeof(unsigned), indices.GetData(),
 			_editable ? GL_DYNAMIC_DRAW : GL_STATIC_DRAW);
+	_System::_Android::Unlock();
 #endif
 }
 bool Index::IsBuild()const { return (bool)index; }
@@ -69,14 +74,16 @@ void Index::Edit() {
 	//if (!IsBuild())throw VertexError(VertexError::Code::NotBuild);
 #endif
 #ifdef _WIN32
-	if (context1) {
-		context1->UpdateSubresource1(index, 0, nullptr, indices.GetData(), 0, 0, D3D11_COPY_DISCARD);
+	if (context1T) {
+		context1T->UpdateSubresource1(index, 0, nullptr, indices.GetData(), 0, 0, D3D11_COPY_DISCARD);
 	} else {
-		context->UpdateSubresource(index, 0, nullptr, indices.GetData(), 0, 0);
+		contextT->UpdateSubresource(index, 0, nullptr, indices.GetData(), 0, 0);
 	}
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glBindBuffer(GL_ARRAY_BUFFER, index);
 	glBufferSubData(GL_ARRAY_BUFFER, 0, num * sizeof(unsigned), indices.GetData());
+	_System::_Android::Unlock();
 #endif
 }
 void Index::Delete() {
@@ -87,7 +94,9 @@ void Index::Delete() {
 	index->Release();
 	index = nullptr;
 #elif __ANDROID__
+	_System::_Android::Lock();
 	glDeleteBuffers(1, &index);
+	_System::_Android::Unlock();
 	index = 0;
 #endif
 }

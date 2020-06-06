@@ -86,7 +86,6 @@ private:
 		ID3D11SamplerState* sampler;
 	};
 #elif __ANDROID__
-
 	void SetWarpMode(TextureAdressMode _mode, GLenum _name);
 
 	GLuint sampler;

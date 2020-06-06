@@ -8,14 +8,19 @@
 class Scrollbar {
 	bool isDisable;
 	bool scrolling;
+	float wheelScrolling;
 	bool isVertical;
 	bool visible;
+	bool leftOrRight;
 
 	float mouseStartPos;
 	float stickStartPos;
 	float value;
 	float contentRatio;
 	float wheelScrollStrength;
+
+	PointF plusScrollArea;
+	PointF plusScrollArea2;
 
 	PointF barBasePos;
 	ScaleImage* bar;
@@ -24,24 +29,33 @@ class Scrollbar {
 	RectF baseContentArea;
 	RectF contentArea;
 public:
-	PosType posType;
-	void (*controlFinish)(Scrollbar* _target);
-	void (*controlling)(Scrollbar* _target);
+	//left가 false, right가 true
+	void (*controlFinish)(Scrollbar* _target, bool _leftOrRight);
+	//left가 false, right가 true
+	void (*controlling)(Scrollbar* _target, bool _leftOrRight);
 
 	//_contentRatio 보여지는 객체 크기 / 스크롤하는 전체 객체 크기
-	Scrollbar(bool _isVertical, PosType _posType, ScaleImage* _bar, ScaleImage* _stick, PointF _pos, float _contentRatio, float _value, RectF _contentArea, float _wheelScrollStrength = 1.f);
+	Scrollbar(bool _isVertical, ScaleImage* _bar, ScaleImage* _stick, PointF _pos, float _contentRatio, float _value, RectF _contentArea, PointF _plusScrollArea = PointF(0.f, 0.f), PointF _plusScrollArea2 = PointF(0.f, 0.f), float _wheelScrollStrength = 1.f);
 	~Scrollbar();
 
 	float GetValue()const;
 	float GetContentRatio()const;
 
-	void SetValue(float _value);//0~1
+	void SetValue(float _value, bool _noCallback = false);//0~1
+	//_contentRatio 보여지는 객체 크기 / 스크롤하는 전체 객체 크기
 	void SetContentRatio(float _contentRatio);
 
 	PointF GetPos()const;
+	float GetX()const;
+	float GetY()const;
 	void SetPos(PointF _pos);
+	void SetX(float _x);
+	void SetY(float _y);
 
 	float GetWidth()const;
+
+	void SetVertical(bool _vertical);
+	bool IsVertical()const;
 
 	bool Update();
 	void Draw();
@@ -51,6 +65,7 @@ public:
 	ScaleImage* GetStick()const;
 
 	void Disable(bool _disable = true);
+	bool IsDisable()const;
 	void SetVisible(bool _visible);
 	bool GetVisible()const;
 };

@@ -4,7 +4,6 @@
 #include "../data/Array.h"
 
 
-
 class Font {
 	friend class Label;
 	friend class TextBox;
@@ -63,3 +62,7 @@ struct FontContainer {
 	unsigned len;
 	Font* font;
 };
+
+
+inline FontColor fontColor[1];
+inline FontContainer fontContainer[1];

@@ -84,7 +84,7 @@ public:
 		if (index > (GetSize() - 1))throw AssetFileError(AssetFileError::Code::OverflowIndex);
 		else if (index < 0) throw AssetFileError(AssetFileError::Code::MinusIndex);
 #endif
-		AAsset_seek(hFile,(int)index,(int)_moveType);
+		AAsset_seek(hFile,(int)_index,(int)_moveType);
 	}
 	unsigned GetSize()const {
 #ifdef _DEBUG

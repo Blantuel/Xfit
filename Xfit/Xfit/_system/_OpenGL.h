@@ -36,16 +36,17 @@ namespace _System::_OpenGL {
 	}
 	namespace shape {
 		inline GLint matUniform;
+		inline GLint viewMatUniform;
 		inline GLint colorUniform;
 	}
 	namespace imgIns {
         inline GLint matUniform;
         inline GLint viewMatUniform;
-		inline GLint colorMatUniform;
 		inline GLint samplerUniform;
 	}
 	namespace imgMultiIns {
-		inline GLint colorMatUniform;
+		inline GLint matUniform;
+		inline GLint viewMatUniform;
 		inline GLint samplerUniform;
 	}
 

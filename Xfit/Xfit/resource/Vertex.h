@@ -52,7 +52,7 @@ public:
 	void MakePtImageVertex2D(PointU _size, CenterPointPos _centerPointPos = CenterPointPos::Center);
 
 	Vertex();
-	~Vertex();
+	virtual ~Vertex();
 	virtual void Build(bool _editable = false);
 	virtual void Edit();
 	bool IsBuild()const;

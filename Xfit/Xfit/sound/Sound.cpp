@@ -202,6 +202,11 @@ void Sound::Resume() {
 	soundMutex.unlock();
 }
 #ifdef _WIN32
+static void Error(const wchar_t* _func, HRESULT _hr) {
+	wchar_t text[100];
+	swprintf_s(text, 100, L"%s : %d", _func, _hr);
+	MessageBox(_System::_Windows::hWnd, text, L"»ç¿îµå ÃÊ±âÈ­ ¿À·ù", MB_ICONERROR | MB_OK);
+}
 void Sound::ThreadFunc() {
 	soundClient->Start();
 	while (!soundExit) {
@@ -363,14 +368,19 @@ void Sound::BufferQueueCallback(SLBufferQueueItf caller, void* pContext) {
 	soundEvent.Set();
 }
 #endif
-void Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµå½Ã _samplingRate, 2Ã¤³Î 16ºñÆ®¿©¾ßÇÔ.
+
+
+bool Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµå½Ã _samplingRate, 2Ã¤³Î 16ºñÆ®¿©¾ßÇÔ.
 	sounds.Alloc(_maxSoundLen);
 #ifdef _WIN32
 	CoInitializeEx(0, COINIT_MULTITHREADED);
 
 	HRESULT hr = CoCreateInstance(__uuidof(MMDeviceEnumerator), nullptr, CLSCTX_INPROC_SERVER, __uuidof(IMMDeviceEnumerator), (void**)&soundDeviceEnumerator);
+	if (FAILED(hr)) { Error(L"CoCreateInstance", hr); return false; }
 	hr = soundDeviceEnumerator->GetDefaultAudioEndpoint(eRender, eConsole, &soundDevice);
+	if (FAILED(hr)) { Error(L"GetDefaultAudioEndpoint", hr); return false; }
 	hr = soundDevice->Activate(__uuidof(IAudioClient), CLSCTX_INPROC_SERVER, nullptr, (void**)&soundClient);
+	if (FAILED(hr)) { Error(L"Activate", hr); return false; }
 
 	WAVEFORMATEXTENSIBLE soundFormat;
 	soundFormat.Format.cbSize = 22;
@@ -383,20 +393,27 @@ void Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµ
 	soundFormat.dwChannelMask = SPEAKER_FRONT_LEFT | SPEAKER_FRONT_RIGHT;
 	soundFormat.Samples.wValidBitsPerSample = 16;
 	soundFormat.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
-
+	HRESULT hra = AUDCLNT_E_UNSUPPORTED_FORMAT;
 	//100000 == 0.01 second;
 	hr = soundClient->Initialize(AUDCLNT_SHAREMODE_SHARED, AUDCLNT_STREAMFLAGS_RATEADJUST | AUDCLNT_STREAMFLAGS_EVENTCALLBACK, 100000, 0,
 		(WAVEFORMATEX*)&soundFormat, nullptr);
+	if (FAILED(hr)) {Error(L"Initialize", hr); return false;}
+
 	hr = soundClient->GetBufferSize(&soundBufferSize);
+	if (FAILED(hr)) { Error(L"GetBufferSize", hr); return false; }
 	hr = soundClient->GetService(__uuidof(IAudioRenderClient), (void**)&soundRenderClient);
+	if (FAILED(hr)) { Error(L"GetService(IAudioRenderClient)", hr); return false; }
 	hr = soundClient->GetService(__uuidof(IChannelAudioVolume), (void**)&soundVolume);
+	if (FAILED(hr)) { Error(L"GetService(IChannelAudioVolume)", hr); return false; }
 	hr = soundClient->GetService(__uuidof(IAudioClock), (void**)&soundClock);
+	if (FAILED(hr)) { Error(L"GetService(IAudioClock)", hr); return false; }
 
 	SetMasterVolume(1.f);
 
 	hEvent = CreateEvent(nullptr, false, false, nullptr);
 
 	hr = soundClient->SetEventHandle(hEvent);
+	if (FAILED(hr)) { Error(L"SetEventHandle", hr); return false; }
 #elif __ANDROID__
 	slCreateEngine(&engineObject, 0, nullptr, 0, nullptr, nullptr);
 
@@ -414,7 +431,7 @@ void Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµ
 	
 	format.formatType = SL_DATAFORMAT_PCM;
 	format.numChannels = 2;
-	format.samplesPerSec = SL_SAMPLINGRATE_44_1;
+	format.samplesPerSec = SL_SAMPLINGRATE_48;
 	format.bitsPerSample = SL_PCMSAMPLEFORMAT_FIXED_16;
 	format.containerSize = 16;
 	format.channelMask = SL_SPEAKER_FRONT_LEFT | SL_SPEAKER_FRONT_RIGHT;
@@ -451,6 +468,8 @@ void Sound::Init(size_t _maxSoundLen, unsigned _samplingRate/* = 44100*/) {//¹Ýµ
 	(*playItf)->SetPlayState(playItf, SL_PLAYSTATE_PLAYING);
 #endif
 	soundThread = std::thread(Sound::ThreadFunc);
+
+	return true;
 }
 void Sound::Release() {
 	soundExit = true;

@@ -21,3 +21,6 @@ void Image::Draw() {
 RectF Image::GetRect()const {
 	return RectF(pos.x - scale.x / 2.f, pos.x + scale.x / 2.f, pos.y + scale.y / 2.f, pos.y - scale.y / 2.f);
 }
+RectF Image::GetRect90()const {
+	return RectF(pos.x - scale.y / 2.f, pos.x + scale.y / 2.f, pos.y + scale.x / 2.f, pos.y - scale.x / 2.f);
+}

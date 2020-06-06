@@ -4,10 +4,10 @@
 #include "../system/Input.h"
 #include "../resource/Frame.h"
 
-Slider::Slider(PosType _posType, ScaleImage* _bar, ScaleImage* _stick, PointF _pos, float _value):
+Slider::Slider(ScaleImage* _bar, ScaleImage* _stick, PointF _pos, float _value):
 bar(_bar),
 stick(_stick),
-value(_value), sliding(false), controlFinish(nullptr), controlling(nullptr), posType(_posType) {
+value(_value), sliding(false), controlFinish(nullptr), controlling(nullptr) {
 	SetPos(_pos);
 
 }
@@ -31,7 +31,7 @@ float Slider::GetValue()const {
 
 void Slider::SetValue(float _value) {
 	value = _value;
-	stick->pos = (barBasePos + PointF(-(float)bar->frame->GetWidth() / 2.f + value * (float)bar->frame->GetWidth(), 0.f)) * WindowRatioPoint(posType);
+	stick->pos = (barBasePos + PointF(-(float)bar->frame->GetWidth() / 2.f + value * (float)bar->frame->GetWidth(), 0.f)) * WindowRatio();
 	stick->UpdateMatrix();
 
 	if (controlling)controlling(this);

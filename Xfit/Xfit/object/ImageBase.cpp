@@ -74,7 +74,9 @@ void ImageBase::DrawImage(const Vertex* _vertex,const Vertex* _uv, const Index* 
 
 	_System::_DirectX11::context->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	_System::_DirectX11::context->PSSetShaderResources(0, 1, &_frame->srv);
+	if(_frame->srv1)_System::_DirectX11::context->PSSetShaderResources(0, 1, (ID3D11ShaderResourceView**)&_frame->srv1);
+	else _System::_DirectX11::context->PSSetShaderResources(0, 1, &_frame->srv);
+	
 
 	_System::_DirectX11::context->IASetIndexBuffer(_index->index, DXGI_FORMAT_R32_UINT, 0);
 
@@ -91,10 +93,9 @@ void ImageBase::DrawImage(const Vertex* _vertex,const Vertex* _uv, const Index* 
 		glProgramUniformMatrix4fv(imgFragProg, imgFrag::colorMatUniform, 1,GL_FALSE,colorMat.e);
 	} else {*/
 		glUseProgram(imgProg);
-		glUniformMatrix4fv(img::matUniform, 1, GL_TRUE, mat.e);
-		glUniformMatrix4fv(img::viewMatUniform, 1, GL_TRUE, Matrix::GetScale(2.f / (float)System::GetWindowWidth(), 2.f / (float)System::GetWindowHeight()).e);
-		glUniformMatrix4fv(img::colorMatUniform, 1,GL_TRUE, colorMat.e);
-		glUniform1i(img::samplerUniform, 0);
+		glUniformMatrix4fv(img::matUniform, 1, GL_FALSE, mat.e);
+		glUniformMatrix4fv(img::viewMatUniform, 1, GL_FALSE, Matrix::GetScale(2.f / (float)System::GetWindowWidth(), 2.f / (float)System::GetWindowHeight()).e);
+		glUniformMatrix4fv(img::colorMatUniform, 1,GL_FALSE, colorMat.e);
 	//}
 	glEnableVertexAttribArray(1);
 

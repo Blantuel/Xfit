@@ -5,38 +5,31 @@
 #include "_Windows.h"
 #include "_Renderer.h"
 
-#include "..//file/File.h"
+#include "../file/File.h"
 
+#include "_XfitDataFiles.h"
+
+using namespace XfitFileData;
 
 #define COMPILE 1
 
-#define COMPILE_SHADER_PATH "shaders/"
+#define COMPILE_SHADER_PATH "../Xfit/"
 
 #define SHADER_PATH "../Xfit/_shader/out/"
 
-#define RELEASE_SHADER_PATH "shaders/"
 
-#define I 1
-
-#if I == 1
-#define f 3
-#endif
+static unsigned char* shaderData;
 
 namespace _System::_DirectX11 {
-	static void LoadVertexShaderDebug(const char* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize, 
+	static void LoadVertexShader(const unsigned* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize, 
 		ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
-		File file(_path);
-		const unsigned size = file.GetSize();
-		unsigned char* data = new unsigned char[size];
-		file.ReadBytes(size, data);
-
 		HRESULT hr;
 		if (_outClassLinkage) {
 			hr = device->CreateClassLinkage(_outClassLinkage);
-			hr = device->CreateVertexShader(data, size, *_outClassLinkage, _shader);
-			hr = D3DReflect(data, size, __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
+			hr = device->CreateVertexShader(&shaderData[_path[0]], _path[1], *_outClassLinkage, _shader);
+			hr = D3DReflect(&shaderData[_path[0]], _path[1], __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
 		} else {
-			hr = device->CreateVertexShader(data, size, nullptr, _shader);
+			hr = device->CreateVertexShader(&shaderData[_path[0]], _path[1], nullptr, _shader);
 		}
 		if (FAILED(hr)) {
 			wchar_t text[20];
@@ -44,57 +37,43 @@ namespace _System::_DirectX11 {
 			MessageBox(nullptr, text, L"오류", MB_OK);
 		}
 
-		hr = device1->CreateInputLayout(_inputElement, _elementSize, data, size, _outLayout);
-		delete[]data;
+		hr = device1->CreateInputLayout(_inputElement, _elementSize, &shaderData[_path[0]], _path[1], _outLayout);
 		if (FAILED(hr));
 	}
-	static void LoadPixelShaderDebug(const char* _path, ID3D11PixelShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
-		File file(_path);
-		const unsigned size = file.GetSize();
-		unsigned char* data = new unsigned char[size];
-		file.ReadBytes(size, data);
+	static void LoadPixelShader(const unsigned* _path, ID3D11PixelShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
 
 		HRESULT hr;
 		if (_outClassLinkage) {
 			hr = device->CreateClassLinkage(_outClassLinkage);
-			hr = device->CreatePixelShader(data, size, *_outClassLinkage, _shader);
-			hr = D3DReflect(data, size, __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
+			hr = device->CreatePixelShader(&shaderData[_path[0]], _path[1], *_outClassLinkage, _shader);
+			hr = D3DReflect(&shaderData[_path[0]], _path[1], __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
 		} else {
-			hr = device->CreatePixelShader(data, size, nullptr , _shader);
+			hr = device->CreatePixelShader(&shaderData[_path[0]], _path[1], nullptr , _shader);
 		}
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
 			MessageBox(nullptr, text, L"오류", MB_OK);
 		}
-
-		delete[]data;
 		if (FAILED(hr));
 	}
-	static void LoadGeometryShaderDebug(const char* _path, ID3D11GeometryShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
-		File file(_path);
-		const unsigned size = file.GetSize();
-		unsigned char* data = new unsigned char[size];
-		file.ReadBytes(size, data);
-
+	static void LoadGeometryShader(const unsigned* _path, ID3D11GeometryShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
 		HRESULT hr;
 		if (_outClassLinkage) {
 			hr = device->CreateClassLinkage(_outClassLinkage);
-			hr = device->CreateGeometryShader(data, size, *_outClassLinkage, _shader);
-			hr = D3DReflect(data, size, __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
+			hr = device->CreateGeometryShader(&shaderData[_path[0]], _path[1], *_outClassLinkage, _shader);
+			hr = D3DReflect(&shaderData[_path[0]], _path[1], __uuidof(ID3D11ShaderReflection), (void**)_outReflection);
 		} else {
-			hr = device->CreateGeometryShader(data, size, nullptr, _shader);
+			hr = device->CreateGeometryShader(&shaderData[_path[0]], _path[1], nullptr, _shader);
 		}
 		if (FAILED(hr)) {
 			wchar_t text[20];
 			swprintf_s(text, 20, L"%x", hr);
 			MessageBox(nullptr, text, L"오류", MB_OK);
 		}
-
-		delete[]data;
 		if (FAILED(hr));
 	}
-	static void LoadCompileVertexShaderDebug(const char* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize,
+	static void LoadCompileVertexShader(const char* _path, ID3D11VertexShader** _shader, D3D11_INPUT_ELEMENT_DESC* _inputElement, ID3D11InputLayout** _outLayout, unsigned _elementSize,
 		ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
 		File file(_path);
 		const unsigned size = file.GetSize();
@@ -132,7 +111,7 @@ namespace _System::_DirectX11 {
 		delete[]data;
 		if (FAILED(hr));
 	}
-	static void LoadCompilePixelShaderDebug(const char* _path, ID3D11PixelShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
+	static void LoadCompilePixelShader(const char* _path, ID3D11PixelShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
 		File file(_path);
 		const unsigned size = file.GetSize();
 		unsigned char* data = new unsigned char[size];
@@ -167,12 +146,12 @@ namespace _System::_DirectX11 {
 		delete[]data;
 		if (FAILED(hr));
 	}
-	static void LoadCompileGeometryShaderDebug(const char* _path, ID3D11GeometryShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
+	static void LoadCompileGeometryShader(const char* _path, ID3D11GeometryShader** _shader, ID3D11ClassLinkage** _outClassLinkage = nullptr, ID3D11ShaderReflection** _outReflection = nullptr) {
 		File file(_path);
 		const unsigned size = file.GetSize();
 		unsigned char* data = new unsigned char[size];
 		file.ReadBytes(size, data);
-
+		
 		HRESULT hr;
 
 		ID3DBlob* compiledData, * error;
@@ -203,11 +182,90 @@ namespace _System::_DirectX11 {
 	}
 
 	void Clear(bool _clearDepth) {
+		context->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+
+		D3D11_VIEWPORT viewport;
+		viewport.Width = (FLOAT)_Renderer::windowSize.width;
+		viewport.Height = (FLOAT)_Renderer::windowSize.height;
+		viewport.TopLeftX = 0;
+		viewport.TopLeftY = 0;
+		viewport.MinDepth = 0;
+		viewport.MaxDepth = 1;
+
+		context->RSSetViewports(1, &viewport);
+
 		context->ClearRenderTargetView(renderTargetView, _Renderer::backColor);
 		if (_clearDepth)context->ClearDepthStencilView(depthStencilView, D3D11_CLEAR_DEPTH, 1.f, 0xff);
 	}
 	void Release() {
+		SafeRelease(&device);
+		SafeRelease(&device1);
+		SafeRelease(&device2);
+		SafeRelease(&device3);
 
+		SafeRelease(&context);
+		SafeRelease(&context1);
+
+		SafeRelease(&renderTargetView);
+		SafeRelease(&renderTargetView1);
+
+		SafeRelease(&backBuffer);
+		SafeRelease(&backBuffer1);
+
+		SafeRelease(&depthStencilView);
+
+		SafeRelease(&rasterizerState);
+		SafeRelease(&rasterizerState1);
+
+		SafeRelease(&rasterizerStateCullingBack);
+		SafeRelease(&rasterizerStateCullingBack1);
+
+		SafeRelease(&rasterizerStateCullingFront);
+		SafeRelease(&rasterizerStateCullingFront1);
+
+		SafeRelease(&depthStencilState);
+		SafeRelease(&depthStencilState2D);
+
+		SafeRelease(&imgVert2DShader);
+		SafeRelease(&imgVert2DLayout);
+		SafeRelease(&imgPx2DShader);
+
+		SafeRelease(&imgVertConstantBuffer2D);
+		SafeRelease(&imgPxConstantBuffer2D);
+
+		SafeRelease(&shapeVert2DShader);
+		SafeRelease(&shapeVert2DLayout);
+		SafeRelease(&shapeGeo2DShader);
+		SafeRelease(&shapePx2DShader);
+
+		SafeRelease(&shapeVertConstantBuffer2D);
+		SafeRelease(&shapeGeoConstantBuffer2D);
+
+		SafeRelease(&lineGeo2DShader);
+		SafeRelease(&linePx2DShader);
+
+		SafeRelease(&lineGeoConstantBuffer2D);
+		SafeRelease(&linePxConstantBuffer2D);
+
+		SafeRelease(&imgInsVert2DShader);
+		SafeRelease(&imgInsVert2DLayout);
+		SafeRelease(&imgInsPx2DShader);
+
+		SafeRelease(&imgMultiInsVert2DShader);
+		SafeRelease(&imgMultiInsVert2DLayout);
+		SafeRelease(&imgMultiInsPx2DShader);
+
+		SafeRelease(&shapeInsVert2DShader);
+		SafeRelease(&shapeInsVert2DLayout);
+		SafeRelease(&shapeInsGeo2DShader);
+
+		SafeRelease(&shapeInsVertConstantBuffer2D);
+
+		SafeRelease(&lineInsVert2DShader);
+		SafeRelease(&lineInsVert2DLayout);
+		SafeRelease(&lineInsGeo2DShader);
+
+		SafeRelease(&lineInsGeoConstantBuffer2D);
 	}
 	void Create() {
 		HRESULT hr;
@@ -230,6 +288,9 @@ namespace _System::_DirectX11 {
 		if (device2)device->QueryInterface(&device3);
 
 		context->QueryInterface(&context1);
+
+		contextT = context;
+		context1T = context1;
 	}
 	unsigned GetMaxMsaaQuality(unsigned _sampleCount) {
 #ifdef _DEBUG
@@ -434,9 +495,6 @@ namespace _System::_DirectX11 {
 		constantBufferDesc.ByteWidth = sizeof(LineInsGeoConstantStruct2D);
 		hr = device->CreateBuffer(&constantBufferDesc, nullptr, &lineInsGeoConstantBuffer2D);
 		if (FAILED(hr));
-
-
-		context->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 		/*
 		LPCSTR SemanticName;
 		UINT SemanticIndex;
@@ -447,129 +505,95 @@ namespace _System::_DirectX11 {
 		UINT InstanceDataStepRate;
 		*/
 
-		D3D11_INPUT_ELEMENT_DESC imgElement[] = { 
+#ifndef COMPILE 
+		File file("XfitData.xfitData");
+
+		const unsigned size = file.GetSize();
+
+		shaderData = new unsigned char[size];
+
+		file.ReadBytes(size, shaderData);
+
+		file.Close();
+#endif
+
+		D3D11_INPUT_ELEMENT_DESC imgElement[] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
+
 #ifdef COMPILE 
-
-#ifdef _DEBUG
-		LoadCompileVertexShaderDebug(COMPILE_SHADER_PATH"imgVert2D.hlsl", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadCompilePixelShaderDebug(COMPILE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader);
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"imgVert2D.hlsl", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
+		LoadCompilePixelShader(COMPILE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader);
 #else
-		LoadCompileVertexShaderDebug(RELEASE_SHADER_PATH"imgVert2D.hlsl", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadCompilePixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.hlsl", &imgPx2DShader);
-#endif
-
-#else
-
-#ifdef _DEBUG
-		LoadVertexShaderDebug(SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadPixelShaderDebug(SHADER_PATH"imgPx2D.cso", &imgPx2DShader);
-#else
-		LoadVertexShaderDebug(RELEASE_SHADER_PATH"imgVert2D.cso", &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
-		LoadPixelShaderDebug(RELEASE_SHADER_PATH"imgPx2D.cso", &imgPx2DShader);
-#endif
-
+		LoadVertexShader(shaders::imgVert2D_cso, &imgVert2DShader, imgElement, &imgVert2DLayout, ARRAYSIZE(imgElement));
+		LoadPixelShader(shaders::imgPx2D_cso, &imgPx2DShader);
 #endif
 		D3D11_INPUT_ELEMENT_DESC shapeElement[]{
 			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
 		};
 
 #ifdef COMPILE 
-
-#ifdef _DEBUG
-		LoadCompileVertexShaderDebug(COMPILE_SHADER_PATH"shapeVert2D.hlsl", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
-		LoadCompileGeometryShaderDebug(COMPILE_SHADER_PATH"shapeGeo2D.hlsl", &shapeGeo2DShader);
-		LoadCompilePixelShaderDebug(COMPILE_SHADER_PATH"shapePx2D.hlsl", &shapePx2DShader);
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"shapeVert2D.hlsl", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
+		LoadCompileGeometryShader(COMPILE_SHADER_PATH"shapeGeo2D.hlsl", &shapeGeo2DShader);
+		LoadCompilePixelShader(COMPILE_SHADER_PATH"shapePx2D.hlsl", &shapePx2DShader);
 #else
-		LoadCompileVertexShaderDebug(RELEASE_SHADER_PATH"shapeVert2D.hlsl", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
-		LoadCompileGeometryShaderDebug(RELEASE_SHADER_PATH"shapeGeo2D.hlsl", &shapeGeo2DShader);
-		LoadCompilePixelShaderDebug(RELEASE_SHADER_PATH"shapePx2D.hlsl", &shapePx2DShader);
-#endif
-
-#else
-
-#ifdef _DEBUG
-		LoadVertexShaderDebug(SHADER_PATH"shapeVert2D.cso", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
-		LoadGeometryShaderDebug(SHADER_PATH"shapeGeo2D.cso", &shapeGeo2DShader);
-		LoadPixelShaderDebug(SHADER_PATH"shapePx2D.cso", &shapePx2DShader);
-#else
-		LoadVertexShaderDebug(RELEASE_SHADER_PATH"shapeVert2D.cso", &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
-		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"shapeGeo2D.cso", &shapeGeo2DShader);
-		LoadPixelShaderDebug(RELEASE_SHADER_PATH"shapePx2D.cso", &shapePx2DShader);
-#endif
-
+		LoadVertexShader(shaders::shapeVert2D_cso, &shapeVert2DShader, shapeElement, &shapeVert2DLayout, ARRAYSIZE(shapeElement));
+		LoadGeometryShader(shaders::shapeGeo2D_cso, &shapeGeo2DShader);
+		LoadPixelShader(shaders::shapePx2D_cso, &shapePx2DShader);
 #endif
 
 #ifdef COMPILE 
-
-#ifdef _DEBUG
 		//shapeVert2D
-		LoadCompileGeometryShaderDebug(COMPILE_SHADER_PATH"lineGeo2D.hlsl", &lineGeo2DShader);
-		LoadCompilePixelShaderDebug(COMPILE_SHADER_PATH"linePx2D.hlsl", &linePx2DShader);
+		LoadCompileGeometryShader(COMPILE_SHADER_PATH"lineGeo2D.hlsl", &lineGeo2DShader);
+		LoadCompilePixelShader(COMPILE_SHADER_PATH"linePx2D.hlsl", &linePx2DShader);
 #else
 		//shapeVert2D
-		LoadCompileGeometryShaderDebug(RELEASE_SHADER_PATH"lineGeo2D.hlsl", &lineGeo2DShader);
-		LoadCompilePixelShaderDebug(RELEASE_SHADER_PATH"linePx2D.hlsl", &linePx2DShader);
-#endif
-
-#else
-
-#ifdef _DEBUG
-		//shapeVert2D
-		LoadGeometryShaderDebug(SHADER_PATH"lineGeo2D.cso", &lineGeo2DShader);
-		LoadPixelShaderDebug(SHADER_PATH"linePx2D.cso", &linePx2DShader);
-#else
-		//shapeVert2D
-		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"lineGeo2D.cso", &lineGeo2DShader);
-		LoadPixelShaderDebug(RELEASE_SHADER_PATH"linePx2D.cso", &linePx2DShader);
-#endif
-
+		LoadGeometryShader(shaders::lineGeo2D_cso, &lineGeo2DShader);
+		LoadPixelShader(shaders::linePx2D_cso, &linePx2DShader);
 #endif
 
 		D3D11_INPUT_ELEMENT_DESC imgInsElement[] = {
-			{"Pos", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"InsMat", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1}
+			{"MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 112, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
 #ifdef COMPILE 
-
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"imgInsVert2D.hlsl", &imgInsVert2DShader, imgInsElement, &imgInsVert2DLayout, ARRAYSIZE(imgInsElement));
+		LoadCompilePixelShader(COMPILE_SHADER_PATH"imgInsPx2D.hlsl", &imgInsPx2DShader);
 #else
-
-#ifdef _DEBUG
-		//LoadVertexShaderDebug(SHADER_PATH"imgInsVert2D.cso", &imgInsVert2DShader, imgInsElement, &imgInsVert2DLayout, ARRAYSIZE(imgInsElement));
-		//imgPx2DShader
-#else
-#endif
-
+		LoadVertexShader(shaders::imgInsVert2D_cso, &imgInsVert2DShader, imgInsElement, &imgInsVert2DLayout, ARRAYSIZE(imgInsElement));
+		LoadPixelShader(shaders::imgInsPx2D_cso, &imgInsPx2DShader);
 #endif
 
 		D3D11_INPUT_ELEMENT_DESC imgMultiInsElement[] = {
-			{"Pos", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"UV", 0, DXGI_FORMAT_R32G32_FLOAT, 1, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"InsMat", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"InsMat", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1},
-			{"ImgId", 0, DXGI_FORMAT_R32G32B32A32_UINT, 2, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1}//첫번째 요소(x)만 사용
+			{"MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 16, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 32, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"MATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 48, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 64, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 1, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 2, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"COLORMATRIX", 3, DXGI_FORMAT_R32G32B32A32_FLOAT, 2, 112, D3D11_INPUT_PER_INSTANCE_DATA, 1},
+			{"IMGINDEX", 0, DXGI_FORMAT_R32_SINT, 2, 128, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
 
 #ifdef COMPILE 
-
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"imgMultiInsVert2D.hlsl", &imgMultiInsVert2DShader, imgMultiInsElement, &imgMultiInsVert2DLayout, ARRAYSIZE(imgMultiInsElement));
+		LoadCompilePixelShader(COMPILE_SHADER_PATH"imgMultiInsPx2D.hlsl", &imgMultiInsPx2DShader);
 #else
-
-#ifdef _DEBUG
-		//LoadVertexShaderDebug(SHADER_PATH"imgMultiInsVert2D.cso", &imgMultiInsVert2DShader, imgMultiInsElement, &imgMultiInsVert2DLayout, ARRAYSIZE(imgMultiInsElement));
-		//LoadPixelShaderDebug(SHADER_PATH"imgMultiInsPx2D.cso", &imgMultiInsPx2DShader);
-#else
+		LoadVertexShader(shaders::imgMultiInsVert2D_cso, &imgMultiInsVert2DShader, imgMultiInsElement, &imgMultiInsVert2DLayout, ARRAYSIZE(imgMultiInsElement));
+		LoadPixelShader(shaders::imgMultiInsPx2D_cso, &imgMultiInsPx2DShader);
 #endif
-
-#endif
-
 		D3D11_INPUT_ELEMENT_DESC shapeInsElement[] = {
 			{"POSITION", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
 			{"MATRIX", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 0, D3D11_INPUT_PER_INSTANCE_DATA, 1},
@@ -580,31 +604,14 @@ namespace _System::_DirectX11 {
 			{"FILLCOLOR", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 1, 80, D3D11_INPUT_PER_INSTANCE_DATA, 1},
 			{"LINEWIDTH", 0, DXGI_FORMAT_R32_FLOAT, 1, 96, D3D11_INPUT_PER_INSTANCE_DATA, 1}
 		};
-
 #ifdef COMPILE 
-
-#ifdef _DEBUG
-		LoadCompileVertexShaderDebug(COMPILE_SHADER_PATH"shapeInsVert2D.hlsl", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
-		LoadCompileGeometryShaderDebug(COMPILE_SHADER_PATH"shapeInsGeo2D.hlsl", &shapeInsGeo2DShader);
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"shapeInsVert2D.hlsl", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
+		LoadCompileGeometryShader(COMPILE_SHADER_PATH"shapeInsGeo2D.hlsl", &shapeInsGeo2DShader);
 		//shapePx2DShader
 #else
-		LoadCompileVertexShaderDebug(RELEASE_SHADER_PATH"shapeInsVert2D.hlsl", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
-		LoadCompileGeometryShaderDebug(RELEASE_SHADER_PATH"shapeInsGeo2D.hlsl", &shapeInsGeo2DShader);
+		LoadVertexShader(shaders::shapeInsVert2D_cso, &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
+		LoadGeometryShader(shaders::shapeInsGeo2D_cso, &shapeInsGeo2DShader);
 		//shapePx2DShader
-#endif
-
-#else
-
-#ifdef _DEBUG
-		LoadVertexShaderDebug(SHADER_PATH"shapeInsVert2D.cso", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
-		LoadGeometryShaderDebug(SHADER_PATH"shapeInsGeo2D.cso", &shapeInsGeo2DShader);
-		//shapePx2DShader
-#else
-		LoadVertexShaderDebug(RELEASE_SHADER_PATH"shapeInsVert2D.cso", &shapeInsVert2DShader, shapeInsElement, &shapeInsVert2DLayout, ARRAYSIZE(shapeInsElement));
-		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"shapeInsGeo2D.cso", &shapeInsGeo2DShader);
-		//shapePx2DShader
-#endif
-
 #endif
 
 		D3D11_INPUT_ELEMENT_DESC lineInsElement[] = {
@@ -618,40 +625,19 @@ namespace _System::_DirectX11 {
 		};
 
 #ifdef COMPILE 
-
-#ifdef _DEBUG
-		LoadCompileVertexShaderDebug(COMPILE_SHADER_PATH"lineInsVert2D.hlsl", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
-		LoadCompileGeometryShaderDebug(COMPILE_SHADER_PATH"lineInsGeo2D.hlsl", &lineInsGeo2DShader);
+		LoadCompileVertexShader(COMPILE_SHADER_PATH"lineInsVert2D.hlsl", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
+		LoadCompileGeometryShader(COMPILE_SHADER_PATH"lineInsGeo2D.hlsl", &lineInsGeo2DShader);
 		//shapePx2DShader
 #else
-		LoadCompileVertexShaderDebug(RELEASE_SHADER_PATH"lineInsVert2D.hlsl", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
-		LoadCompileGeometryShaderDebug(RELEASE_SHADER_PATH"lineInsGeo2D.hlsl", &lineInsGeo2DShader);
+		LoadVertexShader(shaders::lineInsVert2D_cso, &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
+		LoadGeometryShader(shaders::lineInsGeo2D_cso, &lineInsGeo2DShader);
 		//shapePx2DShader
 #endif
 
-#else
-
-#ifdef _DEBUG
-		LoadVertexShaderDebug(SHADER_PATH"lineInsVert2D.cso", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
-		LoadGeometryShaderDebug(SHADER_PATH"lineInsGeo2D.cso", &lineInsGeo2DShader);
-		//shapePx2DShader
-#else
-		LoadVertexShaderDebug(RELEASE_SHADER_PATH"lineInsVert2D.cso", &lineInsVert2DShader, lineInsElement, &lineInsVert2DLayout, ARRAYSIZE(lineInsElement));
-		LoadGeometryShaderDebug(RELEASE_SHADER_PATH"lineInsGeo2D.cso", &lineInsGeo2DShader);
-		//shapePx2DShader
+		context->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+#ifndef COMPILE 
+		delete[]shaderData;
 #endif
-
-#endif
-
-		D3D11_VIEWPORT viewport;
-		viewport.Width = (FLOAT)_Renderer::windowSize.width;
-		viewport.Height = (FLOAT)_Renderer::windowSize.height;
-		viewport.TopLeftX = 0;
-		viewport.TopLeftY = 0;
-		viewport.MinDepth = 0;
-		viewport.MaxDepth = 1;
-
-		context->RSSetViewports(1, &viewport);
 	}
 	void Resize() {
 		D3D11_VIEWPORT viewport;
@@ -673,8 +659,6 @@ namespace _System::_DirectX11 {
 
 		SafeRelease(&backBuffer1);
 		SafeRelease(&backBuffer);
-	
-
 		
 		hr = _DXGI::swapChain->ResizeBuffers(1, 0, 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0);
 		
@@ -717,7 +701,7 @@ namespace _System::_DirectX11 {
 			hr = device1->CreateDepthStencilView(g_depthStencil, 0, &depthStencilView);
 
 			g_depthStencil->Release();
-			context1->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
+			context->OMSetRenderTargets(1, &renderTargetView, depthStencilView);
 		}
 	}
 }

@@ -8,11 +8,13 @@
 #include "_DirectX11.h"
 #include "_DXGI.h"
 
+#include "../object/ScaleHeader.h"
 
 namespace _System::_Windows {
 	void Release() {}
 
 	bool activateInited = false;//WM_ACTIVATE가 처음 윈도우가 보여졌을 때 호출되는 것을 방지
+	bool sizeinited = false;
 
 	LRESULT CALLBACK WndProc(HWND _hWnd, UINT _message, WPARAM _wParam, LPARAM _lParam) {
 		switch (_message) {
@@ -21,28 +23,44 @@ namespace _System::_Windows {
 				_Windows::pause = HIWORD(_wParam);//윈도우가 최소화 확인
 				_Windows::activated = (LOWORD(_wParam) != WA_INACTIVE);
 
-				if (screenMode == System::ScreenMode::Fullscreen) {
-					if (!_Windows::activated) {
-						CloseWindow(_hWnd);
-						_Windows::pause = true;
-					}
-
-				}
-
 				System::activateFunc();
 			}
 			activateInited = true;
 			return 0;
 		case WM_SIZE:
-			_Renderer::windowSize.width = LOWORD(_lParam);
-			_Renderer::windowSize.height = HIWORD(_lParam);
+			if (_wParam != SIZE_MINIMIZED) {
+				minimizing = false;
+				if (_wParam == SIZE_MAXIMIZED) {
+					maximizing = true;
+				} else {
+					maximizing = false;
+				}
 
-			if (_System::_DXGI::swapChain)_System::_DirectX11::Resize();
-			if (_wParam != SIZE_MINIMIZED && System::sizeFunc)System::sizeFunc();
+				_Renderer::windowSize.width = LOWORD(_lParam);
+				_Renderer::windowSize.height = HIWORD(_lParam);
+
+				if ((float)System::GetWindowWidth() / (float)System::GetWindowHeight() > originalWindowWidth / originalWindowHeight) {
+					_System::_Renderer::windowRatio = (float)System::GetWindowHeight() / originalWindowHeight;
+				} else _System::_Renderer::windowRatio = (float)System::GetWindowWidth() / originalWindowWidth;
+
+				if (_System::_DXGI::swapChain)_System::_DirectX11::Resize();
+				if (System::sizeFunc && sizeinited)System::sizeFunc();
+				if (!sizeinited) {
+					sizeinited = true;
+				}
+			} else {
+				minimizing = true;
+				maximizing = false;
+			}
 			return 0;
 		case WM_GETMINMAXINFO:
 			((MINMAXINFO*)_lParam)->ptMinTrackSize.x = 320;
 			((MINMAXINFO*)_lParam)->ptMinTrackSize.y = 240;
+			return 0;
+		case WM_MOVE:
+			_Renderer::windowPos.x = (int)(short)LOWORD(_lParam);
+			_Renderer::windowPos.y = (int)(short)HIWORD(_lParam);
+			if (System::moveFunc)System::moveFunc();
 			return 0;
 		case WM_KEYDOWN:
 			if (keyState[_wParam] == 0)keyState[_wParam] = 1;
@@ -90,7 +108,7 @@ namespace _System::_Windows {
 			return 0;
 		}
 		case WM_CHAR:
-			if (!Input::IsKeyPressing(Input::Key::Control)) {
+			if (!Input::IsKeyPressing(Input::Key::Control) && !Input::IsKeyPressing(Input::Key::Esc)) {
 				chars += (wchar_t)_wParam;
 				enterCharState = EnterCharState::Finish;
 			}
@@ -148,6 +166,7 @@ namespace _System::_Windows {
 		return DefWindowProc(_hWnd, _message, _wParam, _lParam);
 	}
 	void SetFullScreenMode(unsigned _displayIndex, unsigned _displayModeIndex) {
+		screenMode = System::ScreenMode::Fullscreen;
 		//SetWindowLongPtr(hWnd, GWL_STYLE, WS_POPUP);
 		//SetWindowLongPtr(hWnd, GWL_EXSTYLE, WS_EX_APPWINDOW | WS_EX_TOPMOST);
 		/*
@@ -175,6 +194,9 @@ namespace _System::_Windows {
 		EnumDisplayDevices(NULL, _displayIndex, &displayDevice, 0);
 	
 		ChangeDisplaySettingsEx(displayDevice.DeviceName, &mode, nullptr, CDS_FULLSCREEN | CDS_RESET, nullptr);*/
+
+		currentDisplayIndex = _displayIndex;
+		currentDisplayModeIndex = _displayModeIndex;
 
 		DXGI_MODE_DESC mode;
 		if (_DXGI::outputs[_displayIndex].output1) {
@@ -206,8 +228,6 @@ namespace _System::_Windows {
 		} else {
 			_DXGI::swapChain->SetFullscreenState(TRUE, _DXGI::outputs[_displayIndex].output);
 		}
-
-		screenMode = System::ScreenMode::Fullscreen;
 	}
 	void Create() {
 		RTL_OSVERSIONINFOEXW osversioninfo;
@@ -239,7 +259,8 @@ namespace _System::_Windows {
 		wc.cbClsExtra = 0;
 		wc.cbWndExtra = 0;
 		wc.hInstance = _Windows::hInstance;
-		wc.hIcon = nullptr;
+		if (_info->iconResource)wc.hIcon = LoadIcon(hInstance, _info->iconResource);
+		else wc.hIcon = LoadIcon(NULL, IDI_APPLICATION);
 		if (_info->cursorResource)wc.hCursor = LoadCursor(hInstance, _info->cursorResource);
 		else wc.hCursor = LoadCursor(nullptr, IDC_ARROW);
 		wc.hbrBackground = nullptr;
@@ -258,8 +279,13 @@ namespace _System::_Windows {
 
 		_DirectX11::Init(_info);
 
-		ShowWindow(hWnd, (int)_info->windowShow);
 
+		ShowWindow(hWnd, (int)_info->windowShow);
+		if (_info->windowShow == System::WindowShow::Maximize) {
+			maximizing = true;
+		} else if (_info->windowShow == System::WindowShow::Minimize) {
+			minimizing = true;
+		}
 
 		hdc = GetDC(hWnd);
 
@@ -294,6 +320,8 @@ namespace _System::_Windows {
 		return true;
 	}
 	void SetBorderlessScreenMode(unsigned _displayIndex) {
+		screenMode = System::ScreenMode::BorderlessScreen;
+
 		_DXGI::swapChain->SetFullscreenState(FALSE, nullptr);
 
 		const int left = _DXGI::outputs[_displayIndex].rect.left;
@@ -307,10 +335,9 @@ namespace _System::_Windows {
 		SetWindowPos(hWnd, 0, left, top, right - left, bottom - top, SWP_DRAWFRAME);
 
 		ShowWindow(hWnd, SW_MAXIMIZE);
-
-		screenMode = System::ScreenMode::BorderlessScreen;
 	}
 	void SetWindowMode(Point _pos, PointU _size, System::WindowState _state, bool _maximized, bool _minimized, bool _resizeWindow) {
+		screenMode = System::ScreenMode::Window;
 		resizeWindow = _resizeWindow;
 		maximized = _maximized;
 		minimized = _minimized;
@@ -338,8 +365,6 @@ namespace _System::_Windows {
 		if (_state == System::WindowState::Maximized)ShowWindow(hWnd, SW_MAXIMIZE);
 		else if (_state == System::WindowState::Minimized)ShowWindow(hWnd, SW_MINIMIZE);
 		else ShowWindow(hWnd, SW_RESTORE);
-		
-		screenMode = System::ScreenMode::Window;
 	}
 }
 #endif

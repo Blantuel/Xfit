@@ -18,4 +18,9 @@ namespace _System::_Renderer {
 	constexpr float _backColorZero[4] = { 0.f,0.f,0.f,0.f };
 
 	inline PointU windowSize;
+	inline float windowRatio = 0.f;
+
+#ifdef _WIN32
+	inline Point windowPos;
+#endif
 }

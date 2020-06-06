@@ -351,6 +351,27 @@
     <ClInclude Include="network\IP.h">
       <Filter>Header</Filter>
     </ClInclude>
+    <ClInclude Include="component\ToggleButton.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="file\INI.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="math\Random.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="_system\_XfitDataFiles.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ImageInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\ImageMultiInstance.h">
+      <Filter>Header</Filter>
+    </ClInclude>
+    <ClInclude Include="object\SizeMatrixObject.h">
+      <Filter>Header</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="view\Viewport.cpp">
@@ -426,9 +447,6 @@
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="text\Text.cpp">
-      <Filter>Source</Filter>
-    </ClCompile>
-    <ClCompile Include="text\Textbox.cpp">
       <Filter>Source</Filter>
     </ClCompile>
     <ClCompile Include="_system\_Android.cpp">
@@ -608,6 +626,27 @@
     <ClCompile Include="network\IP.cpp">
       <Filter>Source</Filter>
     </ClCompile>
+    <ClCompile Include="component\ToggleButton.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="file\INI.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="math\Random.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="text\TextBox.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ImageInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\ImageMultiInstance.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
+    <ClCompile Include="object\SizeMatrixObject.cpp">
+      <Filter>Source</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="imgPx2D.hlsl" />
@@ -621,8 +660,9 @@
     <FxCompile Include="lineInsGeo2D.hlsl" />
     <FxCompile Include="linePx2D.hlsl" />
     <FxCompile Include="shapePx2D.hlsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include=".editorconfig" />
+    <FxCompile Include="imgInsVert2D.hlsl" />
+    <FxCompile Include="imgInsPx2D.hlsl" />
+    <FxCompile Include="imgMultiInsPx2D.hlsl" />
+    <FxCompile Include="imgMultiInsVert2D.hlsl" />
   </ItemGroup>
 </Project>
